@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorPrimary"
+    android:contentInsetLeft="0dp"
+    android:contentInsetStart="0dp"
+    android:navigationIcon="@drawable/common_ic_back"
+    app:navigationIcon="@drawable/common_ic_back"
+    app:elevation="0dp"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+    <!--android:elevation="4dp"-->
+
+
+    <ImageButton
+        android:id="@+id/ibtn_nav_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:clickable="true"
+        android:background="@drawable/btn_transparent_selector"
+        android:src="@drawable/common_ic_back" />
+
+
+    <TextView
+        android:id="@+id/tv_title"
+        style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:visibility="visible"
+        android:textSize="20sp" />
+    <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:src="@drawable/home_img_headline"-->
+        <!--/>-->
+
+    <ImageButton
+        android:id="@+id/ibtn_title_search"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:clickable="true"
+        android:background="@drawable/btn_transparent_selector"
+        android:src="@drawable/common_btn_search" />
+</android.support.v7.widget.Toolbar>

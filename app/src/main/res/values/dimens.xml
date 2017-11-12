@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--常用左边距-->
+    <dimen name="margin_screen_left">15dp</dimen>
+    <!--常用右边距-->
+    <dimen name="margin_screen_right">15dp</dimen>
+
+    <!--toolbar 左边距-->
+    <dimen name="toolbar_back_btn_paddingLeft">15dp</dimen>
+    <!--toolbar 右边距-->
+    <dimen name="toolbar_back_btn_paddingRight">15dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+</resources>
