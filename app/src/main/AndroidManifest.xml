@@ -37,8 +37,14 @@
             android:launchMode="singleTop"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".ui.square.VideoSelectActivity" />
-        <activity android:name=".ui.video.VideoPlayerActivity"
-            android:configChanges="orientation|screenSize"/>
+        <activity
+            android:name=".ui.video.VideoPlayerActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".ui.login.LoginActivity" />
+        <activity android:name=".ui.login.ForgetPasswordActivity" />
+        <activity android:name=".ui.login.SetNewPasswordActivity" />
+        <activity android:name=".ui.login.RegisterActivity" />
+        <activity android:name=".ui.login.PerfectDataActivity"></activity>
     </application>
 
 </manifest>

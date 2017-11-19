@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Environment
 import android.support.v4.app.FragmentActivity
+import com.aiitec.openapi.net.AIIRequest
 import com.aiitec.openapi.utils.LogUtil
 import mabeijianxi.camera.VCamera
 import mabeijianxi.camera.util.DeviceUtils
@@ -20,6 +21,7 @@ class App : Application (){
     companion object {
         var app: App? = null
         var context: Context? = null
+        var aiiRequest: AIIRequest? = null
     }
     private val activities = ArrayList<FragmentActivity>()
 
@@ -29,7 +31,7 @@ class App : Application (){
         App.app = this
         App.context = applicationContext
         LogUtil.showLog = true
-
+        aiiRequest = AIIRequest(this, Api.API)
 
         initSmallVideo(this)
     }

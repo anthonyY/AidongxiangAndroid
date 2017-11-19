@@ -1,6 +1,7 @@
 package com.aidongxiang.app.adapter
 
 import android.content.Context
+import android.view.View
 import android.widget.ImageView
 import com.aidongxiang.app.R
 import com.aidongxiang.app.utils.GlideImgManager
@@ -15,7 +16,13 @@ class HomeVideoAdapter(context: Context, datas:MutableList<String>) : CommonRecy
     override fun convert(h: CommonRecyclerViewHolder?, item: String?, position: Int) {
 
         val iv_item_img = h?.getView<ImageView?>(R.id.iv_item_img)
-        GlideImgManager.load(context, item,  iv_item_img)
+        GlideImgManager.load(context, item, iv_item_img)
+        val lineItem = h?.getView<View>(R.id.lineItem)
+        if(position == itemCount-1){
+            lineItem?.visibility = View.GONE
+        } else {
+            lineItem?.visibility = View.VISIBLE
+        }
     }
 
     override fun getLayoutViewId(viewType: Int): Int = R.layout.item_home_video

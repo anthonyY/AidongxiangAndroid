@@ -12,5 +12,6 @@ import android.os.Environment;
 public class Constants {
 
     public static String VIDEOS_DIR;
-
+    public static String CACHEDIR = Environment.getExternalStorageDirectory()
+            + "/file/com.aidongxiang.app/uploadfiles/";
 }

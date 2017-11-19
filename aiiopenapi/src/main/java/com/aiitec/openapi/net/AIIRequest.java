@@ -309,7 +309,7 @@ public class AIIRequest {
         OkHttpClient client = new OkHttpClient.Builder().readTimeout(READ_TIMEOUT*4, TimeUnit.SECONDS)// 设置读取超时时间
                 .writeTimeout(WRITE_TIMEOUT*4, TimeUnit.SECONDS)// 设置写的超时时间
                 .connectTimeout(CONNECT_TIMEOUT*2, TimeUnit.SECONDS)// 设置连接超时时间
-   .addNetworkInterceptor(new Interceptor() {
+                .addNetworkInterceptor(new Interceptor() {
 
             public Response intercept(Chain chain) throws IOException {
                 Response originalResponse = chain.proceed(chain.request());
@@ -317,7 +317,9 @@ public class AIIRequest {
                         .body(new ProgressResponseBody(originalResponse.body(), progressListener)).build();
             }
         }).build();
+        //断点续传要用到的，指示下载的区间
         okhttp3.Request okRequest = new okhttp3.Request.Builder().url(url).build();
+//                .header("RANGE", "bytes=" + startPoints + "-")
 
         final Call call = client.newCall(okRequest);
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {

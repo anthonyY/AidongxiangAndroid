@@ -75,11 +75,12 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation project(':aiiopenapi')
     implementation project(':alipay')
     implementation project(':socialsdklibrary')
-//    小视频录制
+    //    小视频录制
     compile 'com.mabeijianxi:small-video-record:1.2.2'
-//    多图片选择
+    //    多图片选择
     compile 'com.github.lovetuzitong:MultiImageSelector:1.2'
+    compile project(':entitylibrary')
+    implementation project(':aiiopenapi')
 }

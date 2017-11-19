@@ -34,7 +34,7 @@ public class AIIDownloadCallBack implements Callback {
         this.progressListener = progressListener;
     }
 
-    /** 网络异常，请求失败，但是这些回调居然在子线程中，气死我了 */
+    /** 网络异常，请求失败，但是这些回调在子线程中 */
     @Override
     public void onFailure(Call arg0, IOException arg1) {
         arg1.printStackTrace();
@@ -43,7 +43,7 @@ public class AIIDownloadCallBack implements Callback {
 
     }
 
-    /** 回调成功，但是这些回调居然在子线程中，气死我了 */
+    /** 回调成功，但是这些回调在子线程中 */
     @Override
     public void onResponse(Call arg0, Response arg1) throws IOException {
     	int code = arg1.code();
@@ -64,13 +64,13 @@ public class AIIDownloadCallBack implements Callback {
         if (progressListener != null) {
             progressListener.onFailure();
         }
-    };
+    }
 
     public void onSuccess(Response response) {
         if (progressListener != null) {
             progressListener.onSuccess(destFile);
         }
-    };
+    }
 
     private void save(File destFile, Response response, long startsPoint) {
         ResponseBody body = response.body();

@@ -23,7 +23,22 @@
     <string name="title_square">广场</string>
     <string name="title_audio">音频</string>
     <string name="title_mine">我的</string>
+    <string name="get_sms_code">获取验证码</string>
+    <string name="sms_code">短信验证码</string>
+    <string name="mobile">手机号码</string>
+    <string name="mobile_can_not_use">手机不能使用</string>
+    <string name="next">下一步</string>
+    <string name="forget_password">忘记密码</string>
+    <string name="new_user_register">新用户注册</string>
+    <string name="finish">完成</string>
+    <string name="set_password">设置密码(6-16位字母和数字组合)</string>
+    <string name="password_hint">密码(6-16位字母和数字组合)</string>
+    <string name="input_again">再次输入密码</string>
 
     <string name="more">更多</string>
-    <string name="title_activity_news">NewsActivity</string>
+    <string name="nickname">昵称</string>
+    <string name="photo">相册</string>
+    <string name="camera">拍照</string>
+    <string name="err_sdcard">sd卡不存在或者不可用，请检查后使用</string>
+
 </resources>

@@ -1,1 +1,1 @@
-include ':app', ':aiiopenapi', ':alipay', ':socialsdklibrary'
+include ':app', ':aiiopenapi', ':alipay', ':socialsdklibrary', ':entitylibrary'

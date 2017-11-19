@@ -3,11 +3,14 @@ package com.aidongxiang.app.utils;
 import android.content.Context;
 import android.widget.ImageView;
 
+import com.aidongxiang.app.R;
 import com.aidongxiang.app.base.Api;
+import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.util.Random;
 
 
 /**
@@ -18,6 +21,7 @@ import java.io.File;
 
 public class GlideImgManager {
 
+    static int[] defailtColorIds = {R.color.defaultColors1, R.color.defaultColors3, R.color.defaultColors4, R.color.defaultColors5,R.color.defaultColors6, R.color.defaultColors7, R.color.defaultColors8, R.color.defaultColors9};
     private static final int DEFAULT_ROUND = 10;
     public enum GlideType{
         /**加载圆形的图*/
@@ -56,20 +60,24 @@ public class GlideImgManager {
      * @param type
      */
     public static void load(Context context, String url, int erroImg, int emptyImg, ImageView iv, GlideType type, int roundDp) {
-        if(url == null){
+        if(context == null){
+            return;
+        } if(url == null){
             url = "";
         }
+
         if(!url.startsWith("http")){
             url = Api.IMAGE_URL +url;
         }
-        DrawableTypeRequest<String> request = Glide.with(context).load(url);
-        if(emptyImg != -1) {
-            request.placeholder(emptyImg);
-        }
-        if(erroImg != -1) {
-            request.error(erroImg);
-        }
 
+        Random random = new Random();
+        if(emptyImg == -1) {
+            emptyImg = defailtColorIds[random.nextInt(defailtColorIds.length)];
+        }
+        if(erroImg == -1) {
+            erroImg = defailtColorIds[random.nextInt(defailtColorIds.length)];
+        }
+        DrawableRequestBuilder<String> request = Glide.with(context).load(url).placeholder(emptyImg).error(erroImg);
         if (GlideType.TYPE_CIRCLE == type) {
             request.transform(new GlideCircleTransform(context)).into(iv);
         } else if (GlideType.TYPE_ROUND == type) {
@@ -78,7 +86,6 @@ public class GlideImgManager {
             request.into(iv);
         }
     }
-
 
 
     public static void loadFile(Context context, String path, ImageView iv) {
@@ -95,13 +102,15 @@ public class GlideImgManager {
     }
     public static void loadFile(Context context, File file, int erroImg, int emptyImg, ImageView iv, GlideType type, int roundDp) {
 
-        DrawableTypeRequest<File> request = Glide.with(context).load(file);
-        if(emptyImg != -1) {
-            request.placeholder(emptyImg);
+        Random random = new Random();
+        if(emptyImg == -1) {
+            emptyImg = defailtColorIds[random.nextInt(defailtColorIds.length)];
         }
-        if(erroImg != -1) {
-            request.error(erroImg);
+        if(erroImg == -1) {
+            erroImg = defailtColorIds[random.nextInt(defailtColorIds.length)];
         }
+        DrawableRequestBuilder<File> request = Glide.with(context).load(file).placeholder(emptyImg).error(erroImg);
+
         if (GlideType.TYPE_CIRCLE == type) {
             request.transform(new GlideCircleTransform(context)).into(iv);
         } else if (GlideType.TYPE_ROUND == type) {

@@ -12,8 +12,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.aidongxiang.app.MainActivity;
 import com.aidongxiang.app.R;
+import com.aidongxiang.app.ui.login.LoginActivity;
 import com.aidongxiang.app.ui.Main2Activity;
 
 import java.lang.reflect.Field;
@@ -239,8 +239,8 @@ public class StatusBarUtil {
     public static void addCustomStatusBar(Activity activity, @ColorRes int colorRes) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (activity.getClass() != Main2Activity.class/* && activity.getClass() != VideoDetailsActivity.class &&
-                    activity.getClass() != LiveBroadcastActivity.class && activity.getClass() != LoginActivity.class
+            if (activity.getClass() != Main2Activity.class && activity.getClass() != LoginActivity.class
+                   /*&& activity.getClass() != LiveBroadcastActivity.class && activity.getClass() != LoginActivity.class
                     && activity.getClass() != WelcomeActivity.class  && activity.getClass() != GuideActivity.class
                     && activity.getClass() != MineActivity.class*/ ) {
                 View rootView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);

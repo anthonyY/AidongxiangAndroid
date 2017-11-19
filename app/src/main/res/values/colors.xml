@@ -1,24 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#5f3181</color>
+    <color name="colorPrimaryDark">#5f3181</color>
     <color name="colorAccent">#FF4081</color>
 
     <color name="item_selected_color">#eeeeee</color>
     <color name="half_transparent">#7fff</color>
     <color name="white">#fff</color>
     <color name="red">#f00</color>
-    <color name="bg_all">#f0f0f0</color>
+    <color name="bg_all">#fdfdfd</color>
     <color name="black3">#333</color>
     <color name="black5">#555</color>
     <color name="black6">#666</color>
     <color name="gray7">#777</color>
     <color name="gray9">#999</color>
-    <color name="gray_text_hint">#aaa</color>
+    <color name="gray_text">#cbcbcb</color>
+    <color name="gray_text_hint">#cbcbcb</color>
     <color name="light_white2">#DDD</color>
-    <color name="unenable_color">#f4f4f4</color>
+    <color name="unenable_color">#cbcbcb</color>
     <color name="gray_line">#CCCCCC</color>
     <color name="blue_selected">#379</color>
     <color name="blue_normal">#268</color>
+    <color name="blue_text">#4330f8</color>
     <color name="nav_divider_color">#4f4f4f</color>
+
+    <color name="defaultColors1">#FF9585ad</color>
+    <color name="defaultColors3">#FF91a7ff</color>
+    <color name="defaultColors4">#FF7fc3f7</color>
+    <color name="defaultColors5">#FF9ff2f3</color>
+    <color name="defaultColors6">#FFFFCCBC</color>
+    <color name="defaultColors7">#e8e5df</color>
+    <color name="defaultColors8">#f1f0ef</color>
+    <color name="defaultColors9">#f0ebeb</color>
+    <color name="purple">#5f3181</color>
+    <color name="purple_selected">#4e2070</color>
+    <color name="gray_btn_normal">#aaa7cf</color>
+    <color name="gray_btn_selected">#8885ad</color>
+
+
+
 </resources>

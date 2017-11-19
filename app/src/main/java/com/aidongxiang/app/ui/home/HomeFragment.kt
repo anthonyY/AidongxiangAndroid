@@ -11,6 +11,7 @@ import com.aidongxiang.app.adapter.HomeVideoAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtFragment
 import com.aidongxiang.app.model.Ad
+import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.utils.StatusBarUtil
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.layout_title_bar_home.*
@@ -32,10 +33,12 @@ class HomeFragment : BaseKtFragment() {
                 "http://e.hiphotos.baidu.com/image/h%3D300/sign=91aecc5808087bf462ec51e9c2d3575e/37d3d539b6003af3b6bc2f733f2ac65c1038b69b.jpg"
         )
     }
-    var homeVideoAdapter : HomeVideoAdapter ?= null
-    var homeNewsAdapter : HomeNewsAdapter?= null
-    var homeCategoryAdapter : HomeCategoryAdapter?= null
+    lateinit var homeVideoAdapter : HomeVideoAdapter
+    lateinit var homeAudioAdapter : HomeVideoAdapter
+    lateinit var homeNewsAdapter : HomeNewsAdapter
+    lateinit var homeCategoryAdapter : HomeCategoryAdapter
     val videoDatas = ArrayList<String>()
+    val audioDatas = ArrayList<String>()
     val newsDatas = ArrayList<String>()
     val categoryDatas = ArrayList<String>()
     val random = Random()
@@ -51,7 +54,19 @@ class HomeFragment : BaseKtFragment() {
         recycler_home_video.isNestedScrollingEnabled = false
         recycler_home_video.layoutManager = linearLayoutManager
         homeVideoAdapter = HomeVideoAdapter(activity!!, videoDatas)
-        homeVideoAdapter?.setOnRecyclerViewItemClickListener { v, position ->// switchToActivity(LiveBroadcastActivity::class.java)
+        homeVideoAdapter.setOnRecyclerViewItemClickListener { v, position ->
+             switchToActivity(LoginActivity::class.java)
+        }
+
+        val audioManager = LinearLayoutManager(activity)
+        //下面这段是解决NestedScrollView嵌套RecyclerView时滑动不流畅问题的解决办法
+        audioManager.isSmoothScrollbarEnabled = true
+        audioManager.isAutoMeasureEnabled = true
+        recycler_home_audio.setHasFixedSize(true)
+        recycler_home_audio.isNestedScrollingEnabled = false
+        recycler_home_audio.layoutManager = audioManager
+        homeAudioAdapter = HomeVideoAdapter(activity!!, audioDatas)
+        homeAudioAdapter.setOnRecyclerViewItemClickListener { v, position ->// switchToActivity(LiveBroadcastActivity::class.java)
         }
 
         val linearLayoutManager2 = LinearLayoutManager(activity)
@@ -75,8 +90,9 @@ class HomeFragment : BaseKtFragment() {
 
         homeNewsAdapter = HomeNewsAdapter(activity!!, newsDatas)
         recycler_home_video.adapter = homeVideoAdapter
+        recycler_home_audio.adapter = homeAudioAdapter
         recycler_home_news.adapter = homeNewsAdapter
-        homeNewsAdapter?.setOnRecyclerViewItemClickListener( {
+        homeNewsAdapter.setOnRecyclerViewItemClickListener( {
             v, position ->{
 //                switchToActivity(TutorDetailsActivity::class.java, "id" to 9, "name" to "张三")
             }
@@ -95,14 +111,22 @@ class HomeFragment : BaseKtFragment() {
             ad.name = "广告"
             ad.link = "http://www.baidu.com"
             ad.imagePath = imgs[random.nextInt(imgs.size)]
-            videoDatas.add(imgs[random.nextInt(imgs.size)])
-            newsDatas.add(imgs[random.nextInt(imgs.size)])
-            categoryDatas.add(imgs[random.nextInt(imgs.size)])
+            if(i < 3){
+                videoDatas.add("http://www.baidu.com/img/sdsdfsdf")
+                audioDatas.add("http://www.baidu.com/img/sdsdfsdf")
+            }
+
+            newsDatas.add("http://www.baidu.com/img/sdsdfsdf")
             ads.add(ad)
+            if(i < 4){
+                categoryDatas.add(imgs[random.nextInt(imgs.size)])
+            }
+
         }
         ad_home.startAD(ads.size, 3, true, ads, 0.544f)
-        homeNewsAdapter?.update()
-        homeVideoAdapter?.update()
+        homeNewsAdapter.update()
+        homeVideoAdapter.update()
+        homeAudioAdapter.update()
     }
 
 
