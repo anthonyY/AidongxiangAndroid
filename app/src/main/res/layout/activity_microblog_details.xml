@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.aidongxiang.app.ui.square.MicroblogDetailsActivity">
+
+
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/llBottomBtns"
+        android:background="@android:color/background_light">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+
+            <include
+                layout="@layout/layout_title_bar"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                 />
+
+            <include
+                layout="@layout/item_post"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                app:tabMode="scrollable">
+
+                <RelativeLayout
+                    android:id="@+id/rlCommentTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:background="@drawable/item_selector"
+                    android:clickable="true"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp">
+
+                    <TextView
+                        android:id="@+id/tv_comment_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="评论"
+                        android:textColor="@color/gray7"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_comment_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/tv_comment_label"
+                        android:text="1235"
+                        android:textColor="@color/gray7"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="60dp"
+                        android:layout_height="3dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@drawable/transparent_purple_selector" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlForwardTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:background="@drawable/item_selector"
+                    android:clickable="true"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp">
+
+                    <TextView
+                        android:id="@+id/tv_forward_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="转发"
+                        android:textColor="@color/gray7"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_forward_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/tv_forward_label"
+                        android:text="1235"
+                        android:textColor="@color/gray7"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="60dp"
+                        android:layout_height="3dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@drawable/transparent_purple_selector" />
+                </RelativeLayout>
+
+                <android.support.v4.widget.Space
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <RelativeLayout
+                    android:id="@+id/rlAppraiseTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:background="@drawable/item_selector"
+                    android:clickable="true"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp">
+
+                    <TextView
+                        android:id="@+id/tv_appraise_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="赞"
+                        android:textColor="@color/gray7"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_appraise_num"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/tv_appraise_label"
+                        android:text="1235"
+                        android:textColor="@color/gray7"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="60dp"
+                        android:layout_height="3dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@drawable/transparent_purple_selector" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                style="@style/line"
+                app:tabMode="scrollable" />
+        </android.support.design.widget.AppBarLayout>
+
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </android.support.v4.view.ViewPager>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <LinearLayout
+        android:id="@+id/llBottomBtns"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/item_selector"
+            android:clickable="true"
+            android:gravity="center"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/common_btn_share_gray"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="转发"
+                android:textColor="@color/gray7"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/item_selector"
+            android:clickable="true"
+            android:gravity="center"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/common_btn_evaluation"
+                android:drawablePadding="8dp"
+                android:gravity="center"
+                android:text="评论"
+                android:textColor="@color/gray7"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/item_selector"
+            android:clickable="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/common_btn_like_nor" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="赞"
+                android:textColor="@color/gray7"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>-->
+
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/mAppBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        app:elevation="0dp">
+
+
+        <LinearLayout
+            android:id="@+id/titlebar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/titlebar_bg"
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent">
+
+                <ImageButton
+                    android:id="@+id/left_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_gravity="left"
+                    android:background="@drawable/btn_transparent_selector"
+                    android:clickable="true"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:src="@drawable/common_btn_back" />
+
+                <TextView
+                    android:id="@+id/tv_title"
+                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:singleLine="true"
+                    android:text="@string/app_name"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="12dp"
+                android:paddingLeft="@dimen/margin_screen_left"
+                android:paddingRight="@dimen/margin_screen_right"
+                android:paddingTop="12dp">
+
+                <com.aidongxiang.app.widgets.CircleImageView
+                    android:id="@+id/ivItemAvatar"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@mipmap/ic_launcher" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvItemName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="张三"
+                        android:textColor="@color/purple"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvItemTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="2017-12-15"
+                        android:textColor="@color/gray7"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvItemAttention"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_purple_line_round_selector"
+                    android:gravity="center"
+                    android:paddingBottom="6dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:paddingTop="6dp"
+                    android:text="关注"
+                    android:textColor="@color/purple"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/ivItemMore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:paddingTop="8dp"
+                    android:src="@drawable/common_btn_more" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvItemContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:paddingLeft="@dimen/margin_screen_left"
+                android:paddingRight="@dimen/margin_screen_right"
+                android:text="是大放送大放送地方斯蒂芬斯蒂芬是大放送大放送对方水电费手动阀手动阀斯蒂芬斯蒂芬收到 "
+                android:textColor="@color/black3"
+                android:textSize="14sp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_post_img"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:paddingLeft="@dimen/margin_screen_left"
+                android:paddingRight="@dimen/margin_screen_right" />
+
+            <ImageView
+                android:id="@+id/ivItemOneImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:maxHeight="100dp"
+                android:minHeight="50dp"
+                android:paddingLeft="@dimen/margin_screen_left"
+                android:paddingRight="@dimen/margin_screen_right" />
+
+            <View style="@style/line" />
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/ll_statusBar2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
+
+            <RelativeLayout
+                android:id="@+id/rlCommentTab"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/item_selector"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/tv_comment_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="评论"
+                    android:textColor="@color/gray7"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_comment_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/tv_comment_label"
+                    android:text="1235"
+                    android:textColor="@color/gray7"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="3dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/transparent_purple_selector" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlForwardTab"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/item_selector"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/tv_forward_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="转发"
+                    android:textColor="@color/gray7"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_forward_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/tv_forward_label"
+                    android:text="1235"
+                    android:textColor="@color/gray7"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="3dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/transparent_purple_selector" />
+            </RelativeLayout>
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <RelativeLayout
+                android:id="@+id/rlAppraiseTab"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/item_selector"
+                android:clickable="true"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:id="@+id/tv_appraise_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="赞"
+                    android:textColor="@color/gray7"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_appraise_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/tv_appraise_label"
+                    android:text="1235"
+                    android:textColor="@color/gray7"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="3dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/transparent_purple_selector" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <View
+            style="@style/line"
+            app:layout_scrollFlags="scroll|enterAlways" />
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <android.support.v4.view.ViewPager
+
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+
+</android.support.design.widget.CoordinatorLayout>
+

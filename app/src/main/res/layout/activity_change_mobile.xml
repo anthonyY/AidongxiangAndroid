@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.aidongxiang.app.ui.mine.ChangeMobileActivity">
+
+    <include layout="@layout/layout_title_bar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="@dimen/margin_screen_left"
+        android:layout_marginRight="@dimen/margin_screen_right"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="20dp"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:src="@drawable/common_icon_phone"/>
+        <EditText
+            android:id="@+id/etSmscode"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="@string/sms_code"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:inputType="number"
+            android:maxLength="6"
+            android:background="@android:color/transparent"
+            android:textColor="@color/black5"/>
+        <Button
+            android:id="@+id/btnSmscode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="56dp"
+            android:minHeight="36dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:textColor="@color/white"
+            android:text="@string/get_sms_code"
+            style="@style/btnPurpleStyle"/>
+    </LinearLayout>
+    <View style="@style/line"
+        android:layout_marginLeft="@dimen/margin_screen_left"
+        android:layout_marginRight="@dimen/margin_screen_right"/>
+    <TextView
+        android:id="@+id/tvMobileCannotUse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:textColor="@color/black5"
+        android:textSize="12sp"
+        android:text="手机不能使用？"
+        android:paddingLeft="8dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:clickable="true"
+        android:layout_marginRight="@dimen/margin_screen_right"/>
+
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/next"
+        android:layout_marginTop="40dp"
+        style="@style/btnPurpleStyle"
+        android:enabled="false"
+        android:layout_marginRight="@dimen/margin_screen_right"
+        android:layout_marginLeft="@dimen/margin_screen_left"/>
+</LinearLayout>

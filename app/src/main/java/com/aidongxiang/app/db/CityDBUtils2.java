@@ -53,7 +53,7 @@ public class CityDBUtils2 {
                     } else {// 如果是大于6位数的格式也就是包含商区的
                         Region region = aiiOpenDb.findRegionsFromId(regionId);
                         if (region != null) {// 如果有数据
-                            districtCode = (int) region.getId();
+                            districtCode =  region.getId();
                             city.setBusinessDistrict(region.getName());
                             city.setBusinessDistrictCode(regionId);
                             city.setDistrictCode(districtCode);

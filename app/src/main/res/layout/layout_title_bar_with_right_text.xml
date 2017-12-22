@@ -1,48 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/toolbar"
+    android:id="@+id/titlebar"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="?attr/colorPrimary"
-    android:contentInsetLeft="0dp"
-    android:contentInsetStart="0dp"
-    android:navigationIcon="@drawable/common_ic_back"
-    app:elevation="0dp"
-    app:navigationIcon="@drawable/common_ic_back"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-    <!--android:elevation="4dp"-->
+    android:layout_height="wrap_content"
+    android:background="@drawable/titlebar_bg"
+    android:orientation="vertical">
 
-    <!--
-        <ImageView
-            android:id="@+id/left_icon"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:contentInsetLeft="0dp"
+        android:contentInsetStart="0dp"
+        android:navigationIcon="@drawable/common_btn_back"
+        app:elevation="0dp"
+        app:navigationIcon="@drawable/common_btn_back"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/btn_title_confirm"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:onClick="onClick_Event"
-            android:layout_gravity="left"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:clickable="true"
+            android:layout_gravity="right"
             android:background="@drawable/btn_transparent_selector"
-            android:src="@drawable/common_ic_back" />
-    -->
-
-    <TextView
-        android:id="@+id/tv_title"
-        style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:singleLine="true"
-        android:textColor="@android:color/white"
-        android:textSize="20sp" />
-    <Button
-        android:id="@+id/btn_title_confirm"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:minWidth="56dp"
-        android:background="@drawable/btn_transparent_selector"
-        android:textColor="@color/black3"
-        android:layout_gravity="right"
-        android:text="@string/confirm"/>
-</android.support.v7.widget.Toolbar>
+            android:minWidth="56dp"
+            android:text="@string/confirm"
+            android:visibility="gone"
+            android:textColor="@color/white" />
+    </android.support.v7.widget.Toolbar>
+</LinearLayout>

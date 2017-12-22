@@ -177,45 +177,5 @@ public class SessionRequestQuery extends RequestQuery {
         this.deviceType = deviceType;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(this.version);
-        dest.writeString(this.model);
-        dest.writeString(this.resolution);
-        dest.writeInt(this.lang);
-        dest.writeString(this.screenSize);
-        dest.writeString(this.deviceToken);
-        dest.writeString(this.deviceInfo);
-        dest.writeInt(this.deviceType);
-    }
-
-    protected SessionRequestQuery(Parcel in) {
-        super(in);
-        this.version = in.readString();
-        this.model = in.readString();
-        this.resolution = in.readString();
-        this.lang = in.readInt();
-        this.screenSize = in.readString();
-        this.deviceToken = in.readString();
-        this.deviceInfo = in.readString();
-        this.deviceType = in.readInt();
-    }
-
-    public static final Creator<SessionRequestQuery> CREATOR = new Creator<SessionRequestQuery>() {
-        @Override
-        public SessionRequestQuery createFromParcel(Parcel source) {
-            return new SessionRequestQuery(source);
-        }
-
-        @Override
-        public SessionRequestQuery[] newArray(int size) {
-            return new SessionRequestQuery[size];
-        }
-    };
 }

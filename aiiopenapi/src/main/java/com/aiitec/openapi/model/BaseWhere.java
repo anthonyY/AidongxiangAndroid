@@ -1,8 +1,5 @@
 package com.aiitec.openapi.model;
 
-import android.os.Parcel;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import com.aiitec.openapi.json.annotation.JSONField;
@@ -82,43 +79,5 @@ public class BaseWhere extends Entity {
     }
 
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeInt(this.regionId);
-        dest.writeString(this.searchKey);
-        dest.writeString(this.mobile);
-        dest.writeList(this.ids);
-        dest.writeStringList(this.mobiles);
-    }
-
-    public BaseWhere() {
-    }
-
-    protected BaseWhere(Parcel in) {
-        super(in);
-        this.regionId = in.readInt();
-        this.searchKey = in.readString();
-        this.mobile = in.readString();
-        this.ids = new ArrayList<Integer>();
-        in.readList(this.ids, Integer.class.getClassLoader());
-        this.mobiles = in.createStringArrayList();
-    }
-
-    public static final Creator<BaseWhere> CREATOR = new Creator<BaseWhere>() {
-        @Override
-        public BaseWhere createFromParcel(Parcel source) {
-            return new BaseWhere(source);
-        }
-
-        @Override
-        public BaseWhere[] newArray(int size) {
-            return new BaseWhere[size];
-        }
-    };
 }

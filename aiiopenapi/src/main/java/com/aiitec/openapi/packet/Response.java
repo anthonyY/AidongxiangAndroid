@@ -1,6 +1,5 @@
 package com.aiitec.openapi.packet;
 
-import android.os.Parcel;
 
 import com.aiitec.openapi.json.annotation.JSONField;
 import com.aiitec.openapi.model.Entity;
@@ -120,39 +119,4 @@ public class Response extends Entity {
 	public Response() {
 	}
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		super.writeToParcel(dest, flags);
-		dest.writeString(this.namespace);
-		dest.writeString(this.timestampLatest);
-		dest.writeString(this.session);
-		dest.writeString(this.timestamp);
-		dest.writeParcelable(this.query, flags);
-	}
-
-	protected Response(Parcel in) {
-		super(in);
-		this.namespace = in.readString();
-		this.timestampLatest = in.readString();
-		this.session = in.readString();
-		this.timestamp = in.readString();
-		this.query = in.readParcelable(ResponseQuery.class.getClassLoader());
-	}
-
-	public static final Creator<Response> CREATOR = new Creator<Response>() {
-		@Override
-		public Response createFromParcel(Parcel source) {
-			return new Response(source);
-		}
-
-		@Override
-		public Response[] newArray(int size) {
-			return new Response[size];
-		}
-	};
 }

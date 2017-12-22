@@ -8,7 +8,7 @@
     <color name="half_transparent">#7fff</color>
     <color name="white">#fff</color>
     <color name="red">#f00</color>
-    <color name="bg_all">#fdfdfd</color>
+    <color name="bg_all">#f0f0f0</color>
     <color name="black3">#333</color>
     <color name="black5">#555</color>
     <color name="black6">#666</color>
@@ -36,6 +36,7 @@
     <color name="purple_selected">#4e2070</color>
     <color name="gray_btn_normal">#aaa7cf</color>
     <color name="gray_btn_selected">#8885ad</color>
+
 
 
 

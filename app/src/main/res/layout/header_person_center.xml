@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/my_bg"
+    >
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:paddingBottom="16dp">
+        <ImageButton
+            android:id="@+id/ibtn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/common_btn_back"
+            android:minHeight="56dp"
+            android:minWidth="40dp"
+            android:background="@drawable/btn_transparent_selector"
+            />
+        <com.aidongxiang.app.widgets.CircleImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:src="@mipmap/ic_launcher"/>
+        
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_below="@+id/ivAvatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:text="张小梅"/>
+        <LinearLayout
+            android:layout_below="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvFollow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:text="关注  12"/>
+            <View
+                android:id="@+id/lineTop"
+                android:layout_width="1dp"
+                android:layout_height="12dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/white"/>
+
+            <TextView
+                android:id="@+id/tvFans"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:text="粉丝  1233"/>
+            <View
+                android:id="@+id/lineTop2"
+                android:layout_width="1dp"
+                android:layout_height="12dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@color/white"/>
+       <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_marginLeft="8dp"
+            android:textSize="14sp"
+            android:layout_centerHorizontal="true"
+            android:text="+关注"/>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>
+

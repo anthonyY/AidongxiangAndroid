@@ -88,16 +88,16 @@ class VideoSelectActivity : BaseKtActivity(), LoaderManager.LoaderCallbacks<Curs
 //                val modifyTime = data.getLong(data.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED))//暂未用到
 
                 //提前生成缩略图，再获取：http://stackoverflow.com/questions/27903264/how-to-get-the-video-thumbnail-path-and-not-the-bitmap
-                MediaStore.Video.Thumbnails.getThumbnail(contentResolver, videoId, MediaStore.Video.Thumbnails.MICRO_KIND, null);
+                MediaStore.Video.Thumbnails.getThumbnail(contentResolver, videoId, MediaStore.Video.Thumbnails.MICRO_KIND, null)
                 val projection = arrayOf( MediaStore.Video.Thumbnails._ID, MediaStore.Video.Thumbnails.DATA)
                 val cursor = contentResolver.query(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI
                         , projection
                         , MediaStore.Video.Thumbnails.VIDEO_ID + "=?"
                         , arrayOf(videoId.toString())
                         , null)
-                var thumbPath = "";
+                var thumbPath = ""
                 while (cursor.moveToNext()){
-                    thumbPath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA));
+                    thumbPath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Thumbnails.DATA))
                 }
                 cursor.close();
                 // 获取该视频的父路径名

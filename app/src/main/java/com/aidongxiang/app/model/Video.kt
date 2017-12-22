@@ -13,6 +13,11 @@ class Video : Entity(){
     var dirPath : String ?= null
     var thumbPath : String ?= null
     var path : String ?= null
+    var name : String ?= null
     var duration : Long = 0
     var size : Long = 0
+    var id : Long = 0
+
+
+
 }

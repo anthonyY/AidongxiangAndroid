@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical">
+  <!--  <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingRight="@dimen/margin_screen_right"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingBottom="12dp"
+        android:paddingTop="12dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+            <com.aidongxiang.app.widgets.CircleImageView
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:src="@mipmap/ic_launcher"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="我来说几句"
+                android:layout_marginLeft="8dp"
+                android:minHeight="40dp"
+                style="?android:attr/borderlessButtonStyle"
+                android:background="@drawable/btn_video_details_comment_selector"/>
+        </LinearLayout>
+    </LinearLayout>
+    <View style="@style/line"/>-->
+    <com.jcodecraeer.xrecyclerview.XRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/faBtnComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/margin_screen_right"
+        android:layout_marginBottom="@dimen/margin_screen_right"
+        app:rippleColor="@color/purple_selected"
+        android:src="@drawable/ic_edit"/>
+</RelativeLayout>

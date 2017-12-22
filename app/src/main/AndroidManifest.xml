@@ -24,27 +24,64 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.home.NewsActivity" />
+        <activity android:name=".ui.home.CommonWebViewActivity" />
         <activity
-            android:name="mabeijianxi.camera.MediaRecorderActivity"
-            android:theme="@style/AppTheme" />
+            android:name=".ui.square.PublishPostActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity android:name=".ui.square.VideoSelectActivity" />
+        <activity android:name=".ui.square.MediaRecorderActivity" />
         <activity
             android:name="me.nereo.multi_image_selector.MultiImageSelectorActivity"
             android:configChanges="orientation|screenSize" />
         <activity android:name=".ui.square.ImageSelectActivity" />
-        <activity android:name=".ui.home.NewsActivity" />
-        <activity
-            android:name=".ui.square.PublishPostActivity"
-            android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".ui.square.VideoSelectActivity" />
-        <activity
-            android:name=".ui.video.VideoPlayerActivity"
-            android:configChanges="orientation|screenSize" />
+        <activity android:name=".ui.square.MicroblogDetailsActivity" />
+        <activity android:name=".ui.square.BigImageActivity" />
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.login.ForgetPasswordActivity" />
         <activity android:name=".ui.login.SetNewPasswordActivity" />
         <activity android:name=".ui.login.RegisterActivity" />
-        <activity android:name=".ui.login.PerfectDataActivity"></activity>
+        <activity android:name=".ui.login.PerfectDataActivity" />
+        <activity android:name=".ui.login.WelcomeActivity" />
+        <activity android:name=".ui.login.MobileAppealActivity" />
+        <activity android:name=".ui.mine.SettingActivity" />
+        <activity android:name=".ui.mine.AccountSecurityActivity" />
+        <activity android:name=".ui.mine.UpdatePasswordActivity" />
+        <activity android:name=".ui.mine.ChangeMobileActivity" />
+        <activity android:name=".ui.mine.MyCollectionActivity" />
+        <activity android:name=".ui.mine.WatchHistoryActivity" />
+        <activity android:name=".ui.mine.MyDownloadActivity" />
+        <activity android:name=".ui.mine.PersonCenterActivity" />
+        <activity android:name=".ui.mine.UserInfoActivity" />
+        <activity android:name=".ui.mine.NicknameActivity" />
+        <activity android:name=".ui.mine.MyScreenActivity" />
+        <activity android:name=".ui.mine.FansListActivity" />
+        <activity android:name=".ui.mine.SignatureActivity" />
+        <activity android:name=".ui.audio.AudioDetailsActivity" />
+        <activity
+            android:name=".ui.video.VideoPlayerActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".ui.video.VideoDetailsActivity"
+            android:configChanges="orientation|screenSize" />
+
+        <service android:name=".service.MusicService">
+            <intent-filter>
+                <action android:name="com.aidongxiang.app.music_play_service" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name=".receiver.MusicPlayReceiver">
+            <intent-filter>
+                <action android:name="com.aidongxiang.app.music_play_reciver" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".ui.mine.MyMicroblogActivity"></activity>
     </application>
 
 </manifest>

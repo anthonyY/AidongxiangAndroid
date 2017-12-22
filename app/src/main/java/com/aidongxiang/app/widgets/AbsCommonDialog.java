@@ -28,7 +28,9 @@ public abstract class AbsCommonDialog extends Dialog {
 
     abstract float widthScale() ;
     abstract int layoutId() ;
-    abstract int animStyle();
+    public int animStyle(){
+        return R.style.dialogAnimationStyle;
+    }
 
     private View.OnClickListener onConfirmClickListener;
     private View.OnClickListener onCancelClickListener;
@@ -60,11 +62,8 @@ public abstract class AbsCommonDialog extends Dialog {
         WindowManager.LayoutParams params = window.getAttributes();
         params.gravity = Gravity.CENTER_VERTICAL;
         window.setAttributes(setLayoutParams(params));
-        if(animStyle() < 0){
-            setAnimationStyle(R.style.dialogAnimationStyle);
-        } else {
-            setAnimationStyle(animStyle());
-        }
+        setAnimationStyle(animStyle());
+
 
     }
 
@@ -135,6 +134,13 @@ public abstract class AbsCommonDialog extends Dialog {
     }
 
     public void setContent(String content) {
+        if (tv_content != null && !TextUtils.isEmpty(content)) {
+            tv_content.setVisibility(View.VISIBLE);
+            tv_content.setText(content);
+        }
+    }
+
+    public void setContent(CharSequence content) {
         if (tv_content != null && !TextUtils.isEmpty(content)) {
             tv_content.setVisibility(View.VISIBLE);
             tv_content.setText(content);

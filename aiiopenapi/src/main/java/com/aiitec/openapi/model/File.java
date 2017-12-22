@@ -1,15 +1,16 @@
 package com.aiitec.openapi.model;
 
-import android.os.Parcel;
 
-public class File extends Entity {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class File extends Entity implements Parcelable {
 
 	/**文件路径*/
 	private String path;
 	private String filename;
 	private String md5;
-	
-	
+	private long id;
 
 	public String getMd5() {
         return md5;
@@ -38,6 +39,17 @@ public class File extends Entity {
 		this.path = path;
 	}
 
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public File() {
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -45,23 +57,20 @@ public class File extends Entity {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		super.writeToParcel(dest, flags);
 		dest.writeString(this.path);
 		dest.writeString(this.filename);
 		dest.writeString(this.md5);
-	}
-
-	public File() {
+		dest.writeLong(this.id);
 	}
 
 	protected File(Parcel in) {
-		super(in);
 		this.path = in.readString();
 		this.filename = in.readString();
 		this.md5 = in.readString();
+		this.id = in.readLong();
 	}
 
-	public static final Creator<File> CREATOR = new Creator<File>() {
+	public static final Parcelable.Creator<File> CREATOR = new Parcelable.Creator<File>() {
 		@Override
 		public File createFromParcel(Parcel source) {
 			return new File(source);

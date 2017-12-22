@@ -10,6 +10,7 @@ import android.support.annotation.StringRes
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.aidongxiang.app.R
@@ -27,15 +28,19 @@ import java.io.Serializable
  */
 abstract class BaseKtActivity : AppCompatActivity() {
 
-    val ARG_ID = "id"
-    val ARG_NAME = "name"
+
     private var tv_title : TextView ?= null
 
     fun Activity.toast(message: CharSequence) {
-        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+        runOnUiThread {
+            Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+        }
+
     }
     fun Activity.toast(@StringRes messageRes: Int) {
-        Toast.makeText(applicationContext, messageRes, Toast.LENGTH_SHORT).show()
+        runOnUiThread {
+            Toast.makeText(applicationContext, messageRes, Toast.LENGTH_SHORT).show()
+        }
     }
 
     /**
@@ -49,10 +54,14 @@ abstract class BaseKtActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         doBeforeSetContent()
         ContentViewUtils.inject(this)
-        StatusBarUtil.addCustomStatusBar(this)
+        val titleBar = findViewById<LinearLayout>(R.id.titlebar)
+        if(titleBar != null){
+            StatusBarUtil.addStatusBarView(titleBar, android.R.color.transparent)
+        }
+
         progressDialog = CustomProgressDialog(this)
-        progressDialog!!.setCancelable(true)
-        progressDialog!!.setCanceledOnTouchOutside(true)
+        progressDialog?.setCancelable(true)
+        progressDialog?.setCanceledOnTouchOutside(true)
 
         val myApp = application as App
         myApp.addInstance(this)

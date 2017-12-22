@@ -1,6 +1,5 @@
 package com.aiitec.openapi.packet;
 
-import android.os.Parcel;
 
 import com.aiitec.openapi.json.annotation.JSONField;
 import com.aiitec.openapi.model.ListRequestQuery;
@@ -31,30 +30,4 @@ public class ListRequest extends Request {
         query.setTable(ta);
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeParcelable(this.query, flags);
-    }
-
-    protected ListRequest(Parcel in) {
-        this.query = in.readParcelable(ListRequestQuery.class.getClassLoader());
-    }
-
-    public static final Creator<ListRequest> CREATOR = new Creator<ListRequest>() {
-        @Override
-        public ListRequest createFromParcel(Parcel source) {
-            return new ListRequest(source);
-        }
-
-        @Override
-        public ListRequest[] newArray(int size) {
-            return new ListRequest[size];
-        }
-    };
 }

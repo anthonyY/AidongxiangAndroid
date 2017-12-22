@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import com.aidongxiang.app.R;
 import com.aidongxiang.app.ui.login.LoginActivity;
 import com.aidongxiang.app.ui.Main2Activity;
+import com.aidongxiang.app.ui.square.PublishPostActivity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -85,7 +86,7 @@ public class StatusBarUtil {
         }else if(type==2){
             FlymeSetStatusBarLightMode(activity.getWindow(), true);
         }else if(type==3){
-            activity.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN| View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            activity.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
 
     }
@@ -169,7 +170,7 @@ public class StatusBarUtil {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     //开发版 7.7.13 及以后版本采用了系统API，旧方法无效但不会报错，所以两个方式都要加上
                     if(dark){
-                        activity.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN| View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                        activity.getWindow().getDecorView().setSystemUiVisibility(  View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                     }else {
                         activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
                     }
@@ -240,7 +241,7 @@ public class StatusBarUtil {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (activity.getClass() != Main2Activity.class && activity.getClass() != LoginActivity.class
-                   /*&& activity.getClass() != LiveBroadcastActivity.class && activity.getClass() != LoginActivity.class
+                   && activity.getClass() != PublishPostActivity.class /*&& activity.getClass() != LoginActivity.class
                     && activity.getClass() != WelcomeActivity.class  && activity.getClass() != GuideActivity.class
                     && activity.getClass() != MineActivity.class*/ ) {
                 View rootView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);

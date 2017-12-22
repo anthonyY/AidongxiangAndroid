@@ -1,23 +1,55 @@
 package com.aidongxiang.app.ui.home
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
+import android.support.design.widget.TabLayout
 import com.aidongxiang.app.R
-
+import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
+import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.BaseKtActivity
 import kotlinx.android.synthetic.main.activity_news.*
 
-class NewsActivity : AppCompatActivity() {
+/**
+ * 新闻资讯类
+ * @author Anthony
+ * createTime 2017-11-20
+ * @version 1.0
+ */
+@ContentView(R.layout.activity_news)
+class NewsActivity : BaseKtActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_news)
-        setSupportActionBar(toolbar)
+    lateinit var mPagerAdapter: SimpleFragmentPagerAdapter
+    private var position: Int = 0
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+
+    override fun init(savedInstanceState: Bundle?) {
+        position = bundle.getInt("position")
+        mPagerAdapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
+
+
+        viewpager.adapter = mPagerAdapter
+        tablayout.setupWithViewPager(viewpager)
+
+
+        setDatas()
+//        if (position == 1) {
+//            viewpager.currentItem = 1
+//        }
+
     }
+
+    private fun setDatas(){
+        val titles = arrayOf("热点新闻","旅游指南","民族风情","侗乡美食","摄影分享")
+        for((index, title) in titles.withIndex()){
+            mPagerAdapter.addFragment(NewsListFragment.newInstance(index), title)
+        }
+        if(titles.size > 4){
+            tablayout.tabMode = TabLayout.MODE_SCROLLABLE
+        } else {
+            tablayout.tabMode = TabLayout.MODE_FIXED
+        }
+
+        mPagerAdapter.notifyDataSetChanged()
+    }
+
 
 }

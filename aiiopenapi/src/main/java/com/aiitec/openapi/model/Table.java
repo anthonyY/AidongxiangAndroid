@@ -1,6 +1,5 @@
 package com.aiitec.openapi.model;
 
-import android.os.Parcel;
 
 import com.aiitec.openapi.json.annotation.JSONField;
 
@@ -101,42 +100,4 @@ public class Table extends Entity {
 		this.where = where;
 	}
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		super.writeToParcel(dest, flags);
-		dest.writeInt(this.page);
-		dest.writeInt(this.limit);
-		dest.writeInt(this.orderBy);
-		dest.writeInt(this.orderType);
-		dest.writeParcelable(this.where, flags);
-	}
-
-	public Table() {
-	}
-
-	protected Table(Parcel in) {
-		super(in);
-		this.page = in.readInt();
-		this.limit = in.readInt();
-		this.orderBy = in.readInt();
-		this.orderType = in.readInt();
-		this.where = in.readParcelable(BaseWhere.class.getClassLoader());
-	}
-
-	public static final Creator<Table> CREATOR = new Creator<Table>() {
-		@Override
-		public Table createFromParcel(Parcel source) {
-			return new Table(source);
-		}
-
-		@Override
-		public Table[] newArray(int size) {
-			return new Table[size];
-		}
-	};
 }

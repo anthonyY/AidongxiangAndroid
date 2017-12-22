@@ -1,13 +1,8 @@
 package com.aiitec.openapi.packet;
 
-import android.os.Parcel;
 
 import com.aiitec.openapi.json.annotation.JSONField;
 import com.aiitec.openapi.model.ListResponseQuery;
-
-
-
-
 
 /**
  * 列表返回基类
@@ -28,22 +23,5 @@ public class ListResponse extends Response{
 		this.query = query;
 	}
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		super.writeToParcel(dest, flags);
-		dest.writeParcelable(this.query, flags);
-	}
-
-	public ListResponse() {
-	}
-
-	protected ListResponse(Parcel in) {
-		this.query = in.readParcelable(ListResponseQuery.class.getClassLoader());
-	}
 
 }

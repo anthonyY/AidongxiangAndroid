@@ -1,22 +1,20 @@
 package com.aiitec.openapi.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+
+import com.aiitec.openapi.json.CombinationUtil;
+import com.aiitec.openapi.json.JSON;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.aiitec.openapi.json.CombinationUtil;
-import com.aiitec.openapi.json.JSON;
-
-public class Entity implements Cloneable, Parcelable {
+public class Entity implements Cloneable {
     /**
      * 如果重写构造函数，记得要重新调用setDefaultNumber()这个方法，或者调用super()
      */
     public Entity() {
-        setDefaultNumber();
+//        setDefaultNumber();
     }
 
     /**
@@ -44,71 +42,6 @@ public class Entity implements Cloneable, Parcelable {
                 e.printStackTrace();
             }
         }
-    }
-
-    // 这是我们自己的数据库框架注解
-    @com.aiitec.openapi.db.annotation.Unique
-    protected long id = -1;
-    protected String name;
-
-    /***
-     * 获取id
-     * 
-     * @return id
-     */
-    public long getId() {
-        return id;
-    }
-
-    /**
-     * 设置id
-     * 
-     * @param id
-     *            对象id
-     */
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    /**
-     * 获取名称
-     * 
-     * @return 名称
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * 设置名称
-     * 
-     * @param name
-     *            名称
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /** 时间戳 */
-    protected String timestamp;
-
-    /**
-     * 获取时间戳
-     * 
-     * @return 时间戳
-     */
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    /**
-     * 设置时间戳
-     * 
-     * @param timestamp
-     *            时间戳
-     */
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
     }
 
 
@@ -259,33 +192,5 @@ public class Entity implements Cloneable, Parcelable {
     }
 
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.id);
-        dest.writeString(this.name);
-        dest.writeString(this.timestamp);
-    }
-
-    protected Entity(Parcel in) {
-        this.id = in.readLong();
-        this.name = in.readString();
-        this.timestamp = in.readString();
-    }
-
-    public static final Creator<Entity> CREATOR = new Creator<Entity>() {
-        @Override
-        public Entity createFromParcel(Parcel source) {
-            return new Entity(source);
-        }
-
-        @Override
-        public Entity[] newArray(int size) {
-            return new Entity[size];
-        }
-    };
 }

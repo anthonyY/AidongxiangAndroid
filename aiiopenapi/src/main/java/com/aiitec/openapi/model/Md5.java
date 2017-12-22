@@ -1,6 +1,5 @@
 package com.aiitec.openapi.model;
 
-import android.os.Parcel;
 
 import com.aiitec.openapi.json.annotation.JSONField;
 
@@ -28,36 +27,8 @@ public class Md5 extends Entity {
         this.item = item;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(this.item);
-        dest.writeString(this.key);
-    }
 
     public Md5() {
     }
 
-    protected Md5(Parcel in) {
-        super(in);
-        this.item = in.readString();
-        this.key = in.readString();
-    }
-
-    public static final Creator<Md5> CREATOR = new Creator<Md5>() {
-        @Override
-        public Md5 createFromParcel(Parcel source) {
-            return new Md5(source);
-        }
-
-        @Override
-        public Md5[] newArray(int size) {
-            return new Md5[size];
-        }
-    };
 }

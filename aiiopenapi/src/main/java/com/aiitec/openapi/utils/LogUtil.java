@@ -4,8 +4,8 @@ import android.util.Log;
 
 public class LogUtil {
 
-	public static final String DEFAULT_TAG = "AIDONGXIANG";
-	public static boolean showLog = false;
+	public static final String DEFAULT_TAG = "TAG_AIDONGXIANG";
+	public static boolean showLog = true;
 
 	public static void v(String logText) {
 		if (showLog) {

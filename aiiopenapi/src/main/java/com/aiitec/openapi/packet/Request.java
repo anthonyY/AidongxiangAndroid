@@ -151,39 +151,4 @@ public class Request extends Entity {
     public Request() {
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeString(this.namespace);
-        dest.writeString(this.timestampLatest);
-        dest.writeString(this.session);
-        dest.writeString(this.md5);
-        dest.writeParcelable(this.query, flags);
-    }
-
-    protected Request(Parcel in) {
-        super(in);
-        this.namespace = in.readString();
-        this.timestampLatest = in.readString();
-        this.session = in.readString();
-        this.md5 = in.readString();
-        this.query = in.readParcelable(RequestQuery.class.getClassLoader());
-    }
-
-    public static final Creator<Request> CREATOR = new Creator<Request>() {
-        @Override
-        public Request createFromParcel(Parcel source) {
-            return new Request(source);
-        }
-
-        @Override
-        public Request[] newArray(int size) {
-            return new Request[size];
-        }
-    };
 }

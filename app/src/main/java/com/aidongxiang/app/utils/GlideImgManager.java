@@ -36,6 +36,9 @@ public class GlideImgManager {
     public static void load(Context context, String url, int emptyImg, ImageView iv) {
         load(context, url, emptyImg, emptyImg, iv, null, 0);
     }
+    public static void load(Context context, String url, ImageView iv, GlideType type) {
+        load(context, url, -1, iv, type);
+    }
     public static void load(Context context, String url, int emptyImg, ImageView iv, GlideType type) {
         load(context, url, emptyImg, emptyImg, iv, type, 0);
     }
@@ -87,7 +90,9 @@ public class GlideImgManager {
         }
     }
 
-
+    public static DrawableTypeRequest<File> loadFile(Context context, String url) {
+        return Glide.with(context).load(new File(url));
+    }
     public static void loadFile(Context context, String path, ImageView iv) {
         loadFile(context, new File(path), -1, -1, iv, null, 0);
     }
@@ -100,15 +105,10 @@ public class GlideImgManager {
     public static void loadFile(Context context, String path, int erroImg, int emptyImg, ImageView iv, GlideType type) {
         loadFile(context, new File(path), erroImg, emptyImg, iv, type, 0);
     }
-    public static void loadFile(Context context, File file, int erroImg, int emptyImg, ImageView iv, GlideType type, int roundDp) {
+    public static void loadFile(Context context, File file, int emptyImg,  int erroImg, ImageView iv, GlideType type, int roundDp) {
 
-        Random random = new Random();
-        if(emptyImg == -1) {
-            emptyImg = defailtColorIds[random.nextInt(defailtColorIds.length)];
-        }
-        if(erroImg == -1) {
-            erroImg = defailtColorIds[random.nextInt(defailtColorIds.length)];
-        }
+        emptyImg = getRandomDefaultImage();
+        erroImg = getRandomDefaultImage();
         DrawableRequestBuilder<File> request = Glide.with(context).load(file).placeholder(emptyImg).error(erroImg);
 
         if (GlideType.TYPE_CIRCLE == type) {
@@ -118,5 +118,16 @@ public class GlideImgManager {
         } else {
             request.into(iv);
         }
+    }
+    public static int getRandomDefaultImage(){
+        int emptyImg = -1;
+        Random random = new Random();
+        if(emptyImg == -1) {
+            emptyImg = defailtColorIds[random.nextInt(defailtColorIds.length)];
+        }
+        return emptyImg;
+//        if(erroImg == -1) {
+//            erroImg = defailtColorIds[random.nextInt(defailtColorIds.length)];
+//        }
     }
 }

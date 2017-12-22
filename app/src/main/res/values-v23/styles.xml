@@ -18,7 +18,6 @@
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:textColorHint">@color/gray_text_hint</item>
         <item name="toolbarNavigationButtonStyle">@style/MyToolbarNavigationButtonStyle</item>
-        <item name="android:listDivider">@drawable/divider_nav</item>
     </style>
     <style name="transparentStatusTheme" parent="AppTheme">
         <item name="android:windowTranslucentStatus">true</item>

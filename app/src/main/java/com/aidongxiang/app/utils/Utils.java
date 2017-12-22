@@ -5,7 +5,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.text.Spannable;
@@ -17,17 +22,26 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.CharacterStyle;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.aidongxiang.app.base.Constants;
+import com.aiitec.openapi.utils.LogUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +53,7 @@ import java.util.regex.Pattern;
 
 public class Utils {
 
+    static String VIDEOS_DIR = Environment.getExternalStorageDirectory().toString() + "/file/com.aidongxiang.app/videos/";
     /**
      * 返回中文和英文字符的统一长度，中文字符占2个字节长度，英文占1个
      *
@@ -141,7 +156,7 @@ public class Utils {
 		if(index != -1){
 			fileName = filePath.substring(index + 1, index2);
 		}
-		final String imagePath = Constants.VIDEOS_DIR +fileName;
+		final String imagePath = VIDEOS_DIR +fileName;
 		//本来想用AsynTask的，但是经常会有很多线程同时执行，AsynTask非常慢，受不了
 		final android.os.Handler handler = new android.os.Handler(new android.os.Handler.Callback(){
 			@Override
@@ -221,5 +236,55 @@ public class Utils {
         }
         return bitmap;
     }
+
+
+
+
+    /**
+     * make true current connect service is wifi
+     * @param mContext
+     * @return
+     */
+    public static boolean isWifi(Context mContext) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeNetInfo != null && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            return true;
+        }
+        return false;
+    }
+
+    static Pattern pattern = Pattern.compile("[0-9]*");
+
+    /**
+     * 判断字符串是否全部是数字
+     * @param str
+     * @return
+     */
+    public static boolean isNumeric(String str){
+        Matcher isNum = pattern.matcher(str);
+        if( !isNum.matches() ){
+            return false;
+        }
+        return true;
+    }
+
+
+    public static void switchFullScreen(Window window, boolean isFullScreen){
+        if (isFullScreen){
+            //设置为全屏
+            WindowManager.LayoutParams lp = window.getAttributes();
+            lp.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            window.setAttributes(lp);
+            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }else{
+            //设置为非全屏
+            WindowManager.LayoutParams lp = window.getAttributes();
+            lp.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            window.setAttributes(lp);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
+
 
 }

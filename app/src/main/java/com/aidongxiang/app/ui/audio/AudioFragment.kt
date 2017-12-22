@@ -17,22 +17,27 @@ import kotlinx.android.synthetic.main.layout_title_bar_home.*
 @ContentView(R.layout.fragment_video_tablelayout)
 class AudioFragment : BaseKtFragment() {
 
-    var categorys = arrayListOf<String>("动听侗歌","动听苗歌","山歌","尙重琵琶歌")
+    var categorys = arrayListOf("动听侗歌","动听苗歌","山歌","尙重琵琶歌")
 
     var mPagerAdapter : SimpleFragmentPagerAdapter?= null
 
     override fun init(view: View) {
         setToolBar(toolbar)
-        StatusBarUtil.addStatusBarView(view)
+        setTitle("音频")
+        StatusBarUtil.addStatusBarView(titlebar, android.R.color.transparent)
         mPagerAdapter = SimpleFragmentPagerAdapter(childFragmentManager, activity)
 
         for(title in categorys){
-            mPagerAdapter?.addFragment(VideoListFragment(), title)
+            mPagerAdapter?.addFragment(AudioListFragment(), title)
         }
 
         viewpager.adapter = mPagerAdapter
         tablayout.setupWithViewPager(viewpager)
-        tablayout.tabMode = TabLayout.MODE_FIXED
+        if(categorys.size > 4){
+            tablayout.tabMode = TabLayout.MODE_SCROLLABLE
+        } else {
+            tablayout.tabMode = TabLayout.MODE_FIXED
+        }
     }
 
 

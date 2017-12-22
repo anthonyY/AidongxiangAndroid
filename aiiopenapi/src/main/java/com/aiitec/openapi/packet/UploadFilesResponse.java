@@ -24,34 +24,7 @@ public class UploadFilesResponse extends ListResponse {
 		this.query = query;
 	}
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		super.writeToParcel(dest, flags);
-		dest.writeParcelable(this.query, flags);
-	}
-
 	public UploadFilesResponse() {
 	}
 
-	protected UploadFilesResponse(Parcel in) {
-		super(in);
-		this.query = in.readParcelable(FileListResponseQuery.class.getClassLoader());
-	}
-
-	public static final Creator<UploadFilesResponse> CREATOR = new Creator<UploadFilesResponse>() {
-		@Override
-		public UploadFilesResponse createFromParcel(Parcel source) {
-			return new UploadFilesResponse(source);
-		}
-
-		@Override
-		public UploadFilesResponse[] newArray(int size) {
-			return new UploadFilesResponse[size];
-		}
-	};
 }

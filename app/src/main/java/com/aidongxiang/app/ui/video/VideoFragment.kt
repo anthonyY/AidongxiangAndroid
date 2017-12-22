@@ -22,7 +22,8 @@ class VideoFragment : BaseKtFragment() {
 
     override fun init(view: View) {
         setToolBar(toolbar)
-        StatusBarUtil.addStatusBarView(view)
+        setTitle("视频")
+        StatusBarUtil.addStatusBarView(titlebar, android.R.color.transparent)
         mPagerAdapter = SimpleFragmentPagerAdapter(childFragmentManager, activity)
 
         for(title in categorys){
@@ -31,7 +32,12 @@ class VideoFragment : BaseKtFragment() {
 
         viewpager.adapter = mPagerAdapter
         tablayout.setupWithViewPager(viewpager)
-        tablayout.tabMode = TabLayout.MODE_FIXED
+        if(categorys.size > 4){
+            tablayout.tabMode = TabLayout.MODE_SCROLLABLE
+        } else {
+            tablayout.tabMode = TabLayout.MODE_FIXED
+        }
+
     }
 
 

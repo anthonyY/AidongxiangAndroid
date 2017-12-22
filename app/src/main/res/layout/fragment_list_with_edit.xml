@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <com.jcodecraeer.xrecyclerview.XRecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        <include layout="@layout/layout_empty"/>
+        <include layout="@layout/layout_nonet"/>
+    </RelativeLayout>
+    <View style="@style/line"
+        android:id="@+id/line_bottom"/>
+    <LinearLayout
+        android:id="@+id/ll_bottom_btn"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:visibility="gone"
+        android:background="@color/white">
+        <TextView
+            android:id="@+id/tv_select_all"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="全选"
+            android:clickable="true"
+            android:background="@drawable/item_selector"
+            android:textColor="@color/purple_gray_selector"
+            />
+        <View
+            android:layout_width="0px"
+            android:layout_height="20dp"/>
+        <TextView
+            android:id="@+id/tv_delete"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="删除"
+            android:clickable="true"
+            android:background="@drawable/item_selector"
+            android:textColor="@color/purple_gray_selector"
+            />
+    </LinearLayout>
+</LinearLayout>

@@ -54,10 +54,10 @@ class RegisterActivity : BaseKtActivity(), TextWatcher {
                 toast("请输入验证码")
                 return@setOnClickListener
             }
-            if(!cbRegisterAgree.isChecked){
-                toast("请勾选同意按钮")
-                return@setOnClickListener
-            }
+//            if(!cbRegisterAgree.isChecked){
+//                toast("请勾选同意按钮")
+//                return@setOnClickListener
+//            }
             switchToActivityForResult(PerfectDataActivity::class.java, 1)
         }
         etMobile.addTextChangedListener(this)

@@ -73,11 +73,9 @@ public class CacheModel extends Entity{
 	public void setTimestempLasted(String timestempLasted) {
 		this.timestempLasted = timestempLasted;
 	}
-	@Override
 	public long getId() {
 		return id;
 	}
-	@Override
 	public void setId(long id) {
 		this.id = id;
 	}

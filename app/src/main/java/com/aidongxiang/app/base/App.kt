@@ -4,11 +4,13 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
+import android.os.Environment.getExternalStoragePublicDirectory
 import android.support.v4.app.FragmentActivity
+import com.aidongxiang.app.BuildConfig
 import com.aiitec.openapi.net.AIIRequest
 import com.aiitec.openapi.utils.LogUtil
-import mabeijianxi.camera.VCamera
-import mabeijianxi.camera.util.DeviceUtils
+import com.mabeijianxi.smallvideorecord2.DeviceUtils
+import com.mabeijianxi.smallvideorecord2.JianXiCamera
 import java.util.ArrayList
 
 /**
@@ -30,7 +32,7 @@ class App : Application (){
         super.onCreate()
         App.app = this
         App.context = applicationContext
-        LogUtil.showLog = true
+        LogUtil.showLog = BuildConfig.DEBUG
         aiiRequest = AIIRequest(this, Api.API)
 
         initSmallVideo(this)
@@ -105,16 +107,15 @@ class App : Application (){
                 .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
         if (DeviceUtils.isZte()) {
             if (dcim.exists()) {
-                VCamera.setVideoCachePath(dcim.absolutePath + "/mabeijianxi/")
+                JianXiCamera.setVideoCachePath(dcim.absolutePath + "/mabeijianxi/")
             } else {
-                VCamera.setVideoCachePath(dcim.getPath().replace("/sdcard/",
+                JianXiCamera.setVideoCachePath(dcim.path.replace("/sdcard/",
                         "/sdcard-ext/") + "/mabeijianxi/")
             }
         } else {
-            VCamera.setVideoCachePath(dcim.absolutePath + "/mabeijianxi/")
+            JianXiCamera.setVideoCachePath(dcim.absolutePath + "/mabeijianxi/")
         }
-        VCamera.setDebugMode(true)
-        VCamera.initialize(context)
+        JianXiCamera.initialize(false, null)
     }
 
 }

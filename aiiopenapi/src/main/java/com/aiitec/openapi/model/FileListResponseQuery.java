@@ -30,37 +30,7 @@ public class FileListResponseQuery extends ListResponseQuery {
         this.ids = ids;
     }
 
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeTypedList(this.files);
-        dest.writeList(this.ids);
-    }
-
     public FileListResponseQuery() {
     }
 
-    protected FileListResponseQuery(Parcel in) {
-        this.files = in.createTypedArrayList(File.CREATOR);
-        this.ids = new ArrayList<Integer>();
-        in.readList(this.ids, Integer.class.getClassLoader());
-    }
-
-    public static final Creator<FileListResponseQuery> CREATOR = new Creator<FileListResponseQuery>() {
-        @Override
-        public FileListResponseQuery createFromParcel(Parcel source) {
-            return new FileListResponseQuery(source);
-        }
-
-        @Override
-        public FileListResponseQuery[] newArray(int size) {
-            return new FileListResponseQuery[size];
-        }
-    };
 }

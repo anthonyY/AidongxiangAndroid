@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.dialog_share.*
  */
 class ShareDialog(context : Context) : AbsCommonDialog(context){
 
-    fun animStyle(): Int = R.style.BottomAnimationStyle
+    override fun animStyle(): Int = R.style.BottomAnimationStyle
     fun widthScale(): Float = 1f
     fun layoutId(): Int = R.layout.dialog_share
     var shareUtils : ShareUtils?= null

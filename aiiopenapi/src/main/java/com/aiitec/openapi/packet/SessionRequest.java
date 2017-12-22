@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Parcel;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -48,9 +47,8 @@ public final class SessionRequest extends Request {
 
     /**
      * 设置session信息
-     * 
-     * @param context
-     *            上下文对象
+     *
+     * @param context 上下文对象
      */
     public void setSessionData(Context context, AIIAction action) {
         String deviceId = getDeviceId(context);
@@ -81,7 +79,7 @@ public final class SessionRequest extends Request {
 
     /**
      * 获取手机设备号并加密，没有请求到信鸽设备号就用手机的设备号
-     * 
+     *
      * @return 加密后的设备号
      */
     public String getDeviceId(Context context) {
@@ -103,31 +101,4 @@ public final class SessionRequest extends Request {
         return AiiUtil.md5(deviceUuid.toString() + context.getPackageName());
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeParcelable(this.query, flags);
-    }
-
-    protected SessionRequest(Parcel in) {
-        super(in);
-        this.query = in.readParcelable(SessionRequestQuery.class.getClassLoader());
-    }
-
-    public static final Creator<SessionRequest> CREATOR = new Creator<SessionRequest>() {
-        @Override
-        public SessionRequest createFromParcel(Parcel source) {
-            return new SessionRequest(source);
-        }
-
-        @Override
-        public SessionRequest[] newArray(int size) {
-            return new SessionRequest[size];
-        }
-    };
 }

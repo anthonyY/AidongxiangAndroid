@@ -170,7 +170,7 @@ public final class PacketUtil {
     public static String getCacheDir(Context context){
         String cacheDir = "";
         if(context.getExternalCacheDir() != null){
-            cacheDir = context.getExternalCacheDir().getAbsolutePath()+"/cache/";
+            cacheDir = context.getExternalCacheDir().getAbsolutePath();
         } else if(AiiUtil.isSDCardEnable()){
             cacheDir = AiiUtil.getSDCardPath()+"/"+context.getPackageName()+"/cache/";
         }

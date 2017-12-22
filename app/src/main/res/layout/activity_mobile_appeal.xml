@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context="com.aidongxiang.app.ui.login.MobileAppealActivity">
+
+    <include layout="@layout/layout_title_bar"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:padding="@dimen/margin_screen_left"
+        android:text="若您提交的原始手机号码已停止使用，无法收到验证码，可以提交以下信息至平台审核修改。"
+        android:textColor="@color/black3"/>
+    <View style="@style/line"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingRight="@dimen/margin_screen_right"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/black3"
+            android:textSize="14sp"
+            android:text="原注册手机号码"/>
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black3"
+            android:layout_weight="1.5"
+            android:textSize="14sp"
+            android:background="@color/transparent"
+            android:inputType="number"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:maxLength="11"
+            android:text=""/>
+    </LinearLayout>
+    <View style="@style/line" android:layout_marginLeft="@dimen/margin_screen_left"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingRight="@dimen/margin_screen_right"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/black3"
+            android:textSize="14sp"
+            android:text="新的手机号码"/>
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black3"
+            android:layout_weight="1.5"
+            android:textSize="14sp"
+            android:background="@color/transparent"
+            android:inputType="number"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:maxLength="11"
+            android:text=""/>
+    </LinearLayout>
+    <View style="@style/line" android:layout_marginLeft="@dimen/margin_screen_left"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingRight="@dimen/margin_screen_right"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/black3"
+            android:textSize="14sp"
+            android:text="登录密码"/>
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black3"
+            android:layout_weight="1.5"
+            android:textSize="14sp"
+            android:background="@color/transparent"
+            android:inputType="textPassword"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:maxLength="11"
+            android:text=""/>
+    </LinearLayout>
+    <View style="@style/line" android:layout_marginLeft="@dimen/margin_screen_left"/>
+    <LinearLayout
+        android:id="@+id/llRegisterTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingRight="@dimen/margin_screen_right"
+        android:background="@drawable/item_selector"
+        android:clickable="true"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/black3"
+            android:textSize="14sp"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:text="注册日期"/>
+        <TextView
+            android:id="@+id/tvRegisterTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black3"
+            android:layout_weight="1.5"
+            android:textSize="14sp"
+            android:background="@color/transparent"
+            android:inputType="number"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:maxLength="11"
+            android:text="2017-12-12"/>
+    </LinearLayout>
+    <View style="@style/line" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/btnPurpleStyle"
+        android:layout_marginTop="40dp"
+        android:text="提交申诉"
+        android:layout_marginLeft="@dimen/margin_screen_left"
+        android:layout_marginRight="@dimen/margin_screen_right"
+        />
+</LinearLayout>

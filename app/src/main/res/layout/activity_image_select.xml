@@ -7,7 +7,49 @@
     android:orientation="vertical"
     tools:context="com.aidongxiang.app.ui.square.ImageSelectActivity">
 
-    <include layout="@layout/layout_title_bar_with_right_text"/>
+    <!--<include layout="@layout/layout_title_bar_with_right_text"/>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/titlebar_bg"
+        android:id="@+id/titlebar"
+        android:orientation="vertical">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            android:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            android:navigationIcon="@drawable/common_btn_back"
+            app:elevation="0dp"
+            app:navigationIcon="@drawable/common_btn_back"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+
+            <TextView
+                android:id="@+id/tv_title"
+                style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:singleLine="true"
+                android:text="@string/app_name"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+            <Button
+                android:id="@+id/btn_title_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确定"
+                android:textSize="16sp"
+                android:textColor="@color/purple"
+                android:layout_gravity="right"
+                android:minHeight="32dp"
+                android:minWidth="56dp"
+                android:layout_marginRight="@dimen/margin_screen_right"
+                style="@style/btnWhateRoundStyle"/>
+        </android.support.v7.widget.Toolbar>
+    </LinearLayout>
     <FrameLayout
         android:id="@+id/image_grid"
         android:layout_width="match_parent"

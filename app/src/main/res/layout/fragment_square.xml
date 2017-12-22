@@ -5,43 +5,71 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:contentInsetLeft="0dp"
-        android:contentInsetStart="0dp"
-        app:elevation="0dp"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        android:layout_height="wrap_content"
+        android:id="@+id/titlebar"
+        android:background="@drawable/titlebar_bg"
+        android:orientation="vertical">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            android:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            app:elevation="0dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <RadioGroup
+                android:id="@+id/radioGroupSquare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+                <RadioButton
+                    android:id="@+id/rbAttention"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/purple_white_selector"
+                    android:textSize="16sp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:paddingRight="20dp"
+                    android:paddingLeft="28dp"
+                    android:checked="true"
+                    android:text="关注"
+                    android:button="@null"
+                    android:background="@drawable/tab_sqare_left_selector"/>
+                <RadioButton
+                    android:id="@+id/rbHot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/purple_white_selector"
+                    android:textSize="16sp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:paddingRight="28dp"
+                    android:paddingLeft="20dp"
+                    android:button="@null"
+                    android:text="热门"
+                    android:background="@drawable/tab_sqare_right_selector"/>
+            </RadioGroup>
 
 
+            <ImageButton
+                android:id="@+id/ibtn_title_search"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:clickable="true"
+                android:background="@drawable/btn_transparent_selector"
+                android:src="@drawable/common_btn_search" />
+        </android.support.v7.widget.Toolbar>
+    </LinearLayout>
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tablayout"
-            style="@style/tableLayoutTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            app:tabIndicatorColor="@color/white"
-            app:tabIndicatorHeight="2dp"
-            android:layout_gravity="center"
-            app:tabMode="scrollable"
-            app:tabPaddingEnd="10dp"
-            app:tabSelectedTextColor="@color/white" />
-
-
-        <ImageButton
-            android:id="@+id/ibtn_title_search"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:clickable="true"
-            android:background="@drawable/btn_transparent_selector"
-            android:src="@drawable/common_btn_search" />
-    </android.support.v7.widget.Toolbar>
     <View style="@style/line" />
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"

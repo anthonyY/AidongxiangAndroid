@@ -14,13 +14,13 @@ import com.aidongxiang.app.base.BaseKtActivity
 import com.aiitec.openapi.utils.LogUtil
 import com.aiitec.openapi.utils.ScreenUtils
 import kotlinx.android.synthetic.main.activity_video_player.*
-import mabeijianxi.camera.MediaRecorderBase
-import mabeijianxi.camera.util.StringUtils
-import mabeijianxi.camera.views.SurfaceVideoView
 import android.view.MotionEvent
 import android.view.GestureDetector
 import android.widget.LinearLayout
 import android.widget.SeekBar
+import com.mabeijianxi.smallvideorecord2.MediaRecorderBase
+import com.mabeijianxi.smallvideorecord2.StringUtils
+import com.mabeijianxi.smallvideorecord2.SurfaceVideoView
 
 /**
  * 通用单独播放界面

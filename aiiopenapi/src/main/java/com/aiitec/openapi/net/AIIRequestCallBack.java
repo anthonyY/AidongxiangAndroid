@@ -308,18 +308,20 @@ public class AIIRequestCallBack<T> implements Callback {
 							AiiUtil.putString(context, CommonKey.KEY_SESSION, session);
 						}
 					}
-				} else if (namespace.equals("UserDetails")) {
+				}
+				//下面这个不合理，如果是请求自己的UserDetails就没有问题，要是请求了别人的UserDetails 那就出错了
+				/*else if (namespace.equals("UserDetails")) {
 					// 如果是用户详情协议， 读取用户id存起来，缓存需要用
 					try {
 						JSONObject obj = new JSONObject(responseContent);
 						JSONObject objUser = obj.optJSONObject("q")
 								.optJSONObject("user");
-						AIIConstant.USER_ID = objUser.optLong("id");
+						AIIConstant.USER_ID = objUser.optInt("id");
 						AiiFileCache.changeDir(PacketUtil.getCacheDir(context));
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-				}
+				}*/
 				aiiResponse.onSuccess((T) query, index);
 			} else {
 				aiiResponse.onServiceError(query.getDesc(), status, index);

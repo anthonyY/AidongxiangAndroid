@@ -1,6 +1,5 @@
 package com.aiitec.openapi.model;
 
-import android.os.Parcel;
 
 import java.util.List;
 
@@ -33,37 +32,4 @@ public class UploadFileRequestQuery extends RequestQuery {
         this.md5s = md5s;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeInt(this.action == null ? -1 : this.action.ordinal());
-        dest.writeTypedList(this.md5s);
-    }
-
-    public UploadFileRequestQuery() {
-    }
-
-    protected UploadFileRequestQuery(Parcel in) {
-        super(in);
-        int tmpAction = in.readInt();
-        this.action = tmpAction == -1 ? null : AIIAction.values()[tmpAction];
-        this.md5s = in.createTypedArrayList(Md5.CREATOR);
-    }
-
-    public static final Creator<UploadFileRequestQuery> CREATOR = new Creator<UploadFileRequestQuery>() {
-        @Override
-        public UploadFileRequestQuery createFromParcel(Parcel source) {
-            return new UploadFileRequestQuery(source);
-        }
-
-        @Override
-        public UploadFileRequestQuery[] newArray(int size) {
-            return new UploadFileRequestQuery[size];
-        }
-    };
 }

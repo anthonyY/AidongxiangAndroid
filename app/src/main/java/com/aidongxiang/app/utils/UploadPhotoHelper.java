@@ -53,6 +53,7 @@ public class UploadPhotoHelper {
     private final int PHOTO;
     private final int CUT;
     private final int CODE_UPLOAD_FILE;
+    String CACHEDIR = "";
     private String filePath; // 头像上传本地图片的缓存路径
     // private Uri lastUri; // 最后保存的图像uri
     private boolean isUpload = false;
@@ -98,6 +99,7 @@ public class UploadPhotoHelper {
 
         photoDialog = new PhotoDialog(context);
         photoDialog.setOnButtonClickListener(onButtonClickListener);
+        CACHEDIR = Environment.getExternalStorageDirectory().toString() + "/file/com.aidongxiang.app/uploadfiles/";
 
     }
 
@@ -220,7 +222,7 @@ public class UploadPhotoHelper {
         public void onCameraClick(View view) {
             photoDialog.dismiss();
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            String path = Constants.CACHEDIR;
+            String path = CACHEDIR;
             File file = new File(path);
 
             //如果没有这个目录的话，部分手机无法保存照片
@@ -265,7 +267,7 @@ public class UploadPhotoHelper {
 
     private File getTempFile() {
         if (AiiUtil.isSDCardEnable()) {
-            String path = Constants.CACHEDIR;
+            String path = CACHEDIR;
             File f = new File(path, "temp.jpg");
             try {
                 if (!f.exists()) {
