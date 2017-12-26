@@ -7,20 +7,16 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
 import android.view.*
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.SeekBar
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aiitec.openapi.utils.LogUtil
-import com.aiitec.openapi.utils.ScreenUtils
-import kotlinx.android.synthetic.main.activity_video_player.*
-import android.view.MotionEvent
-import android.view.GestureDetector
-import android.widget.LinearLayout
-import android.widget.SeekBar
-import com.mabeijianxi.smallvideorecord2.MediaRecorderBase
 import com.mabeijianxi.smallvideorecord2.StringUtils
 import com.mabeijianxi.smallvideorecord2.SurfaceVideoView
+import kotlinx.android.synthetic.main.activity_video_player.*
 
 /**
  * 通用单独播放界面
@@ -61,9 +57,9 @@ class VideoPlayerActivity : BaseKtActivity(), SurfaceVideoView.OnPlayStateListen
     }
 
     override fun init(savedInstanceState: Bundle?) {
-        val videoHight = (ScreenUtils.getScreenWidth(this) / (MediaRecorderBase.SMALL_VIDEO_WIDTH / (MediaRecorderBase.SMALL_VIDEO_HEIGHT * 1.0f)))
-        videoview.layoutParams.height = videoHight.toInt()
-        videoview.requestLayout()
+//        val videoHight = (ScreenUtils.getScreenWidth(this) / (MediaRecorderBase.SMALL_VIDEO_WIDTH / (MediaRecorderBase.SMALL_VIDEO_HEIGHT * 1.0f)))
+//        videoview.layoutParams.height = videoHight.toInt()
+//        videoview.requestLayout()
         videoview.setOnPreparedListener(this)
         videoview.setOnPlayStateListener(this)
         videoview.setOnErrorListener(this)

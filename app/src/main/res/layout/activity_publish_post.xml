@@ -89,7 +89,7 @@
                         android:id="@+id/iv_video_thumb"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:maxWidth="200dp"
+                        android:maxHeight="200dp"
                         android:paddingBottom="8dp"
                         android:paddingLeft="@dimen/margin_screen_left"
                         android:paddingRight="@dimen/margin_screen_right"

@@ -4,14 +4,15 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
-import android.os.Environment.getExternalStoragePublicDirectory
 import android.support.v4.app.FragmentActivity
 import com.aidongxiang.app.BuildConfig
 import com.aiitec.openapi.net.AIIRequest
 import com.aiitec.openapi.utils.LogUtil
 import com.mabeijianxi.smallvideorecord2.DeviceUtils
 import com.mabeijianxi.smallvideorecord2.JianXiCamera
-import java.util.ArrayList
+import java.util.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 /**
  *
@@ -21,12 +22,12 @@ import java.util.ArrayList
  */
 class App : Application (){
     companion object {
-        var app: App? = null
+        lateinit var app: App
         var context: Context? = null
         var aiiRequest: AIIRequest? = null
     }
     private val activities = ArrayList<FragmentActivity>()
-
+    lateinit var cachedThreadPool : ExecutorService
 
     override fun onCreate() {
         super.onCreate()
@@ -34,6 +35,7 @@ class App : Application (){
         App.context = applicationContext
         LogUtil.showLog = BuildConfig.DEBUG
         aiiRequest = AIIRequest(this, Api.API)
+        cachedThreadPool = Executors.newCachedThreadPool()
 
         initSmallVideo(this)
     }

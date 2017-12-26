@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.text.TextUtils
 import android.view.View
 import com.aidongxiang.app.R
+import com.aidongxiang.app.adapter.CommonRecyclerViewAdapter
 import com.aidongxiang.app.adapter.PublishImageAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
@@ -69,6 +70,13 @@ class PublishPostActivity : BaseKtActivity() {
                 switchToActivityForResult(ImageSelectActivity::class.java, REQUEST_IMAGE)
             }
         }
+        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener{
+            v, position ->
+            if(v.id == R.id.iv_item_delete){
+                datas.removeAt(position)
+                adapter.update()
+            }
+        })
         rl_publish_video.setOnClickListener {
             if(videoUri != null){
                 switchToActivity(VideoPlayerActivity::class.java, "path" to videoUri!!)
@@ -117,7 +125,7 @@ class PublishPostActivity : BaseKtActivity() {
 
 
     private fun recordVideo() {
-        if(datas.size > 0){
+        if(datas.size > 1){
             toast("不能同时发布图片和视频")
             return
         }
@@ -143,7 +151,7 @@ class PublishPostActivity : BaseKtActivity() {
         MediaRecorderActivity.goSmallVideoRecorder(this, config, REQUEST_RECORD_VIDEO)
     }
     private fun chooseVideo() {
-        if(datas.size > 0){
+        if(datas.size > 1){
             toast("不能同时发布图片和视频")
             return
         }
@@ -164,6 +172,7 @@ class PublishPostActivity : BaseKtActivity() {
                     videoUri = path
                     GlideImgManager.loadFile(this, thumbPath, iv_video_thumb)
                     rl_publish_video.visibility = View.VISIBLE
+                    recycler_image.visibility = View.GONE
                 }
 
         } else if (requestCode == REQUEST_IMAGE) {
@@ -182,6 +191,7 @@ class PublishPostActivity : BaseKtActivity() {
                     adapter.update()
                 }
                 rl_publish_video.visibility = View.GONE
+                recycler_image.visibility = View.VISIBLE
             }
         } else if(requestCode == REQUEST_RECORD_VIDEO && resultCode == Activity.RESULT_OK){
             //录制视频返回
@@ -193,6 +203,7 @@ class PublishPostActivity : BaseKtActivity() {
             if (!TextUtils.isEmpty(videoUri) && !TextUtils.isEmpty(videoScreenshot)) {
                 GlideImgManager.loadFile(this, videoScreenshot, iv_video_thumb)
                 rl_publish_video.visibility = View.VISIBLE
+                recycler_image.visibility = View.GONE
             }
         }
     }
