@@ -1,16 +1,14 @@
 package com.aidongxiang.app.ui.mine
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TabLayout
-import android.view.View
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.ui.audio.AudioListFragment
 import com.aidongxiang.app.ui.video.VideoListFragment
-import com.aidongxiang.app.utils.StatusBarUtil
+import com.aidongxiang.app.ui.video.VideoListFragment.Companion.TYPE_COLLECT
 import kotlinx.android.synthetic.main.activity_mine_tablelayout.*
 import kotlinx.android.synthetic.main.layout_title_bar_with_right_text.*
 
@@ -33,8 +31,8 @@ class MyCollectionActivity : BaseKtActivity() {
         btn_title_confirm.text = "编辑"
         mPagerAdapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
 
-        videoListFragment = VideoListFragment()
-        audioListFragment = AudioListFragment()
+        videoListFragment = VideoListFragment.newInstance(TYPE_COLLECT)
+        audioListFragment = AudioListFragment.newInstance(TYPE_COLLECT)
         mPagerAdapter?.addFragment(videoListFragment, "视频")
         mPagerAdapter?.addFragment(audioListFragment, "音频")
 

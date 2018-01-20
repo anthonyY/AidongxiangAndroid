@@ -1,10 +1,13 @@
 package com.aidongxiang.app.ui.home
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.text.TextUtils
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -16,11 +19,13 @@ import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.base.Constants.ARG_TITLE
 import com.aiitec.openapi.utils.LogUtil
+import com.aiitec.widgets.ShareDialog
 import kotlinx.android.synthetic.main.activity_common_web_view.*
 
 @ContentView(R.layout.activity_common_web_view)
 class CommonWebViewActivity : BaseKtActivity() {
 
+    lateinit var shareDialog : ShareDialog
     @SuppressLint("SetJavaScriptEnabled")
     override fun init(savedInstanceState: Bundle?) {
 
@@ -55,7 +60,28 @@ class CommonWebViewActivity : BaseKtActivity() {
         if (Build.VERSION.SDK_INT >= 21) {//兼容https和http的图片
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         }
+
+        shareDialog = ShareDialog(this)
+        shareDialog.setShareData("爱侗乡新闻", "了飒飒大是", "", "http://aidongxiang.com")
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_share, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_share) {
+            shareDialog.show()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        shareDialog.onActivityResult(requestCode, resultCode, data)
+    }
 
 }

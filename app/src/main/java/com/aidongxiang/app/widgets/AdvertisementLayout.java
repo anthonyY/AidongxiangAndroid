@@ -15,10 +15,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-
 import com.aidongxiang.app.R;
 import com.aidongxiang.app.adapter.BannerAdapter;
-import com.aidongxiang.app.model.Ad;
+import com.aidongxiang.business.model.Ad;
 
 import java.util.ArrayList;
 import java.util.List;

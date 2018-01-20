@@ -2,8 +2,6 @@ package com.aidongxiang.app.ui.mine
 
 import android.os.Bundle
 import android.support.design.widget.TabLayout
-import android.view.Menu
-import android.view.MenuItem
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
@@ -30,8 +28,8 @@ class WatchHistoryActivity : BaseKtActivity() {
         setTitle("观看历史")
         mPagerAdapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
 
-        videoListFragment = VideoListFragment()
-        audioListFragment = AudioListFragment()
+        videoListFragment = VideoListFragment.newInstance(AudioListFragment.TYPE_HISTORY)
+        audioListFragment = AudioListFragment.newInstance(VideoListFragment.TYPE_HISTORY)
         mPagerAdapter?.addFragment(videoListFragment, "视频")
         mPagerAdapter?.addFragment(audioListFragment, "音频")
 

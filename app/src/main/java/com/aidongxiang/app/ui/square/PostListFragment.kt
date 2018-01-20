@@ -7,20 +7,25 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import com.aidongxiang.app.R
+import com.aidongxiang.app.adapter.CommonRecyclerViewAdapter
 import com.aidongxiang.app.adapter.PostAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.ui.home.HomeFragment
+import com.aidongxiang.app.widgets.ItemDialog
 import com.aidongxiang.business.model.Microblog
 import com.aidongxiang.business.model.User
 import com.aidongxiang.business.response.MicroblogListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
+import com.aiitec.openapi.model.RequestQuery
+import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.LogUtil
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  *
@@ -41,6 +46,10 @@ class PostListFragment : BaseListKtFragment(){
      */
     var type = 0
     override fun getDatas(): List<*>? = datas
+    lateinit var itemDialog : ItemDialog
+    lateinit var shieldDialog : ItemDialog
+    lateinit var deleteDialog : ItemDialog
+    var clickMicroblog : Microblog ?= null
 
     override fun requestData() {
         LogUtil.e("type:$type")
@@ -58,12 +67,23 @@ class PostListFragment : BaseListKtFragment(){
         }
         recyclerView?.adapter = adapter
 
+        initDialog()
+
         adapter.setOnRecyclerViewItemClickListener { v, position ->
             if(position > 0){
                 val id = datas[position-1]
                 switchToActivity(MicroblogDetailsActivity::class.java, ARG_ID to id)
             }
         }
+        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener{ v, positon ->
+            if(v.id == R.id.ivItemMore){
+                if(positon > 0){
+                    clickMicroblog = datas[positon-1]
+                    itemDialog.show()
+                }
+
+            }
+        }, R.id.ivItemMore)
         for((index, imagePath) in HomeFragment.imgs.withIndex()){
             val microblog = Microblog()
             val user = User()
@@ -85,6 +105,103 @@ class PostListFragment : BaseListKtFragment(){
         }
         adapter.update()
     }
+
+    private fun initDialog() {
+
+        itemDialog = ItemDialog(activity)
+        val datas = ArrayList<String>()
+        datas.add("屏蔽")
+        datas.add("举报")
+
+        datas.add("取消关注")
+        itemDialog.setItems(datas)
+        itemDialog.setOnItemClickListener { item, position ->
+            clickMicroblog?.let {
+                when(position){
+                    0->{
+                        shieldDialog.show()
+                    }
+                    1->{
+                        switchToActivity(ReportActivity::class.java, ARG_ID to it.id)
+                    }
+                    2->{
+                        requestFocusSubmit(it.id, 2)
+                    }
+                }
+            }
+        }
+        shieldDialog = ItemDialog(activity)
+        val shieldDatas = ArrayList<String>()
+        shieldDatas.add("屏蔽此条内容")
+        shieldDatas.add("屏蔽此人全部内容")
+        shieldDialog.setItems(shieldDatas)
+        shieldDialog.setOnItemClickListener { item, position ->
+            clickMicroblog?.let { requestScreenSubmit(it.id, position+2) }
+        }
+
+        deleteDialog = ItemDialog(activity)
+        val deleteDatas = ArrayList<String>()
+        deleteDatas.add("删除此条内容")
+        deleteDialog.setItems(datas)
+        deleteDialog.setOnItemClickListener { item, position ->
+            clickMicroblog?.let { requestDeleteAction(it.id) }
+        }
+    }
+
+    /**
+     * 屏蔽
+     */
+    private fun requestScreenSubmit(id : Int, action : Int){
+        val query = RequestQuery()
+        query.namespace = "ScreenSubmit"
+//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+        query.action = AIIAction.valueOf(action)
+        query.id = id
+        App.aiiRequest?.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                onRefresh()
+            }
+        })
+    }
+
+    /**
+     * 删除
+     */
+    private fun requestDeleteAction(id : Int){
+        val query = RequestQuery()
+        query.namespace = "DeleteAction"
+//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+        query.action = AIIAction.TWO
+        query.id = id
+        App.aiiRequest?.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                onRefresh()
+            }
+        })
+    }
+
+    /**
+     * 关注 / 取消关注
+     */
+    private fun requestFocusSubmit(id : Int, open : Int){
+        val query = RequestQuery()
+        query.namespace = "FocusSubmit"
+//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+//        query.action = AIIAction.TWO
+        query.id = id
+        App.aiiRequest?.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                onRefresh()
+            }
+        })
+    }
+
+    /**
+     * 添加头部局
+     */
     private fun addHeaderView() {
 
         val header = TextView(activity)

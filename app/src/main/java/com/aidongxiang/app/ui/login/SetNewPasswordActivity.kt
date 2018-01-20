@@ -34,7 +34,7 @@ class SetNewPasswordActivity : BaseKtActivity(), TextWatcher {
     override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
     override fun init(savedInstanceState: Bundle?) {
-        title = "忘记密码"
+        title = "设置新密码"
         btnFinish.setOnClickListener {
             if(TextUtils.isEmpty(etPassword.text.toString())){
                 toast("请输入密码")

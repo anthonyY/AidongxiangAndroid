@@ -14,14 +14,26 @@ import com.aidongxiang.app.adapter.HomeCategoryAdapter
 import com.aidongxiang.app.adapter.HomeNewsAdapter
 import com.aidongxiang.app.adapter.HomeVideoAdapter
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtFragment
 import com.aidongxiang.app.base.Constants.ARG_TITLE
 import com.aidongxiang.app.base.Constants.ARG_URL
-import com.aidongxiang.app.model.Ad
+import com.aidongxiang.app.ui.Main2Activity
+import com.aidongxiang.app.ui.audio.AudioDetailsActivity
 import com.aidongxiang.app.ui.login.LoginActivity
+import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.widgets.NoticeDialog
+import com.aidongxiang.business.model.Ad
+import com.aidongxiang.business.model.Article
 import com.aidongxiang.business.model.Video
+import com.aidongxiang.business.request.AdListRquestQuery
+import com.aidongxiang.business.response.AdListResponseQuery
+import com.aidongxiang.business.response.ArticleListResponseQuery
+import com.aidongxiang.business.response.VideoListResponseQuery
+import com.aiitec.openapi.json.enums.AIIAction
+import com.aiitec.openapi.model.ListRequestQuery
+import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.AiiUtil
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.layout_title_bar_home.*
@@ -94,16 +106,17 @@ class HomeFragment : BaseKtFragment() {
             "<p>\n" +
             "    <br/>\n" +
             "</p>"
-    lateinit var homeVideoAdapter : HomeVideoAdapter
-    lateinit var homeAudioAdapter : HomeAudioAdapter
-    lateinit var homeNewsAdapter : HomeNewsAdapter
-    lateinit var homeCategoryAdapter : HomeCategoryAdapter
-    lateinit var noticeDialog : NoticeDialog
+    lateinit var homeVideoAdapter: HomeVideoAdapter
+    lateinit var homeAudioAdapter: HomeAudioAdapter
+    lateinit var homeNewsAdapter: HomeNewsAdapter
+    lateinit var homeCategoryAdapter: HomeCategoryAdapter
+    lateinit var noticeDialog: NoticeDialog
     val videoDatas = ArrayList<Video>()
     val audioDatas = ArrayList<Video>()
-    val newsDatas = ArrayList<String>()
+    val newsDatas = ArrayList<Article>()
     val categoryDatas = ArrayList<String>()
     val random = Random()
+    var loadState = 0
 
     override fun init(view: View) {
         setTitle(R.string.app_name)
@@ -114,7 +127,7 @@ class HomeFragment : BaseKtFragment() {
         //视频
         homeVideoAdapter = HomeVideoAdapter(activity!!, videoDatas)
         homeVideoAdapter.setOnRecyclerViewItemClickListener { v, position ->
-             switchToActivity(LoginActivity::class.java)
+            switchToActivity(LoginActivity::class.java)
         }
         setLayoutManagerInScroolView(recycler_home_video, videoLayoutManager)
         recycler_home_video.adapter = homeVideoAdapter
@@ -124,7 +137,8 @@ class HomeFragment : BaseKtFragment() {
         val audioManager = LinearLayoutManager(activity)
         setLayoutManagerInScroolView(recycler_home_audio, audioManager)
         homeAudioAdapter = HomeAudioAdapter(activity!!, audioDatas)
-        homeAudioAdapter.setOnRecyclerViewItemClickListener { v, position ->// switchToActivity(LiveBroadcastActivity::class.java)
+        homeAudioAdapter.setOnRecyclerViewItemClickListener { v, position ->
+             switchToActivity(AudioDetailsActivity::class.java)
         }
         recycler_home_audio.adapter = homeAudioAdapter
 
@@ -134,10 +148,8 @@ class HomeFragment : BaseKtFragment() {
         val newsLayoutManager = LinearLayoutManager(activity)
         setLayoutManagerInScroolView(recycler_home_news, newsLayoutManager)
         recycler_home_news.adapter = homeNewsAdapter
-        homeNewsAdapter.setOnRecyclerViewItemClickListener{
-            v, position ->
-                switchToActivity(CommonWebViewActivity::class.java, ARG_TITLE to "新闻详情", ARG_URL to "http://www.baidu.com")
-
+        homeNewsAdapter.setOnRecyclerViewItemClickListener { v, position ->
+            switchToActivity(CommonWebViewActivity::class.java, ARG_TITLE to "新闻详情", ARG_URL to "http://www.baidu.com")
         }
 
         //分类 （扩展内容）
@@ -146,8 +158,8 @@ class HomeFragment : BaseKtFragment() {
         homeCategoryAdapter = HomeCategoryAdapter(activity!!, categoryDatas)
         recycler_home_category.adapter = homeCategoryAdapter
         homeCategoryAdapter.setOnRecyclerViewItemClickListener { v, position ->
-            when(position){
-                0->{
+            when (position) {
+                0 -> {
                     noticeDialog.show()
                 }
             }
@@ -155,22 +167,42 @@ class HomeFragment : BaseKtFragment() {
         noticeDialog = NoticeDialog(activity)
 
         val charSequence = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            Html.fromHtml(content,Html.FROM_HTML_MODE_LEGACY, imgGetter, null)
+            Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY, imgGetter, null)
         } else {
             Html.fromHtml(content, imgGetter, null)
         }
         noticeDialog.setContent(charSequence)
 
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.CHINESE)
-        val isShowNoticeToday = AiiUtil.getBoolean(activity, "isShowNotice"+today)
-        if(!isShowNoticeToday){
+        val isShowNoticeToday = AiiUtil.getBoolean(activity, "isShowNotice" + today)
+        if (!isShowNoticeToday) {
             noticeDialog.show()
-            AiiUtil.putBoolean(activity, "isShowNotice"+today, true)
+            AiiUtil.putBoolean(activity, "isShowNotice" + today, true)
         }
         llHomeNewsMore.setOnClickListener { switchToActivity(NewsActivity::class.java) }
-        swipe_home_refresh.setOnRefreshListener { Handler().postDelayed({swipe_home_refresh.isRefreshing = false }, 1000) }
+        swipe_home_refresh.setOnRefreshListener {
+            loadState = 0
+            Handler().postDelayed({ onLoadFinish() }, 1000)
+        }
+
+        //点更多视频  切换到视频模块
+        iv_home_more_video.setOnClickListener { (activity as Main2Activity).swicthFragment(1) }
+        //点更多音频  切换到音频模块
+        iv_home_more_audio.setOnClickListener { (activity as Main2Activity).swicthFragment(3) }
+        //点更多热门资讯  跳转到资讯页
+        iv_home_more_news.setOnClickListener {  switchToActivity(NewsActivity::class.java) }
+        //点击我的下载按钮
+        ibtn_nav_menu.setOnClickListener{ switchToActivity(MyDownloadActivity::class.java) }
 
         setDatas()
+    }
+
+    private fun onLoadFinish() {
+        loadState++
+//        if(loadState >= 4){
+            swipe_home_refresh.isRefreshing = false
+//        }
+
     }
 
     var imgGetter: ImageGetter = ImageGetter { source ->
@@ -189,7 +221,7 @@ class HomeFragment : BaseKtFragment() {
     /**
      * 设置RecyclerView 的LayoutManager , 并对其做兼容scrollView 滑动卡顿问题的处理
      */
-    private fun setLayoutManagerInScroolView(recyclerView : RecyclerView, layoutManager : LinearLayoutManager){
+    private fun setLayoutManagerInScroolView(recyclerView: RecyclerView, layoutManager: LinearLayoutManager) {
 
         //下面这段是解决NestedScrollView嵌套RecyclerView时滑动不流畅问题的解决办法
         layoutManager.isSmoothScrollbarEnabled = true
@@ -198,6 +230,7 @@ class HomeFragment : BaseKtFragment() {
         recyclerView.isNestedScrollingEnabled = false
         recyclerView.layoutManager = layoutManager
     }
+
     /**
      * 设置数据
      */
@@ -208,7 +241,7 @@ class HomeFragment : BaseKtFragment() {
             ad.name = "广告"
             ad.link = "http://www.baidu.com"
             ad.imagePath = imgs[random.nextInt(imgs.size)]
-            if(i < 3){
+            if (i < 3) {
                 val video = Video()
                 video.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
                 video.audioLength = "12:10"
@@ -218,10 +251,15 @@ class HomeFragment : BaseKtFragment() {
                 videoDatas.add(video)
                 audioDatas.add(video)
             }
-
-            newsDatas.add("http://www.baidu.com/img/sdsdfsdf")
+            val article = Article()
+            article.timestamp = "2018-0$i-1${i + 2} 12:15:34"
+            article.title = "农耕部落初见成效"
+            article.abstract = "农耕部落初见成效农耕部落初见成效农耕部落初见成效"
+            article.id = i
+            article.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
+            newsDatas.add(article)
             ads.add(ad)
-            if(i < 4){
+            if (i < 4) {
                 categoryDatas.add(imgs[random.nextInt(imgs.size)])
             }
 
@@ -232,6 +270,123 @@ class HomeFragment : BaseKtFragment() {
         homeAudioAdapter.update()
     }
 
+    fun requestAdList() {
+        val query = AdListRquestQuery()
+        query.action = AIIAction.ONE
+
+        App.aiiRequest?.send(query, object : AIIResponse<AdListResponseQuery>(activity, false) {
+            override fun onSuccess(response: AdListResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.ads?.let {
+                    ad_home.startAD(it.size, 3, true, it, 0.48f)
+                }
+            }
+        })
+    }
+
+    /**
+     * 请求文章列表
+     */
+    fun requestArticleList() {
+        val query = ListRequestQuery("ArticleList")
+        query.table.page = 1
+        query.action = AIIAction.TWO
+        App.aiiRequest?.send(query, object : AIIResponse<ArticleListResponseQuery>(activity) {
+            override fun onSuccess(response: ArticleListResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.let { getArticleList(it) }
+            }
+
+            override fun onFinish(index: Int) {
+                super.onFinish(index)
+                onLoadFinish()
+            }
+
+            override fun onCache(response: ArticleListResponseQuery?, index: Int) {
+                super.onCache(response, index)
+                response?.let { getArticleList(it) }
+            }
+        })
+    }
+
+    /**
+     * 获取新闻数据，设置到adapter里
+     */
+    private fun getArticleList(response: ArticleListResponseQuery) {
+        newsDatas.clear()
+        response.articles?.let { newsDatas.addAll(it) }
+        homeNewsAdapter.update()
+    }
 
 
+    /**
+     * 请求音频列表
+     */
+    fun requestAudioList(){
+
+        val query = ListRequestQuery("AudioList")
+        query.table.page = 1
+        query.table.limit = 3
+        query.action = AIIAction.ONE
+        App.aiiRequest?.send(query, object : AIIResponse<VideoListResponseQuery>(activity){
+            override fun onSuccess(response: VideoListResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.let { getAudioList(it) }
+            }
+
+            override fun onFinish(index: Int) {
+                super.onFinish(index)
+                onLoadFinish()
+            }
+
+            override fun onCache(response: VideoListResponseQuery?, index: Int) {
+                super.onCache(response, index)
+                response?.let { getAudioList(it) }
+            }
+        })
+    }
+
+    /**
+     * 请求视频列表
+     */
+    fun requestVideoList(){
+
+        val query = ListRequestQuery("VideoList")
+        query.table.page = 1
+        query.table.limit = 3
+        query.action = AIIAction.ONE
+        App.aiiRequest?.send(query, object : AIIResponse<VideoListResponseQuery>(activity){
+            override fun onSuccess(response: VideoListResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.let { getVideoList(it) }
+            }
+
+            override fun onFinish(index: Int) {
+                super.onFinish(index)
+                onLoadFinish()
+            }
+
+            override fun onCache(response: VideoListResponseQuery?, index: Int) {
+                super.onCache(response, index)
+                response?.let { getVideoList(it) }
+            }
+        })
+    }
+
+    /**
+     * 获取音频数据，设置到adapter里
+     */
+    private fun getAudioList(response: VideoListResponseQuery) {
+        audioDatas.clear()
+        response.videos?.let { audioDatas.addAll(it) }
+        homeAudioAdapter.update()
+    }
+    /**
+     * 获取视频数据，设置到adapter里
+     */
+    private fun getVideoList(response: VideoListResponseQuery) {
+        videoDatas.clear()
+        response.videos?.let { videoDatas.addAll(it) }
+        homeVideoAdapter.update()
+    }
 }

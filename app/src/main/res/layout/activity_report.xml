@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    tools:context="com.aidongxiang.app.ui.square.ReportActivity">
+
+    <include layout="@layout/layout_title_bar"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black3"
+        android:text="举报原因"
+        android:padding="@dimen/margin_screen_left"
+        android:textSize="16sp"/>
+
+
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/gridview_report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:columnCount="2"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingRight="@dimen/margin_screen_right">
+        <CheckBox
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black3"
+            app:layout_columnWeight="1"
+            android:text="sdsdsdf "/>
+        <CheckBox
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black3"
+            app:layout_columnWeight="1"
+            android:text="sdsdsdf "/>
+        <CheckBox
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black3"
+            app:layout_columnWeight="1"
+            android:singleLine="true"
+            android:text="sdsdsdfsdsdsdfsdsdsdfsdsdsdfsdsdsdfsdsdsdf "/>
+        <CheckBox
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black3"
+            app:layout_columnWeight="1"
+            android:singleLine="true"
+            android:text="sdsdsdfsdsdsdfsdsdsdfsdsdsdfsdsdsdfsdsdsdf "/>
+    </android.support.v7.widget.GridLayout>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_gray_line"
+        android:padding="8dp"
+        android:gravity="left|top"
+        android:layout_margin="@dimen/margin_screen_left"
+        android:minLines="4"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/btnPurpleStyle"
+        android:layout_marginRight="@dimen/margin_screen_right"
+        android:layout_marginLeft="@dimen/margin_screen_left"
+        android:layout_marginTop="12dp"
+        android:text="举报"/>
+</LinearLayout>

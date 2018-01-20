@@ -68,6 +68,10 @@ class ForgetPasswordActivity : BaseKtActivity(), TextWatcher {
             }
             smscodeCountDown?.start()
         }
+
+        tvMobileCannotUse.setOnClickListener {
+            switchToActivity(MobileAppealActivity::class.java)
+        }
     }
 
 

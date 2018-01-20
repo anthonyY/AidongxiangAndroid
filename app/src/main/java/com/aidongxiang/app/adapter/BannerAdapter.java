@@ -11,10 +11,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
-
 import com.aidongxiang.app.R;
-import com.aidongxiang.app.model.Ad;
 import com.aidongxiang.app.utils.GlideImgManager;
+import com.aidongxiang.business.model.Ad;
 
 import java.util.ArrayList;
 import java.util.List;

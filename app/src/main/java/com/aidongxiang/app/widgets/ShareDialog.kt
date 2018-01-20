@@ -45,4 +45,11 @@ class ShareDialog(context : Context) : AbsCommonDialog(context){
     fun onActivityResult(requestCode : Int, resultCode:Int, data:Intent?){
         shareUtils?.onActivityResult(requestCode, resultCode, data)
     }
+
+    fun setShareData(title : String, content : String, imagePath: String, url : String){
+        shareUtils?.setShareTitle(title)
+        shareUtils?.setShareContent(content)
+        shareUtils?.setShareImage(imagePath)
+        shareUtils?.setShareUrl(url)
+    }
 }

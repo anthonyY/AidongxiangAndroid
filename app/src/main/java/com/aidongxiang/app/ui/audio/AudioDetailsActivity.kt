@@ -9,12 +9,12 @@ import android.widget.SeekBar
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
-import com.aidongxiang.app.model.Ad
 import com.aidongxiang.app.observer.IMusicPlayObserver
 import com.aidongxiang.app.observer.MusicPlaySubject
 import com.aidongxiang.app.service.MusicService
 import com.aidongxiang.app.ui.home.HomeFragment
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
+import com.aidongxiang.business.model.Ad
 import com.aiitec.openapi.utils.LogUtil
 import kotlinx.android.synthetic.main.activity_audio_details.*
 import java.util.*

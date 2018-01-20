@@ -7,6 +7,7 @@ import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.ui.audio.AudioListFragment
+import com.aidongxiang.app.ui.audio.AudioListFragment.Companion.TYPE_DOWNLOAD
 import com.aidongxiang.app.ui.video.VideoListFragment
 import kotlinx.android.synthetic.main.activity_mine_tablelayout.*
 import kotlinx.android.synthetic.main.layout_title_bar_with_right_text.*
@@ -32,8 +33,8 @@ class MyDownloadActivity : BaseKtActivity() {
         setTitle("我的下载")
         mPagerAdapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
 
-        videoListFragment = VideoListFragment()
-        audioListFragment = AudioListFragment()
+        videoListFragment = VideoListFragment.newInstance(TYPE_DOWNLOAD)
+        audioListFragment = AudioListFragment.newInstance(TYPE_DOWNLOAD)
         mPagerAdapter?.addFragment(videoListFragment, "视频")
         mPagerAdapter?.addFragment(audioListFragment, "音频")
 

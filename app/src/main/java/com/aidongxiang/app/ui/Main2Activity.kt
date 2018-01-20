@@ -1,7 +1,6 @@
 package com.aidongxiang.app.ui
 
 import android.content.Intent
-import android.media.AudioFormat
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
@@ -84,5 +83,15 @@ class Main2Activity : BaseKtActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         setIntent(intent)
+    }
+
+    fun swicthFragment(index : Int){
+        when(index){
+            0-> switchFragment(homeFragment)
+            1-> switchFragment(videoFragment)
+            2-> switchFragment(squareFragment)
+            3-> switchFragment(audioFragment)
+            4-> switchFragment(mineFragment)
+        }
     }
 }

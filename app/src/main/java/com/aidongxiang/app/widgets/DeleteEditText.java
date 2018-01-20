@@ -1,9 +1,13 @@
 package com.aidongxiang.app.widgets;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.AppCompatEditText;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
@@ -14,11 +18,10 @@ import com.aiitec.openapi.utils.ScreenUtils;
  * @createTime 2016-06-20
  * 带删除按钮的输入框，点击X就删除文字，并提供一个删除监听接口
  * 删除按钮icon用drawableRight 设置
- */
-public class DeleteEditText extends AppCompatEditText {
+ */public class DeleteEditText extends AppCompatEditText {
 
     private int touchPadding;
-
+    private Drawable[] compoundDrawables;
     public DeleteEditText(Context context){
         super(context);
         init(null);
@@ -33,6 +36,29 @@ public class DeleteEditText extends AppCompatEditText {
     }
     private void init(AttributeSet attrs){
         touchPadding = ScreenUtils.dip2px(getContext(), 4);
+        compoundDrawables = getCompoundDrawables();
+        //默认一开始没有文字，也就drawableRight不显示
+        setCompoundDrawables(compoundDrawables[0], compoundDrawables[1], null, compoundDrawables[3]);
+
+
+        addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(compoundDrawables != null){
+                    if(TextUtils.isEmpty(s.toString().trim())){//没有文字，也就drawableRight不显示
+                        setCompoundDrawables(compoundDrawables[0], compoundDrawables[1], null, compoundDrawables[3]);
+                    } else {//有文字，drawableRight显示
+                        setCompoundDrawables(compoundDrawables[0], compoundDrawables[1], compoundDrawables[2], compoundDrawables[3]);
+                    }
+                }
+            }
+        });
     }
 
     public void setTouchPadding(int padding) {
@@ -40,6 +66,12 @@ public class DeleteEditText extends AppCompatEditText {
     }
 
     private long downTime ;
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+    }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
@@ -70,6 +102,8 @@ public class DeleteEditText extends AppCompatEditText {
                         }
                     }
                 }
+                break;
+            default:
                 break;
         }
         return super.dispatchTouchEvent(event);

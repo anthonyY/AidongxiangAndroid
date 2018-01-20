@@ -76,14 +76,24 @@ class PublishPostActivity : BaseKtActivity() {
                 datas.removeAt(position)
                 adapter.update()
             }
-        })
+        }, R.id.iv_item_delete)
         rl_publish_video.setOnClickListener {
             if(videoUri != null){
                 switchToActivity(VideoPlayerActivity::class.java, "path" to videoUri!!)
             }
         }
-        iv_publish_image.setOnClickListener { switchToActivityForResult(ImageSelectActivity::class.java, REQUEST_IMAGE) }
+        iv_publish_image.setOnClickListener {
+            if(!TextUtils.isEmpty(videoUri)){
+                toast("不能同时发布图片和视频")
+                return@setOnClickListener
+            }
+            switchToActivityForResult(ImageSelectActivity::class.java, REQUEST_IMAGE)
+        }
         iv_publish_video.setOnClickListener {
+            if(datas.size > 1){
+                toast("不能同时发布图片和视频")
+                return@setOnClickListener
+            }
             itemDialog.show()
         }
 

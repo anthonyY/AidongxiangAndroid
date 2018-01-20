@@ -5,8 +5,6 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
-import com.aiitec.openapi.utils.LogUtil;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,7 +42,6 @@ public class SoftKeyboardStateHelper implements OnGlobalLayoutListener {
         activityRootView.getWindowVisibleDisplayFrame(r);
         final int heightDiff = activityRootView.getRootView().getHeight()
                 - (r.bottom - r.top);
-        LogUtil.e("heightDiff:"+heightDiff);
         if (!isSoftKeyboardOpened && heightDiff > height) {
             isSoftKeyboardOpened = true;
             notifyOnSoftKeyboardOpened(heightDiff);

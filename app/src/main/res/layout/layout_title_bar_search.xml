@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/titlebar_bg"
+    android:id="@+id/titlebar"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:contentInsetLeft="0dp"
+        android:contentInsetStart="0dp"
+        android:navigationIcon="@drawable/common_btn_back"
+        app:elevation="0dp"
+        app:navigationIcon="@drawable/common_btn_back"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+        <ImageButton
+            android:id="@+id/ibtn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:clickable="true"
+            android:background="@drawable/btn_transparent_selector"
+            android:src="@drawable/common_btn_back" />
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:text="@string/search"
+            android:textSize="16sp"
+            android:layout_gravity="right"
+            android:minWidth="52dp"
+            android:background="@drawable/btn_transparent_selector"/>
+        <com.aidongxiang.app.widgets.DeleteEditText
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="6dp"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:paddingRight="12dp"
+            android:paddingLeft="12dp"
+            android:textSize="14sp"
+            android:imeOptions="actionSearch"
+            android:singleLine="true"
+            android:drawableRight="@drawable/common_btn_delete"
+            android:background="@drawable/shape_white_big_round"
+            android:queryHint="请输入搜索内容"
+            android:hint="请输入搜索内容"/>
+
+
+    </android.support.v7.widget.Toolbar>
+</LinearLayout>

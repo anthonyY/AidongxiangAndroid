@@ -81,7 +81,11 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.mine.MyMicroblogActivity"></activity>
+        <activity android:name=".ui.mine.MyMicroblogActivity" />
+        <activity
+            android:name=".ui.square.ReportActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.video.VideoSearchActivity"></activity>
     </application>
 
 </manifest>

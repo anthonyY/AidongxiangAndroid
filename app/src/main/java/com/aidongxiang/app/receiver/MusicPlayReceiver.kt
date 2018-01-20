@@ -1,21 +1,19 @@
 package com.aidongxiang.app.receiver
 
 import android.app.Notification
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.support.v4.app.NotificationCompat
-import com.aidongxiang.app.R
-import android.widget.RemoteViews
 import android.content.Context.NOTIFICATION_SERVICE
-import android.app.NotificationManager
+import android.content.Intent
 import android.os.Build
 import android.text.TextUtils
 import android.view.View
+import android.widget.RemoteViews
+import com.aidongxiang.app.R
 import com.aidongxiang.app.service.MusicService
 import com.aidongxiang.app.service.MusicService.Companion.TYPE_PLAY
-import com.aidongxiang.app.ui.Main2Activity
 import com.aiitec.openapi.utils.LogUtil
 
 
@@ -45,13 +43,13 @@ class MusicPlayReceiver : BroadcastReceiver() {
         //新建意图，用服务播放音乐
         val intentPlay = Intent(context, MusicService::class.java)
         intentPlay.putExtra(MusicService.ARG_TYPE, MusicService.TYPE_START)
-        val pIntentPlay = PendingIntent.getBroadcast(context, 0, intentPlay, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pIntentPlay = PendingIntent.getService(context, 0, intentPlay, PendingIntent.FLAG_UPDATE_CURRENT)
         contentView.setOnClickPendingIntent(R.id.ivPlay, pIntentPlay)
 
         //新建意图，用服务暂停音乐
         val intentPause = Intent(context, MusicService::class.java)
         intentPause.putExtra(MusicService.ARG_TYPE, MusicService.TYPE_PAUSE)
-        val pIntentPause = PendingIntent.getBroadcast(context, 0, intentPause, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pIntentPause = PendingIntent.getService(context, 0, intentPause, PendingIntent.FLAG_UPDATE_CURRENT)
         contentView.setOnClickPendingIntent(R.id.ivStop, pIntentPause);//为play控件注册事件
 
 
