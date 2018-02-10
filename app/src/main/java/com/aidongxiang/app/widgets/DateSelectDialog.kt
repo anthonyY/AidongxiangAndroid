@@ -1,6 +1,7 @@
 package com.aidongxiang.app.widgets
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
@@ -26,8 +27,15 @@ class DateSelectDialog(context : Context) : AbsCommonDialog(context){
     override fun findView(view: View) {
         super.findView(view)
 //        wheel_date.setMode(WheelDatePicker.MODE_GREGORIAN)
-        if (startYear > 0 && endYear > 0)
+        wheel_date.setCurtain(true)
+        wheel_date.isCurved = true
+        wheel_date.isCyclic = false
+        wheel_date.selectedItemTextColor = ContextCompat.getColor(context, R.color.black3)
+        wheel_date.itemTextColor = ContextCompat.getColor(context, R.color.gray9)
+        if (startYear > 0 && endYear > 0){
             wheel_date.setYearFrame(startYear, endYear)
+        }
+
     }
 
     fun setYearFrame(startYear: Int, endYear: Int) {
@@ -36,6 +44,7 @@ class DateSelectDialog(context : Context) : AbsCommonDialog(context){
         if (wheel_date != null) {
             wheel_date.setYearFrame(startYear, endYear)
         }
+
     }
 
     fun getCurrentDate(): Date? {

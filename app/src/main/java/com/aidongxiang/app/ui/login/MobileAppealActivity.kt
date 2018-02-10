@@ -21,8 +21,8 @@ class MobileAppealActivity : BaseKtActivity() {
     override fun init(savedInstanceState: Bundle?) {
 
         val calendar = Calendar.getInstance()
-        val startYear = calendar.get(Calendar.YEAR)
-        val endYear = startYear - 100
+        val endYear = calendar.get(Calendar.YEAR)
+        val startYear = endYear - 100
         dateSelectDialog = DateSelectDialog(this)
         dateSelectDialog.setYearFrame(startYear, endYear)
         dateSelectDialog.setTitle("选择时间")

@@ -127,11 +127,8 @@
             android:textColor="@color/black3"
             android:layout_weight="1.5"
             android:textSize="14sp"
-            android:background="@color/transparent"
-            android:inputType="number"
             android:paddingBottom="12dp"
             android:paddingTop="12dp"
-            android:maxLength="11"
             android:text="2017-12-12"/>
     </LinearLayout>
     <View style="@style/line" />
