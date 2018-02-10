@@ -27,6 +27,9 @@
     <style name="transparentStatusTheme" parent="AppTheme" />
 
     <style name="whiteStatusTheme" parent="AppTheme" />
+    <style name="welcomeTheme" parent="transparentStatusTheme" >
+        <item name="android:windowBackground">@drawable/img_loading</item>
+    </style>
 
     <style name="LoadingDialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>

@@ -118,19 +118,7 @@
             android:background="@color/white"
             >
 
-            <RelativeLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-                <ImageButton
-                    android:id="@+id/iv_publish_expression"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:background="@drawable/btn_transparent_selector"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/common_btn_expression" />
-            </RelativeLayout>
+
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -160,6 +148,21 @@
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:visibility="invisible"
+                android:layout_weight="1">
+                <ImageButton
+                    android:id="@+id/iv_publish_expression"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:background="@drawable/btn_transparent_selector"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/common_btn_expression" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
                 android:layout_weight="1">
                 <ImageButton
                     android:id="@+id/iv_publish_select_360"

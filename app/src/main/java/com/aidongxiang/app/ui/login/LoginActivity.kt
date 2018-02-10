@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.ui.Main2Activity
 import kotlinx.android.synthetic.main.activity_login.*
 
 /**
@@ -19,7 +20,7 @@ class LoginActivity : BaseKtActivity() {
         tv_login_forget.setOnClickListener { switchToActivity(ForgetPasswordActivity::class.java) }
         tv_login_register.setOnClickListener { switchToActivity(RegisterActivity::class.java) }
         btnLogin.setOnClickListener {
-
+            switchToActivity(Main2Activity::class.java)
         }
     }
 

@@ -6,13 +6,18 @@ import android.content.Intent
 import android.os.Environment
 import android.support.v4.app.FragmentActivity
 import com.aidongxiang.app.BuildConfig
+import com.aidongxiang.app.R
 import com.aiitec.openapi.net.AIIRequest
 import com.aiitec.openapi.utils.LogUtil
 import com.mabeijianxi.smallvideorecord2.DeviceUtils
 import com.mabeijianxi.smallvideorecord2.JianXiCamera
+import com.umeng.socialize.PlatformConfig
+import com.umeng.socialize.UMShareAPI
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
+
 
 /**
  *
@@ -26,6 +31,8 @@ class App : Application (){
         var context: Context? = null
         var aiiRequest: AIIRequest? = null
     }
+
+
     private val activities = ArrayList<FragmentActivity>()
     lateinit var cachedThreadPool : ExecutorService
 
@@ -37,7 +44,26 @@ class App : Application (){
         aiiRequest = AIIRequest(this, Api.API)
         cachedThreadPool = Executors.newCachedThreadPool()
 
+        initUmeng()
         initSmallVideo(this)
+    }
+
+    private fun initUmeng() {
+        val weixin_id = resources.getString(R.string.weixinId)
+        val weixin_secret_key = resources.getString(R.string.weixinSecret)
+        val qq_id = resources.getString(R.string.qqId)
+        val qq_secret_key = resources.getString(R.string.qqSecretKey)
+        val sina_id = resources.getString(R.string.sinaId)
+        val sina_key = resources.getString(R.string.sinaSecretKey)
+        val sina_redirect_url = ""
+//                resources.getString(R.string.sina_redirect_url)
+        PlatformConfig.setWeixin(weixin_id, weixin_secret_key)
+        PlatformConfig.setQQZone(qq_id, qq_secret_key)
+        PlatformConfig.setSinaWeibo(sina_id, sina_key, sina_redirect_url)
+
+
+
+        UMShareAPI.get(this)
     }
 
     /**

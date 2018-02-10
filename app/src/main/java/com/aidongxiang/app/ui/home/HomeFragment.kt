@@ -20,8 +20,8 @@ import com.aidongxiang.app.base.Constants.ARG_TITLE
 import com.aidongxiang.app.base.Constants.ARG_URL
 import com.aidongxiang.app.ui.Main2Activity
 import com.aidongxiang.app.ui.audio.AudioDetailsActivity
-import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
+import com.aidongxiang.app.ui.video.VideoDetailsActivity
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.widgets.NoticeDialog
 import com.aidongxiang.business.model.Ad
@@ -127,7 +127,7 @@ class HomeFragment : BaseKtFragment() {
         //视频
         homeVideoAdapter = HomeVideoAdapter(activity!!, videoDatas)
         homeVideoAdapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(LoginActivity::class.java)
+            switchToActivity(VideoDetailsActivity::class.java)
         }
         setLayoutManagerInScroolView(recycler_home_video, videoLayoutManager)
         recycler_home_video.adapter = homeVideoAdapter

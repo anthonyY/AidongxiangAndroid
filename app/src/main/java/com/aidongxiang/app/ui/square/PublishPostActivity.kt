@@ -46,7 +46,7 @@ class PublishPostActivity : BaseKtActivity() {
 
         itemDialog = ItemDialog(this)
         itemDialog.setItems(arrayListOf("拍摄小视频", "选择小视频"))
-        itemDialog.setOnItemClickListener{ item, position ->
+        itemDialog.setOnItemClickListener{ _, position ->
             when(position){
                 0->{
                     recordVideo()

@@ -18,6 +18,7 @@ object Constants {
     val ARG_URL = "url"
     val ARG_TITLE = "title"
     val ARG_TYPE = "type"
+    val ARG_FIRST_LAUNCHER = "firstLauncher"
 
 
     var user : User? = null

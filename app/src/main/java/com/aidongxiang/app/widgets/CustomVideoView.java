@@ -46,15 +46,13 @@ public class CustomVideoView extends VideoView {
         }
     }
 
+    private OnPlayStateListener mListener;
 
-
-    private PlayStatusListener mListener;
-
-    public void setPlayStatusListener(PlayStatusListener mListener) {
+    public void setOnPlayStateListener(OnPlayStateListener mListener) {
         this.mListener = mListener;
     }
 
-    public interface PlayStatusListener {
+    public interface OnPlayStateListener {
         void onPlay();
         void onPause();
     }

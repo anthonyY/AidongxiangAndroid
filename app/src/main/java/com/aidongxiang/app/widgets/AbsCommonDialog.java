@@ -26,8 +26,8 @@ public abstract class AbsCommonDialog extends Dialog {
     protected TextView tv_dialog_confirm;
     protected TextView tv_dialog_cancel;
 
-    abstract float widthScale() ;
-    abstract int layoutId() ;
+    public abstract float widthScale() ;
+    public abstract int layoutId() ;
     public int animStyle(){
         return R.style.dialogAnimationStyle;
     }

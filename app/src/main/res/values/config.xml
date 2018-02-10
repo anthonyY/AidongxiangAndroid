@@ -2,5 +2,9 @@
 <resources>
     <string name="weixinId">2323445345</string>
     <string name="weixinSecret">ss4rg62re3re466k7</string>
-    <string name="umeng_key">ss4rg62re3re466k7</string>
+    <string name="qqId">1106329102</string>
+    <string name="qqSecretKey">Uaywo7vRdhNVR4p4</string>
+    <string name="sinaId">1039717231</string>
+    <string name="sinaSecretKey">af58812111cd9af9ec0f8f5c89ee1b77</string>
+    <string name="umeng_key">5a7eff8ea40fa3083a00017a</string>
 </resources>

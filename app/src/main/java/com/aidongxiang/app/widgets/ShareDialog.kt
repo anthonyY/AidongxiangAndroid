@@ -20,8 +20,8 @@ import kotlinx.android.synthetic.main.dialog_share.*
 class ShareDialog(context : Context) : AbsCommonDialog(context){
 
     override fun animStyle(): Int = R.style.BottomAnimationStyle
-    fun widthScale(): Float = 1f
-    fun layoutId(): Int = R.layout.dialog_share
+    override fun widthScale(): Float = 1f
+    override fun layoutId(): Int = R.layout.dialog_share
     var shareUtils : ShareUtils?= null
 
     override fun findView(view: View?) {

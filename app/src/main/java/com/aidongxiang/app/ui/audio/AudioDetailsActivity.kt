@@ -35,7 +35,7 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
     var isPlaying = false
     override fun init(savedInstanceState: Bundle?) {
 //        audioPath = "http://192.168.31.7:8080/audio/程璧 - Loving You.mp3"
-        audioPath = "http://192.168.31.7:8080/audio/theYear.mp3"
+        audioPath = "http://lingmu111-10012243.cossh.myqcloud.com/%E4%BE%97%E6%AD%8C%20%E4%B8%A2%E4%B9%85%E4%B8%8D%E8%A7%81%E9%95%BF%E7%9B%B8%E6%80%9D.mp3"
 
         ivAudioDetailsPlay.setOnClickListener {
             switchPlayStatus(!isPlaying)

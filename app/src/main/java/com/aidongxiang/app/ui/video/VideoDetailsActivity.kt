@@ -44,7 +44,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
     var hasCache = false
     var isFirst = true
     var isPlayed = false
-    var playPath : String ?= "http://aidongxiang.com/movie/yuntu_2.mp4"
+    var playPath : String ?= "http://lingmu111-10012243.cossh.myqcloud.com/yuntu_2.mp4"
 //    var playPath : String ?= "http://192.168.31.7:8080/movie/yuntu_2.mp4"
     lateinit var commonDialog : CommonDialog
     var mVideoViewLayoutParams : ViewGroup.LayoutParams ?= null
@@ -142,7 +142,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
             return@setOnTouchListener true
         }
-        videoview.setPlayStatusListener(object : CustomVideoView.PlayStatusListener {
+        videoview.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
             override fun onPlay() {
                 ivAudioDetailsPlay.setImageResource(R.drawable.video_btn_stop2)
                 ll_video_control.visibility = View.GONE
