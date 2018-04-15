@@ -7,12 +7,15 @@ import android.support.v4.app.Fragment
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.ui.audio.AudioFragment
 import com.aidongxiang.app.ui.home.HomeFragment
+import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.MineFragment
 import com.aidongxiang.app.ui.square.SquareFragment
 import com.aidongxiang.app.ui.video.VideoFragment
 import com.aidongxiang.app.utils.BottomNavigationViewHelper
+import com.aidongxiang.app.utils.LocationUtils
 import kotlinx.android.synthetic.main.activity_main2.*
 
 /**
@@ -36,6 +39,8 @@ class Main2Activity : BaseKtActivity() {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
         switchFragment(homeFragment)
+
+        LocationUtils.startLocation()
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -57,6 +62,10 @@ class Main2Activity : BaseKtActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_mine -> {
+                if(Constants.user == null){
+                    switchToActivity(LoginActivity::class.java)
+                    return@OnNavigationItemSelectedListener true
+                }
                 switchFragment(mineFragment)
                 return@OnNavigationItemSelectedListener true
             }

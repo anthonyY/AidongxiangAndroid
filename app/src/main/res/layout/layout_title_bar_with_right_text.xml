@@ -18,17 +18,6 @@
         app:elevation="0dp"
         app:navigationIcon="@drawable/common_btn_back"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-        <TextView
-            android:id="@+id/tv_title"
-            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:singleLine="true"
-            android:textColor="@android:color/white"
-            android:textSize="20sp" />
-
         <Button
             android:id="@+id/btn_title_confirm"
             android:layout_width="wrap_content"
@@ -39,5 +28,16 @@
             android:text="@string/confirm"
             android:visibility="gone"
             android:textColor="@color/white" />
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:singleLine="true"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+
     </android.support.v7.widget.Toolbar>
 </LinearLayout>

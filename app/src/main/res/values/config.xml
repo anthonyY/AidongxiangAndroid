@@ -7,4 +7,5 @@
     <string name="sinaId">1039717231</string>
     <string name="sinaSecretKey">af58812111cd9af9ec0f8f5c89ee1b77</string>
     <string name="umeng_key">5a7eff8ea40fa3083a00017a</string>
+    <string name="amap_key">d1bc77ee22c9f479b05ea2399c434837</string>
 </resources>

@@ -2,7 +2,7 @@ package com.aiitec.openapi.packet;
 
 
 import com.aiitec.openapi.json.annotation.JSONField;
-import com.aiitec.openapi.model.UploadFileRequestQuery;
+import com.aiitec.openapi.model.UploadImageRequestQuery;
 
 
 /**
@@ -14,13 +14,13 @@ import com.aiitec.openapi.model.UploadFileRequestQuery;
 public class UploadFilesRequest extends Request {
 
     @JSONField(name="q")
-    private UploadFileRequestQuery query = new UploadFileRequestQuery();
+    private UploadImageRequestQuery query = new UploadImageRequestQuery();
 
-    public UploadFileRequestQuery getQuery() {
+    public UploadImageRequestQuery getQuery() {
         return query;
     }
 
-    public void setQuery(UploadFileRequestQuery query) {
+    public void setQuery(UploadImageRequestQuery query) {
         this.query = query;
     }
 

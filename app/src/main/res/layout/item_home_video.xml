@@ -68,7 +68,7 @@
                     android:gravity="center_vertical"
                     android:drawableLeft="@drawable/common_icon_play_gray"
                     android:drawablePadding="8dp"
-                    android:text="3225"/>
+                    android:text="3225213"/>
                 <TextView
                     android:id="@+id/tv_item_duration"
                     android:layout_width="wrap_content"
@@ -80,7 +80,7 @@
                     android:layout_marginLeft="16dp"
                     android:drawableLeft="@drawable/common_icon_time"
                     android:drawablePadding="8dp"
-                    android:text="3225"/>
+                    android:text="00:00:00"/>
                 <android.support.v4.widget.Space
                     android:layout_width="0dp"
                     android:layout_height="1dp"

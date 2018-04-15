@@ -28,34 +28,32 @@ class NewsListFragment : BaseListKtFragment(){
 
     lateinit var adapter : HomeNewsAdapter
     val datas = ArrayList<Article>()
-    var random = Random()
-    var categoryId = -1
+    private var categoryId = -1
 
     override fun getDatas(): List<*>? = datas
 
     override fun requestData() {
-        requestNewsList()
+        requestArticleList()
     }
 
-    private fun requestNewsList() {
-        for(i in 0..10){
-            val article = Article()
-            article.timestamp = "2018-0$i-1${i + 2} 12:15:34"
-            article.title = "农耕部落初见成效"
-            article.abstract = "农耕部落初见成效农耕部落初见成效农耕部落初见成效"
-            article.id = i
-            article.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-            datas.add(article)
-        }
-        if(activity != null){
-            adapter.update()
-        }
-
-    }
+//    private fun requestNewsList() {
+//        for(i in 0..10){
+//            val article = Article()
+//            article.timestamp = "2018-0$i-1${i + 2} 12:15:34"
+//            article.title = "农耕部落初见成效"
+//            article.abstract = "农耕部落初见成效农耕部落初见成效农耕部落初见成效"
+//            article.id = i
+//            article.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
+//            datas.add(article)
+//        }
+//        if(activity != null){
+//            adapter.update()
+//        }
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = HomeNewsAdapter(activity, datas)
+        adapter = HomeNewsAdapter(activity, datas, false)
 
         arguments?.let { categoryId = it.getInt(Constants.ARG_ID) }
         requestData()
@@ -66,10 +64,16 @@ class NewsListFragment : BaseListKtFragment(){
 
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
-        adapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(CommonWebViewActivity::class.java, Constants.ARG_TITLE to "新闻详情", Constants.ARG_URL to "http://www.baidu.com")
+        adapter.setOnRecyclerViewItemClickListener { _, position ->
+            if(position > 0){
+                val id = datas[position-1].id
+                switchToActivity(ArticleDetailsActivity::class.java, Constants.ARG_TITLE to "新闻详情", Constants.ARG_ID to id)
+
+            }
 
         }
+
+        requestArticleList()
 
     }
     companion object {
@@ -87,13 +91,13 @@ class NewsListFragment : BaseListKtFragment(){
     /**
      * 请求文章列表
      */
-    fun requestArticleList() {
+    private fun requestArticleList() {
         val query = ListRequestQuery("ArticleList")
         query.table.page = 1
-        query.action = AIIAction.TWO
+        query.action = AIIAction.ONE
         val where = Where()
         where.categoryId = categoryId
-        App.aiiRequest?.send(query, object : AIIResponse<ArticleListResponseQuery>(activity, progressDialog) {
+        App.aiiRequest.send(query, object : AIIResponse<ArticleListResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ArticleListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.let { getArticleList(it) }

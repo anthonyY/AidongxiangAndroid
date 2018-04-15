@@ -21,28 +21,32 @@
             android:gravity="center_vertical"
             android:clickable="true"
             android:background="@drawable/my_bg">
-            <com.aidongxiang.app.widgets.CircleImageView
+            <ImageView
+                android:id="@+id/ivMineAvatar"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:src="@mipmap/ic_launcher"/>
+                android:src="@drawable/ic_avatar_default"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12dp"
                 android:orientation="vertical">
                 <TextView
+                    android:id="@+id/tvMineName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="张三"
+                    android:text="未登录"
                     android:textSize="16sp"
                     android:textColor="@color/white"/>
                 <TextView
+                    android:id="@+id/tvMineSignature"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="这个人很懒，什么都没有留下"
+                    android:text=""
                     android:maxLines="2"
                     android:layout_marginTop="12dp"
                     android:textSize="14sp"
+                    android:visibility="gone"
                     android:textColor="@color/white"/>
             </LinearLayout>
         </LinearLayout>
@@ -50,7 +54,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorPrimaryDark"
             android:layout_alignParentBottom="true"
             android:paddingTop="12dp"
             android:gravity="center_vertical"
@@ -64,11 +68,12 @@
                 android:orientation="vertical"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/tvMineMicroblogNum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:textSize="14sp"
-                    android:text="1"/>
+                    android:text="0"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -89,11 +94,12 @@
                 android:orientation="vertical"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/tvMineFocusNum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:textSize="14sp"
-                    android:text="456"/>
+                    android:text="0"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -114,11 +120,12 @@
                 android:orientation="vertical"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/tvMineFansNum"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:textSize="14sp"
-                    android:text="12553"/>
+                    android:text="0"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

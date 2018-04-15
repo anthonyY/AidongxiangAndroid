@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context="com.aidongxiang.app.ui.mine.NicknameActivity">
+
+    <include layout="@layout/layout_title_bar"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_margin="@dimen/margin_screen_left"
+        android:paddingRight="@dimen/margin_screen_left"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:background="@drawable/shape_gray_line">
+
+        <EditText
+            android:id="@+id/etCommentContent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:padding="16dp"
+            android:minLines="3"
+            android:gravity="left|top"
+            android:background="@color/transparent"
+            android:textColor="@color/black3"
+            android:maxLength="140"
+            android:hint="评论内容,140字以内"/>
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tvNickNameLength"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="140"
+            android:layout_gravity="bottom"
+            android:paddingBottom="6dp"
+            android:textColor="@color/gray7"
+            />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSubmit"
+        style="@style/btnPurpleStyle"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/margin_screen_left"
+        android:text="@string/submit"/>
+</LinearLayout>

@@ -2,6 +2,7 @@ package com.aidongxiang.app.ui.video
 
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -14,12 +15,21 @@ import android.widget.SeekBar
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
+import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.Utils
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.app.widgets.CustomVideoView
+import com.aidongxiang.business.model.Audio
+import com.aidongxiang.business.response.AudioDetailsResponseQuery
+import com.aiitec.openapi.enums.CacheMode
+import com.aiitec.openapi.model.RequestQuery
+import com.aiitec.openapi.net.AIIResponse
+import com.aiitec.openapi.utils.LogUtil
+import com.aiitec.openapi.utils.ScreenUtils
 import kotlinx.android.synthetic.main.activity_video_details.*
 import kotlinx.android.synthetic.main.layout_title_bar.*
 
@@ -37,27 +47,36 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
         /**确认非wifi也可以播放*/
         var isConfirmNotWifiPlay = false
     }
+
     var isPlaying = false
-    lateinit var adapter : SimpleFragmentPagerAdapter
-    var id = -1
+    lateinit var adapter: SimpleFragmentPagerAdapter
+    var id: Long = -1
     var isPrepared = false
     var hasCache = false
     var isFirst = true
     var isPlayed = false
-    var playPath : String ?= "http://lingmu111-10012243.cossh.myqcloud.com/yuntu_2.mp4"
-//    var playPath : String ?= "http://192.168.31.7:8080/movie/yuntu_2.mp4"
-    lateinit var commonDialog : CommonDialog
-    var mVideoViewLayoutParams : ViewGroup.LayoutParams ?= null
+    var playPath: String? = null
+    // "http://lingmu111-10012243.cossh.myqcloud.com/yuntu_2.mp4"
+    //    var playPath : String ?= "http://192.168.31.7:8080/movie/yuntu_2.mp4"
+    lateinit var commonDialog: CommonDialog
+    var mVideoViewLayoutParams: ViewGroup.LayoutParams? = null
+//    var mVideoViewLayoutParams2: ViewGroup.LayoutParams? = null
     var currentPosition = 0
     var oldPosition = 0
     var duration = 0
+    var video: Audio ?= null
+    lateinit var videoSynopsisFragment : VideoSynopsisFragment
+    var videoWidth = 0
+    var videoHeight = 0
+    var videoScale = 1f
 
     override fun init(savedInstanceState: Bundle?) {
 
-        id = bundle.getInt(ARG_ID)
+        id = bundle.getLong(ARG_ID)
         title = "视频"
+        videoSynopsisFragment = VideoSynopsisFragment()
         adapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
-        adapter.addFragment(VideoSynopsisFragment(), "简介")
+        adapter.addFragment(videoSynopsisFragment, "简介")
         adapter.addFragment(VideoCommentFragment.newInstance(id), "评论")
         viewPager.adapter = adapter
 
@@ -69,15 +88,18 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             isConfirmNotWifiPlay = true
             startVideo()
         }
-
+        mVideoViewLayoutParams = rl_video.layoutParams
         setListener()
 
+        requestVideoDetails()
     }
 
     private fun setListener() {
 
-        iv_video_status.setOnClickListener { iv_video_status.visibility = View.GONE }
-        ivAudioDetailsPlay.setOnClickListener { switchPlayStatus(!isPlaying) }
+        iv_video_status.setOnClickListener {
+            iv_video_status.visibility = View.GONE
+            startVideo()
+        }
         rl_details_comment.setOnClickListener { switchTab(1) }
         rl_details_synopsis.setOnClickListener { switchTab(0) }
         rl_details_synopsis.isSelected = true
@@ -93,22 +115,22 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
         initVideo()
     }
 
-    var toucTime : Long = 0
+    var toucTime: Long = 0
     private fun initVideo() {
 //        videoView.setZOrderOnTop(true)
         videoview.setZOrderMediaOverlay(true)
 
         ivAudioDetailsPlay.setOnClickListener {
 
-            if(videoview.isPlaying){
+            if (videoview.isPlaying) {
                 videoview.pause()
                 iv_video_status.visibility = View.VISIBLE
             } else {
                 iv_video_status.visibility = View.GONE
-                if(Utils.isWifi(this) || hasCache){
+                if (Utils.isWifi(this) || hasCache) {
                     startVideo()
                 } else {
-                    if(isConfirmNotWifiPlay){
+                    if (isConfirmNotWifiPlay) {
                         startVideo()
                     } else {
                         commonDialog.show()
@@ -122,22 +144,22 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             if (motionEvent.action == MotionEvent.ACTION_DOWN) {
                 //当没有显示立即购买按钮时才显示播放控件
 
-                    ll_video_control.visibility = View.VISIBLE
-                    toucTime = System.currentTimeMillis()
-                    Handler().postDelayed({
-                        if(supportFragmentManager.isDestroyed){
-                            return@postDelayed
-                        }
-                        val delayed = System.currentTimeMillis()
-                        if (delayed - toucTime >= 3000) {
-                            if(videoview.isPlaying){
-                                ll_video_control.visibility = View.GONE
+                ll_video_control.visibility = View.VISIBLE
+                toucTime = System.currentTimeMillis()
+                Handler().postDelayed({
+                    if (supportFragmentManager.isDestroyed) {
+                        return@postDelayed
+                    }
+                    val delayed = System.currentTimeMillis()
+                    if (delayed - toucTime >= 3000) {
+                        if (videoview.isPlaying) {
+                            ll_video_control.visibility = View.GONE
 
-                            }
                         }
+                    }
 
-                    }, 3000)
-                }
+                }, 3000)
+            }
 
 
             return@setOnTouchListener true
@@ -150,7 +172,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
                 //播放过了
                 isPlayed = true
 
-                if(isPrepared){
+                if (isPrepared) {
                     iv_video_wait.visibility = View.GONE
                 }
             }
@@ -158,17 +180,12 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             override fun onPause() {
                 ll_video_control.visibility = View.VISIBLE
                 ivAudioDetailsPlay.setImageResource(R.drawable.video_btn_play2)
-//                if(videoView.currentPosition != 5*60*1000){
-                //5分钟自动停止时不记录观看时间，否则下次进来还停留在5分钟，不能再次试看
-
-//                }
-
             }
         })
 
         ll_video_control.setOnTouchListener { _, motionEvent ->
-            when (motionEvent.action){
-                MotionEvent.ACTION_DOWN->{
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
                     ll_video_control.visibility = View.GONE
                     return@setOnTouchListener true
                 }
@@ -178,11 +195,11 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             return@setOnTouchListener super.onTouchEvent(motionEvent)
         }
 
-        seekbar_video.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        seekbar_video.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {}
             override fun onStartTrackingTouch(p0: SeekBar?) {}
             override fun onStopTrackingTouch(seekbar: SeekBar) {
-                val value = seekbar.progress * videoview.duration/100
+                val value = seekbar.progress * videoview.duration / 100
                 videoview.seekTo(value)
             }
         })
@@ -196,17 +213,33 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
     }
 
-    private fun startVideo(){
+    private fun startVideo() {
         videoview.setBackgroundColor(0)
 
-        if(!TextUtils.isEmpty(playPath)){
-            if(isFirst){
+        LogUtil.e("startVideo:"+playPath)
+        if (!TextUtils.isEmpty(playPath)) {
+            if (isFirst) {
                 videoview.setVideoPath(playPath)
                 isFirst = false
             }
             videoview.start()
+
+            val retr = MediaMetadataRetriever()
+
+            try {
+                retr.setDataSource(playPath, HashMap<String, String>())
+                val videoHeightStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                val videoWidthStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                videoHeight = Integer.parseInt(videoHeightStr) // 视频高度
+                videoWidth = Integer.parseInt(videoWidthStr) // 视频宽度
+                resetVideoWidth()
+            } catch (e : Exception){
+                e.printStackTrace()
+            }
+
+
         } else {
-            if(videoview.isPlaying){
+            if (videoview.isPlaying) {
                 videoview.pause()
             }
         }
@@ -217,7 +250,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
      * 切换选项卡内容
      */
     private fun switchTab(position: Int) {
-        if(position == 0){
+        if (position == 0) {
             rl_details_comment.isSelected = false
             rl_details_synopsis.isSelected = true
             viewPager.currentItem = position
@@ -231,7 +264,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
     private fun switchPlayStatus(playing: Boolean) {
 
-        if(!playing){
+        if (!playing) {
             ivAudioDetailsPlay.setImageResource(R.drawable.video_btn_play2)
         } else {
             ivAudioDetailsPlay.setImageResource(R.drawable.video_btn_stop2)
@@ -242,7 +275,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
 
     override fun onCompletion(p0: MediaPlayer?) {
-        if(isFullScreen){
+        if (isFullScreen) {
             switchScreenRotation()
         }
     }
@@ -254,7 +287,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId === R.id.action_download) {
+        if (item.itemId == R.id.action_download) {
             switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 0)
             return true
         }
@@ -266,22 +299,42 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
     var isFullScreen = false
     private fun switchScreenRotation() {
 
-//        if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
-//            mVideoViewLayoutParams = rl_video.layoutParams
-//            val layoutParams = LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
-////            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-////            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP)
-////            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-////            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-//            rl_video.layoutParams = layoutParams
-//            window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-//            rotation = Surface.ROTATION_0
-//        } else if (rotation == Surface.ROTATION_0) {
-//            //            RelativeLayout.LayoutParams lp = new  RelativeLayout.LayoutParams(320,240);
-//            //            lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-//            rl_video.layoutParams = mVideoViewLayoutParams
-//            rotation = Surface.ROTATION_90
-//        }
+        if(videoWidth < videoHeight){
+            //如果宽<高，全屏只需改变大小就行了，屏幕方向不改变
+            var mVideoHeight = 0
+            if (!isFullScreen){
+                mVideoViewLayoutParams = rl_video.layoutParams
+                val layoutParams = LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
+                rl_video.layoutParams = layoutParams
+                isFullScreen = true
+                iv_full_screen.setImageResource(R.drawable.nonfullscreen)
+                titlebar.visibility = View.GONE
+                mVideoHeight = ScreenUtils.getScreenHeight(this)
+            } else {
+                iv_full_screen.setImageResource(R.drawable.fullscreen)
+                rl_video.layoutParams = mVideoViewLayoutParams
+                isFullScreen = false
+                titlebar.visibility = View.VISIBLE
+                mVideoHeight =  rl_video.layoutParams.height
+            }
+
+            var mVideoWidth = (mVideoHeight * videoScale).toInt()
+            val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+            rl_video2.layoutParams = layoutParams
+
+            mVideoHeight = videoview.measuredHeight//ScreenUtils.getScreenHeight(this)
+            mVideoWidth = ((mVideoHeight * videoScale).toInt())
+
+            // 设置surfaceview画布大小
+            videoview.holder.setFixedSize(mVideoWidth, mVideoHeight)
+        // 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
+            videoview.setMeasure(mVideoWidth,mVideoHeight)
+        // 请求调整
+            videoview.requestLayout()
+
+            return
+        }
         if (!isFullScreen && (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)) {
             mVideoViewLayoutParams = rl_video.layoutParams
             val layoutParams = LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
@@ -289,12 +342,8 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             isFullScreen = true
             rotation = Surface.ROTATION_0
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-//            statusBarView?.visibility = View.GONE
             iv_full_screen.setImageResource(R.drawable.nonfullscreen)
 
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-//                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-//            }
             Utils.switchFullScreen(window, true)
             titlebar.visibility = View.GONE
         } else {
@@ -310,9 +359,11 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 //            statusBarView?.visibility = View.VISIBLE
             titlebar.visibility = View.VISIBLE
         }
+        resetVideoWidth()
     }
+
     override fun onPrepared(mp: MediaPlayer?) {
-        if(mp == null){
+        if (mp == null) {
             return
         }
         isPrepared = true
@@ -334,20 +385,30 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
         mp.setOnBufferingUpdateListener { _, percent ->
             seekbar_video.secondaryProgress = percent
         }
+        mp.setOnVideoSizeChangedListener { mediaPlayer, _, _ ->
+            // 获取视频资源的高度
+
+            this.videoWidth = mediaPlayer.videoWidth
+            this.videoHeight = mediaPlayer.videoHeight
+            resetVideoWidth()
+        }
+
     }
 
-    private fun formatTime(time : Int) : String{
-        val second = time/1000%60
-        val minute = time/1000/60%60
-        val hour = time/1000/60/60
-        return if(hour > 0){
+
+    private fun formatTime(time: Int): String {
+        val second = time / 1000 % 60
+        val minute = time / 1000 / 60 % 60
+        val hour = time / 1000 / 60 / 60
+        return if (hour > 0) {
             "${formatNum(hour)}:${formatNum(minute)}:${formatNum(second)}"
         } else {
             "${formatNum(minute)}:${formatNum(second)}"
         }
     }
-    fun formatNum(value : Int) : String{
-        return if(value < 10){
+
+    fun formatNum(value: Int): String {
+        return if (value < 10) {
             "0$value"
         } else {
             value.toString()
@@ -356,15 +417,15 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
 
     private fun setCurrentValue() {
-        if(isFinishing || supportFragmentManager.isDestroyed){
+        if (isFinishing || supportFragmentManager.isDestroyed) {
             return
         }
         currentPosition = videoview.currentPosition
         duration = videoview.duration
-        if(duration == 0){
+        if (duration == 0) {
             seekbar_video.progress = 0
         } else {
-            seekbar_video.progress = currentPosition*100/duration
+            seekbar_video.progress = currentPosition * 100 / duration
         }
         tv_video_current_time.text = formatTime(currentPosition)
 
@@ -376,10 +437,10 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
         }
         oldPosition = currentPosition
         Handler().postDelayed({
-            if(supportFragmentManager.isDestroyed){
+            if (supportFragmentManager.isDestroyed) {
                 return@postDelayed
             }
-            if(videoview.isPlaying){
+            if (videoview.isPlaying) {
                 setCurrentValue()
             }
 
@@ -393,15 +454,123 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
     }
 
     override fun onBackPressed() {
-        if(isFullScreen){
+        if (isFullScreen) {
             switchScreenRotation()
         } else {
-            if(videoview.isPlaying){
+            if (videoview.isPlaying) {
                 videoview.pause()
             }
             super.onBackPressed()
         }
     }
 
+
+    private fun requestVideoDetails() {
+        val query = RequestQuery("AudioDetails")
+        query.id = id
+        query.cacheMode = CacheMode.PRIORITY_OFTEN
+        App.aiiRequest.send(query, object : AIIResponse<AudioDetailsResponseQuery>(this, progressDialog) {
+
+            override fun onSuccess(response: AudioDetailsResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.audio?.let {
+                    setAudioData(it)
+                }
+            }
+
+            override fun onCache(content: AudioDetailsResponseQuery?, index: Int) {
+                super.onCache(content, index)
+                content?.audio?.let {
+                    setAudioData(it)
+                }
+            }
+        })
+    }
+
+    private fun setAudioData(audio: Audio) {
+        this.video = audio
+        playPath = audio.audioPath
+
+        GlideImgManager.load(this, audio.imagePath, iv_video_wait)
+        setCommentNum(audio.commentNum)
+        videoSynopsisFragment.update(audio)
+    }
+
+    /**
+     * 这个会经常更新， 并且是由子Fragment 更新
+     */
+    fun setCommentNum(num : Int){
+        tv_video_comment_num.text = num.toString()
+    }
+
+
+
+    private fun resetVideoWidth(){
+        var mVideoWidth = videoWidth
+// 获取视频资源的高度
+        var mVideoHeight = videoHeight
+// 获取屏幕的宽度
+//            val display = IneedApplication.newInstanse().getResources().getDisplayMetrics();
+// 在资源尺寸可以播放观看时处理
+        if (mVideoHeight > 0 && mVideoWidth > 0) {
+// 拉伸比例
+            videoScale =  mVideoWidth.toFloat()/ mVideoHeight
+// 视频资源拉伸至屏幕宽度，横屏竖屏需结合传感器等特殊处理
+
+            LogUtil.e("videoWidth:"+videoWidth+"   videoHeight:"+videoHeight+"    videoScale:$videoScale" )
+// 拉伸VideoView高度
+            if(videoScale != 0f){
+                if(mVideoWidth > mVideoHeight){
+                    LogUtil.e("mVideoWidth > mVideoHeight================isFullScreen:"+isFullScreen )
+//                    if(isFullScreen){
+//                        mVideoViewLayoutParams2 = rl_video2.layoutParams
+//                        val layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
+//                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+//                        rl_video2.layoutParams = layoutParams
+//                    } else {
+//                        rl_video2.layoutParams = mVideoViewLayoutParams2
+//                    }
+                    if(isFullScreen){
+                        mVideoHeight = ScreenUtils.getScreenWidth(this)
+                        mVideoWidth = (mVideoHeight * videoScale).toInt()
+                        val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
+                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                        rl_video2.layoutParams = layoutParams
+                    } else {
+                        mVideoHeight = rl_video2.measuredHeight
+                        mVideoWidth = (mVideoHeight * videoScale).toInt()
+                        val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
+                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                        rl_video2.layoutParams = layoutParams
+                    }
+                    mVideoWidth = videoview.measuredWidth//ScreenUtils.getScreenWidth(this)
+                    mVideoHeight = ((mVideoWidth / videoScale).toInt())
+                } else {
+                    LogUtil.e("mVideoWidth <= mVideoHeight<<<<<<<<<<<<<isFullScreen:$isFullScreen" )
+                    if(isFullScreen){
+                        mVideoHeight = ScreenUtils.getScreenHeight(this)
+                        mVideoWidth = (mVideoHeight * videoScale).toInt()
+                        val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
+                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                        rl_video2.layoutParams = layoutParams
+                    } else {
+                        mVideoHeight = rl_video2.measuredHeight
+                        mVideoWidth = (mVideoHeight * videoScale).toInt()
+                        val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
+                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                        rl_video2.layoutParams = layoutParams
+                    }
+                    mVideoHeight = videoview.measuredHeight//ScreenUtils.getScreenHeight(this)
+                    mVideoWidth = ((mVideoHeight * videoScale).toInt())
+                }
+            }
+            // 设置surfaceview画布大小
+            videoview.holder.setFixedSize(mVideoWidth, mVideoHeight)
+// 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
+            videoview.setMeasure(mVideoWidth,mVideoHeight)
+// 请求调整
+            videoview.requestLayout()
+        }
+    }
 
 }

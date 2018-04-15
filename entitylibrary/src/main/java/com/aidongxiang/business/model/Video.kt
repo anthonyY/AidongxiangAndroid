@@ -9,6 +9,7 @@ import com.aiitec.openapi.model.Entity
  * @version 1.0
  */
 class Video : Entity(){
+    var id : Long = -1
     var imagePath : String ?= null
     var playNum = 0
     var audioLength : String ?= null
@@ -16,4 +17,8 @@ class Video : Entity(){
     var name: String ?= null
     var timestamp: String ?= null
     var isSelected = false
+
+
+
+
 }

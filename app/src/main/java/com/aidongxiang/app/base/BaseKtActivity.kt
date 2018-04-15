@@ -14,9 +14,16 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.aidongxiang.app.R
+import com.aidongxiang.app.observer.UserInfoSubject
 import com.aidongxiang.app.utils.ContentViewUtils
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.widgets.CustomProgressDialog
+import com.aidongxiang.business.response.UserDetailsResponseQuery
+import com.aiitec.openapi.cache.AiiFileCache
+import com.aiitec.openapi.constant.AIIConstant
+import com.aiitec.openapi.model.RequestQuery
+import com.aiitec.openapi.net.AIIResponse
+import com.aiitec.openapi.utils.PacketUtil
 import java.io.Serializable
 
 
@@ -59,7 +66,7 @@ abstract class BaseKtActivity : AppCompatActivity() {
             StatusBarUtil.addStatusBarView(titleBar, android.R.color.transparent)
         }
 
-        progressDialog = CustomProgressDialog(this)
+        progressDialog = CustomProgressDialog.createDialog(this)
         progressDialog?.setCancelable(true)
         progressDialog?.setCanceledOnTouchOutside(true)
 
@@ -94,7 +101,7 @@ abstract class BaseKtActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
     }
 
-    override fun setTitle(title: CharSequence) {
+    override fun setTitle(title: CharSequence?) {
         tv_title?.text = title
     }
 
@@ -140,40 +147,43 @@ abstract class BaseKtActivity : AppCompatActivity() {
         intent.putExtras(bundle)
         startActivity(intent)
     }
-    fun switchToActivity(clazz: Class<*>, vararg  pairs: Pair<String, Any>) {
+    fun switchToActivity(clazz: Class<*>, vararg  pairs: Pair<String, Any?>) {
         val intent = Intent(this, clazz)
         intent.putExtras(getBundleExtras(pairs))
         startActivity(intent)
 
     }
-    private fun getBundleExtras( pairs: Array<out Pair<String, Any>>) : Bundle{
+    private fun getBundleExtras( pairs: Array<out Pair<String, Any?>>) : Bundle{
         val bundle = Bundle()
 
         for (pair in pairs){
-            if(Integer::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putInt(pair.first, pair.second as Int)
-            }
-            else if(String::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putString(pair.first, pair.second as String)
-            }
-            else if(Float::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putFloat(pair.first, pair.second as Float)
-            }
-            else if(Double::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putDouble(pair.first, pair.second as Double)
-            }
-            else if(Long::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putLong(pair.first, pair.second as Long)
-            }
-            else if(Serializable::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putSerializable(pair.first, pair.second as Serializable)
-            }
-            else if(Parcelable::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putParcelable(pair.first, pair.second as Parcelable)
-            }
-            else {
+            pair.second?.let {
+                if(Integer::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putInt(pair.first, it as Int)
+                }
+                else if(String::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putString(pair.first, it as String)
+                }
+                else if(Float::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putFloat(pair.first, it as Float)
+                }
+                else if(Double::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putDouble(pair.first, it as Double)
+                }
+                else if(Long::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putLong(pair.first, it as Long)
+                }
+                else if(Serializable::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putSerializable(pair.first, it as Serializable)
+                }
+                else if(Parcelable::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putParcelable(pair.first, it as Parcelable)
+                }
+                else {
 
+                }
             }
+           
         }
         return bundle
     }
@@ -192,12 +202,12 @@ abstract class BaseKtActivity : AppCompatActivity() {
         startActivityForResult(intent, requestCode)
     }
 
-    fun switchToActivityForResult(context: Context, clazz: Class<*>, requestCode: Int,  vararg  pairs: Pair<String, Any>) {
+    fun switchToActivityForResult(context: Context, clazz: Class<*>, requestCode: Int,  vararg  pairs: Pair<String, Any?>) {
         val intent = Intent(context, clazz)
         intent.putExtras(getBundleExtras(pairs))
         startActivityForResult(intent, requestCode)
     }
-    fun switchToActivityForResult(clazz: Class<*>, requestCode: Int,  vararg  pairs: Pair<String, Any>) {
+    fun switchToActivityForResult(clazz: Class<*>, requestCode: Int,  vararg  pairs: Pair<String, Any?>) {
         val intent = Intent(this, clazz)
         intent.putExtras(getBundleExtras(pairs))
         startActivityForResult(intent, requestCode)
@@ -275,4 +285,31 @@ abstract class BaseKtActivity : AppCompatActivity() {
     }
 
 
+    fun requestUserDetails(aiiResponse : AIIResponse<UserDetailsResponseQuery>){
+        App.aiiRequest.send(RequestQuery("UserDetails"), aiiResponse)
+    }
+    fun requestUserDetails(){
+        requestUserDetails(true)
+    }
+    fun requestUserDetails(isShowDialog : Boolean){
+        App.aiiRequest.send(RequestQuery("UserDetails"), object : AIIResponse<UserDetailsResponseQuery>(this, progressDialog, isShowDialog) {
+            override fun onSuccess(response: UserDetailsResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.user?.let {
+                    Constants.user = it
+                    AIIConstant.USER_ID = it.id
+                    AiiFileCache.changeDir(PacketUtil.getCacheDir(this@BaseKtActivity))
+                    UserInfoSubject.getInstance().update(it)
+                }
+            }
+
+            override fun onLoginOut(status: Int) {
+//                super.onLoginOut(status)
+            }
+
+            override fun onServiceError(content: String?, status: Int, index: Int) {
+//                super.onServiceError(content, status, index)
+            }
+        })
+    }
 }

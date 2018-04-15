@@ -1,5 +1,6 @@
 package com.aidongxiang.business.model
 
+import com.aiitec.openapi.json.JSON
 import com.aiitec.openapi.model.Entity
 
 /**
@@ -10,10 +11,15 @@ import com.aiitec.openapi.model.Entity
  */
 class Article : Entity(){
 
-    var id = -1
+    var id : Long= -1
     var title : String ?= null
     var abstract : String ?= null
     var imagePath : String ?= null
     var timestamp : String ?= null
+    var categoryName : String ?= null
+    var content : String ?= null
+    fun a(){
+        JSON.combinationType
+    }
 
 }

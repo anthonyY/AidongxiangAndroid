@@ -6,7 +6,13 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.base.Constants.ARG_ACTION
+import com.aidongxiang.app.ui.login.LoginActivity
+import com.aidongxiang.business.response.SMSResponseQuery
+import com.aiitec.openapi.model.SubmitRequestQuery
+import com.aiitec.openapi.net.AIIResponse
 import kotlinx.android.synthetic.main.activity_update_password.*
 
 /**
@@ -29,6 +35,7 @@ class UpdatePasswordActivity : BaseKtActivity(), TextWatcher {
 
     override fun init(savedInstanceState: Bundle?) {
 
+        title = "修改密码"
         btnFinish.setOnClickListener {
             if(TextUtils.isEmpty(etCurrentPassword.text.toString())){
                 toast("请输入当前密码")
@@ -57,9 +64,36 @@ class UpdatePasswordActivity : BaseKtActivity(), TextWatcher {
                 etNewPasswordAgain.setText("")
                 return@setOnClickListener
             }
+            requestUserUpdatePassword()
         }
         etCurrentPassword.addTextChangedListener(this)
         etNewPassword.addTextChangedListener(this)
         etNewPasswordAgain.addTextChangedListener(this)
+    }
+
+
+    /**
+     * 请求更改密码
+     */
+    private fun requestUserUpdatePassword(){
+        val passwordOld = etCurrentPassword.text.toString()
+        val passwordNew = etNewPassword.text.toString()
+
+        val query = SubmitRequestQuery()
+        query.namespace = "UserUpdatePassword"
+        query.password = passwordOld
+        query.passwordNew = passwordNew
+
+        App.aiiRequest.send(query, object : AIIResponse<SMSResponseQuery>(this){
+
+            override fun onSuccess(response: SMSResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                toast("修改成功，请重新登录")
+                dismissDialog()
+                switchToActivity(LoginActivity::class.java, ARG_ACTION to 1)
+                App.app.closeAllActivity()
+            }
+
+        })
     }
 }

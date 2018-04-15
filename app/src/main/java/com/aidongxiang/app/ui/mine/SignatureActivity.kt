@@ -19,6 +19,8 @@ class SignatureActivity : BaseKtActivity() {
 
     override fun init(savedInstanceState: Bundle?) {
 
+        setTitle("个性签名")
+        Constants.user?.description?.let {  etSignature.setText(it) }
         btnSave.setOnClickListener {
             intent.putExtra(Constants.ARG_NAME, etSignature.text.toString())
             setResult(Activity.RESULT_OK, intent)

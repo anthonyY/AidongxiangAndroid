@@ -1,9 +1,29 @@
 package com.aidongxiang.app.ui.video
 
+import android.annotation.SuppressLint
+import android.support.v4.content.ContextCompat
+import android.text.TextUtils
 import android.view.View
+import android.webkit.WebView
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.Api
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseFragment
+import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.ui.login.LoginActivity
+import com.aidongxiang.app.utils.Utils
+import com.aidongxiang.business.model.Audio
+import com.aiitec.openapi.json.enums.AIIAction
+import com.aiitec.openapi.model.Download
+import com.aiitec.openapi.model.ResponseQuery
+import com.aiitec.openapi.model.SubmitRequestQuery
+import com.aiitec.openapi.net.AIIResponse
+import com.aiitec.openapi.net.download.DownloadManager
+import com.aiitec.openapi.utils.AiiUtil
+import com.aiitec.openapi.utils.ToastUtil
+import kotlinx.android.synthetic.main.fragment_video_synopsis.*
+import java.io.File
 
 /**
  *
@@ -13,9 +33,157 @@ import com.aidongxiang.app.base.BaseFragment
  */
 @ContentView(R.layout.fragment_video_synopsis)
 class VideoSynopsisFragment : BaseFragment(){
+
+    var video: Audio  ?= null
+    var id : Long  = -1
     override fun initView(view: View?) {
+        iv_video_share?.setOnClickListener {
 
+        }
+        iv_video_download?.setOnClickListener {
+            video?.let { download(it) }
+        }
+        video?.let { setVideoData(it) }
+        iv_video_collection.setOnClickListener {
+            if(video == null){
+                return@setOnClickListener
+            }
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return@setOnClickListener
+            }
+            requestCollection(video!!.isFavorite)
+        }
 
+        ll_video_praise.setOnClickListener {
+            if(video == null){
+                return@setOnClickListener
+            }
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return@setOnClickListener
+            }
+            requestPraiseSwitch(video!!.isPraise)
+        }
     }
 
+    fun update(audio: Audio) {
+        this.video = audio
+        if(activity == null){
+            return
+        }
+       setVideoData(audio)
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun setVideoData(audio: Audio) {
+        this.video = audio
+        id = audio.id
+        val webview = view?.findViewById<WebView>(R.id.webview_video_synopsis)
+        webview?.settings?.javaScriptEnabled = true
+        val audiosSynopsis = Utils.getAbsSource(audio.description, Api.BASE_URL + "/")
+        webview?.loadData(audiosSynopsis,"text/html; charset=UTF-8", null)
+        if(audio.isPraise == 2){
+            iv_video_praise.setImageResource(R.drawable.common_btn_like_pre)
+            tv_video_praise_num.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryLight))
+        } else {
+            iv_video_praise.setImageResource(R.drawable.common_btn_like_nor)
+            tv_video_praise_num.setTextColor(ContextCompat.getColor(activity, R.color.gray7))
+        }
+        if(audio.isFavorite == 2){
+            iv_video_collection.setImageResource(R.drawable.common_btn_collect_pre)
+        } else {
+            iv_video_collection.setImageResource(R.drawable.common_btn_collect_nor)
+        }
+        tv_video_praise_num.text = audio.praiseNum.toString()
+        tv_video_play_num.text = audio.playNum.toString()
+        if(audio.price > 0){
+            tv_video_price.text = "¥"+ AiiUtil.formatString(audio.price)
+        } else {
+            tv_video_price.text = ""
+        }
+
+        tv_video_title.text = audio.name
+    }
+
+
+    /**
+     * 请求收藏
+     */
+    private fun requestCollection(open : Int) {
+
+        val query = SubmitRequestQuery("FavoritesSwitch")
+        query.action = AIIAction.ONE
+        query.id = id
+        query.open = open
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                video?.let {
+                    if(it.isFavorite == 2){
+                        it.isFavorite = 1
+                        iv_video_collection.setImageResource(R.drawable.common_btn_collect_nor)
+                    } else {
+                        it.isFavorite = 2
+                        iv_video_collection.setImageResource(R.drawable.common_btn_collect_pre)
+                    }
+                }
+            }
+        })
+    }
+
+    /**
+     * 请求点赞
+     */
+    private fun requestPraiseSwitch(open : Int) {
+
+        val query = SubmitRequestQuery("PraiseSwitch")
+        query.action = AIIAction.ONE
+        query.id = id
+        query.open = open
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                video?.let {
+                    if(it.isPraise == 2){
+                        it.isPraise = 1
+                        val praiseNum = it.praiseNum-1
+                        tv_video_praise_num.text = praiseNum.toString()
+                        iv_video_praise.setImageResource(R.drawable.common_btn_like_nor)
+                        tv_video_praise_num.setTextColor(ContextCompat.getColor(activity, R.color.gray7))
+                    } else {
+                        it.isPraise = 2
+                        val praiseNum = it.praiseNum+1
+                        tv_video_praise_num.text = praiseNum.toString()
+                        iv_video_praise.setImageResource(R.drawable.common_btn_like_pre)
+                        tv_video_praise_num.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryLight))
+                    }
+                }
+            }
+        })
+    }
+
+    private fun download(vedio: Audio) {
+
+        var download = App.aiidbManager.findObjectFromId(Download::class.java, vedio.id)
+        var fileExists = false
+        if (download != null && !TextUtils.isEmpty(download.path)) {
+            val file = File(download.path)
+            fileExists = file.exists()
+        }
+
+        if (download == null || !fileExists) {
+            val downloadManager = DownloadManager.getInstance(activity)
+            download = Download()
+            download.id = vedio.id
+            download.path = vedio.audioPath
+            download.imagePath = vedio.imagePath
+            download.title = vedio.name
+            download.type = 2
+            downloadManager.download(download)
+            ToastUtil.show(activity, "开始下载...")
+        } else {
+            ToastUtil.show(activity,"视频已经存在")
+        }
+    }
 }

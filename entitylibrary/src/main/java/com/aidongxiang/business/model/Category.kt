@@ -10,7 +10,7 @@ import com.aiitec.openapi.model.Entity
  */
 class Category : Entity(){
 
-    var id = -1
+    var id : Long = -1
     var name : String ?= null
     var imagePath : String ?= null
 }

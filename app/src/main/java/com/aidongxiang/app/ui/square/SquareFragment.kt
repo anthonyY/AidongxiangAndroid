@@ -6,6 +6,7 @@ import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtFragment
+import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.utils.StatusBarUtil
 import kotlinx.android.synthetic.main.fragment_square.*
 
@@ -26,9 +27,8 @@ class SquareFragment : BaseKtFragment() {
         StatusBarUtil.addStatusBarView(titlebar, android.R.color.transparent)
         mPagerAdapter = SimpleFragmentPagerAdapter(childFragmentManager, activity)
 
-        for((index, title) in categorys.withIndex()){
-            mPagerAdapter?.addFragment(PostListFragment.newInstance(index), title)
-        }
+
+
 
         viewpager.adapter = mPagerAdapter
 //        tablayout.setupWithViewPager(viewpager)
@@ -55,5 +55,23 @@ class SquareFragment : BaseKtFragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(Constants.user != null){
+            if(mPagerAdapter?.count != 2){
+                mPagerAdapter?.clear()
+                mPagerAdapter?.addFragment(PostListFragment.newInstance(1), "关注")
+                mPagerAdapter?.addFragment(PostListFragment.newInstance(2), "热门")
+                mPagerAdapter?.notifyDataSetChanged()
+            }
+
+        } else {
+            if(mPagerAdapter?.count != 1) {
+                mPagerAdapter?.clear()
+                mPagerAdapter?.addFragment(PostListFragment.newInstance(1), "热门")
+                mPagerAdapter?.notifyDataSetChanged()
+            }
+        }
+    }
 
 }

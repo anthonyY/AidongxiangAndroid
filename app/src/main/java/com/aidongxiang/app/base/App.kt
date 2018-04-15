@@ -1,14 +1,23 @@
 package com.aidongxiang.app.base
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
+import android.os.Handler
 import android.support.v4.app.FragmentActivity
+import android.text.TextUtils
 import com.aidongxiang.app.BuildConfig
 import com.aidongxiang.app.R
+import com.aiitec.openapi.db.AIIDBManager
+import com.aiitec.openapi.json.JSON
+import com.aiitec.openapi.json.enums.CombinationType
+import com.aiitec.openapi.model.SessionRequestQuery
 import com.aiitec.openapi.net.AIIRequest
+import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.LogUtil
+import com.aiitec.openapi.utils.PacketUtil
 import com.mabeijianxi.smallvideorecord2.DeviceUtils
 import com.mabeijianxi.smallvideorecord2.JianXiCamera
 import com.umeng.socialize.PlatformConfig
@@ -27,9 +36,11 @@ import java.util.concurrent.Executors
  */
 class App : Application (){
     companion object {
-        lateinit var app: App
+        @SuppressLint("StaticFieldLeak")
         var context: Context? = null
-        var aiiRequest: AIIRequest? = null
+        lateinit var app: App
+        lateinit var aiiRequest: AIIRequest
+        lateinit var aiidbManager: AIIDBManager
     }
 
 
@@ -38,14 +49,18 @@ class App : Application (){
 
     override fun onCreate() {
         super.onCreate()
-        App.app = this
-        App.context = applicationContext
+        app = this
+        context = applicationContext
+        JSON.combinationType = CombinationType.NORMAL
         LogUtil.showLog = BuildConfig.DEBUG
         aiiRequest = AIIRequest(this, Api.API)
         cachedThreadPool = Executors.newCachedThreadPool()
 
+        aiidbManager = AIIDBManager(this)
         initUmeng()
         initSmallVideo(this)
+
+
     }
 
     private fun initUmeng() {

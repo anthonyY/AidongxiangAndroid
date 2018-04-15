@@ -1,5 +1,15 @@
 package com.aiitec.openapi.net;
 
+import android.content.Context;
+
+import com.aiitec.openapi.json.enums.AIIAction;
+import com.aiitec.openapi.model.File;
+import com.aiitec.openapi.model.Md5;
+import com.aiitec.openapi.model.UploadImageRequestQuery;
+import com.aiitec.openapi.packet.UploadFilesResponse;
+import com.aiitec.openapi.utils.FileMD5Utils;
+import com.aiitec.openapi.utils.LogUtil;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -8,16 +18,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
-
-import android.content.Context;
-
-import com.aiitec.openapi.json.enums.AIIAction;
-import com.aiitec.openapi.model.File;
-import com.aiitec.openapi.model.Md5;
-import com.aiitec.openapi.model.UploadFileRequestQuery;
-import com.aiitec.openapi.packet.UploadFilesResponse;
-import com.aiitec.openapi.utils.FileMD5Utils;
-import com.aiitec.openapi.utils.LogUtil;
 
 /**
  * 上传图片类，带秒传功能
@@ -28,27 +28,27 @@ import com.aiitec.openapi.utils.LogUtil;
  */
 public class UploadFileUtils {
     /** 是否开启秒传功能 */
-    private boolean isOpenFastUpload = true;
+    private boolean isOpenFastUpload = false;
     private AIIRequest aiiRequest;
-    private UploadFileRequestQuery query;
+    private UploadImageRequestQuery query;
     private Context context;
 
     public void setOpenFastUpload(boolean isOpenFastUpload) {
         this.isOpenFastUpload = isOpenFastUpload;
     }
 
-    public UploadFileUtils(Context context, AIIRequest aiiRequest, UploadFileRequestQuery query) {
+    public UploadFileUtils(Context context, AIIRequest aiiRequest, UploadImageRequestQuery query) {
         this.aiiRequest = aiiRequest;
         this.query = query;
         this.context = context;
     }
 
     public UploadFileUtils(Context context, AIIRequest aiiRequest) {
-        this(context, aiiRequest, new UploadFileRequestQuery());
+        this(context, aiiRequest, new UploadImageRequestQuery());
     }
 
-    public <T> void requestUpload(UploadFileRequestQuery query, LinkedHashMap<String, Object> map,
-            AIIResponse<T> aiiResponse, int index) {
+    public <T> void requestUpload(UploadImageRequestQuery query, LinkedHashMap<String, Object> map,
+                                  AIIResponse<T> aiiResponse, int index) {
         this.query = query;
         requestUpload(map, aiiResponse, index);
     }
@@ -65,9 +65,9 @@ public class UploadFileUtils {
         final AIIAction oldAction = query.getAction();
         query.setAction(AIIAction.FOUR);
         Iterator<Entry<String, Object>> it = map.entrySet().iterator();
-        final List<Md5> md5s = new ArrayList<Md5>();
+        final List<Md5> md5s = new ArrayList<>();
         while (it.hasNext()) {
-            Entry<String, Object> entry = (Entry<String, Object>) it.next();
+            Entry<String, Object> entry = it.next();
 
             Md5 md5 = new Md5();
             if (entry.getValue().getClass().equals(java.io.File.class)) {
@@ -207,14 +207,14 @@ public class UploadFileUtils {
                             sb.deleteCharAt(sb.length() - 1);
 
                     }
-                    List<Integer> ids = response.getQuery().getIds();
+                    List<Long> ids = response.getQuery().getIds();
                     try {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     files.addAll(exitedMd5files);
                     for (File file : exitedMd5files) {
-                        ids.add((int) file.getId());
+                        ids.add(file.getId());
                     }
                     try {
                         aiiResponse.onSuccess((T) response, index);

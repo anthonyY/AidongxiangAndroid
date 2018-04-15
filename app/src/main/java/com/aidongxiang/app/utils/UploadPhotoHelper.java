@@ -11,22 +11,19 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.aidongxiang.app.R;
 import com.aidongxiang.app.base.Api;
 import com.aidongxiang.app.base.App;
-import com.aidongxiang.app.base.BaseActivity;
 import com.aidongxiang.app.base.BaseKtActivity;
-import com.aidongxiang.app.base.Constants;
 import com.aidongxiang.app.widgets.PhotoDialog;
+import com.aiitec.openapi.json.enums.AIIAction;
 import com.aiitec.openapi.model.FileListResponseQuery;
+import com.aiitec.openapi.model.UploadImageRequestQuery;
 import com.aiitec.openapi.net.AIIResponse;
 import com.aiitec.openapi.utils.AiiUtil;
 import com.aiitec.openapi.utils.LogUtil;
 import com.aiitec.openapi.utils.ToastUtil;
-import com.bumptech.glide.Glide;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -48,15 +45,15 @@ public class UploadPhotoHelper {
     private ImageView imageView;
     private PhotoDialog photoDialog;
     private long imageId = 0;
+    private int defaultImgRes = 0;
 
     private final int CAMERA;
     private final int PHOTO;
     private final int CUT;
-    private final int CODE_UPLOAD_FILE;
     String CACHEDIR = "";
     private String filePath; // 头像上传本地图片的缓存路径
     // private Uri lastUri; // 最后保存的图像uri
-    private boolean isUpload = false;
+    private boolean isUpload = true;
     private boolean cutEnable = true;
 
     private OnUploadFinishedListener listener;
@@ -91,11 +88,11 @@ public class UploadPhotoHelper {
                              int defaultImgRes, int baseRequestCode) {
         this.context = context;
         this.imageView = imageView;
+        this.defaultImgRes = defaultImgRes;
 
-        CAMERA = 0x0 + baseRequestCode * 4;
-        PHOTO = 0x1 + baseRequestCode * 4;
-        CUT = 0x2 + baseRequestCode * 4;
-        CODE_UPLOAD_FILE = 0x3 + baseRequestCode * 4;
+        CAMERA = 0x10 + baseRequestCode * 4;
+        PHOTO = 0x11 + baseRequestCode * 4;
+        CUT = 0x12 + baseRequestCode * 4;
 
         photoDialog = new PhotoDialog(context);
         photoDialog.setOnButtonClickListener(onButtonClickListener);
@@ -126,7 +123,7 @@ public class UploadPhotoHelper {
         if (response.getStatus() == 0) {
             List<com.aiitec.openapi.model.File> files = response.getFiles();
 //            ToastUtil.show(context, "上传成功");
-            List<Integer> ids = response.getIds();
+            List<Long> ids = response.getIds();
             if (ids != null && ids.size() > 0) {
                 imageId = ids.get(0);
             }
@@ -136,9 +133,6 @@ public class UploadPhotoHelper {
                 path = Api.IMAGE_URL + file.getPath();
             }
 
-            if (imageView != null) {
-                Glide.with(context).load(path).into(imageView);
-            }
             if (listener != null) {
                 listener.onUploadFinished(imageId, path);
             }
@@ -373,17 +367,17 @@ public class UploadPhotoHelper {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                UploadImageRequestQuery query = new UploadImageRequestQuery();
                 LinkedHashMap<String, Object> params = new LinkedHashMap<String, Object>();
+                query.setAction(AIIAction.ONE);
                 params.put(file.getName(), file);
-                App.Companion.getAiiRequest().sendFiles(params, new AIIResponse<FileListResponseQuery>(context){
+                App.Companion.getAiiRequest().sendFiles(query, params, new AIIResponse<FileListResponseQuery>(context){
                     @Override
                     public void onSuccess(FileListResponseQuery response, int index) {
                         super.onSuccess(response, index);
                         context.progressDialogDismiss();
+                        getUploadFiles(response);
 
-                        if (index == CODE_UPLOAD_FILE) {
-                            getUploadFiles(response);
-                        }
                     }
 
                     @Override
@@ -402,7 +396,7 @@ public class UploadPhotoHelper {
                 });
                 context.progressDialogShow();
             }
-        }, 300);
+        }, 1);
 
     }
 

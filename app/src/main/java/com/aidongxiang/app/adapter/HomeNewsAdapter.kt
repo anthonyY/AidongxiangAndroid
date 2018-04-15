@@ -16,11 +16,13 @@ import com.aiitec.openapi.utils.DateUtil
  * createTime 2017/11/4.
  * @version 1.0
  */
-class HomeNewsAdapter(context: Context, datas:MutableList<Article>) : CommonRecyclerViewAdapter<Article>(context, datas){
+class HomeNewsAdapter(context: Context, datas: MutableList<Article>, val isVisibleCategory : Boolean) : CommonRecyclerViewAdapter<Article>(context, datas) {
     var marginLeft = 0
+
     init {
         marginLeft = context.resources.getDimension(R.dimen.margin_screen_left).toInt()
     }
+
     override fun convert(h: CommonRecyclerViewHolder, item: Article, position: Int) {
 
         val ivImg = h.getView<ImageView>(R.id.iv_item_img)
@@ -29,15 +31,25 @@ class HomeNewsAdapter(context: Context, datas:MutableList<Article>) : CommonRecy
         val tvCategory = h.getView<TextView>(R.id.tv_item_category)
         val lineItem = h.getView<View>(R.id.lineItem)
 
-        if(position == itemCount-1){
+        if (position == itemCount - 1) {
             (lineItem?.layoutParams as LinearLayout.LayoutParams).setMargins(0, 0, 0, 0)
         } else {
             (lineItem?.layoutParams as LinearLayout.LayoutParams).setMargins(marginLeft, 0, 0, 0)
         }
-        GlideImgManager.load(context, item.imagePath,  ivImg)
+        GlideImgManager.load(context, item.imagePath, ivImg)
         tvContent.text = item.title
-        tvTime.text = DateUtil.formatStr(item.timestamp, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd")
-        tvCategory.text = ""
+        if(item.timestamp != null){
+            tvTime.text = DateUtil.formatStr(item.timestamp, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd")
+        } else {
+            tvTime.text = ""
+        }
+
+        if(isVisibleCategory){
+            tvCategory.text = item.categoryName
+        } else {
+            tvCategory.text = ""
+        }
+
 
     }
 

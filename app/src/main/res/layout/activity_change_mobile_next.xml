@@ -74,7 +74,7 @@
         android:layout_marginRight="@dimen/margin_screen_right"/>
 
     <Button
-        android:id="@+id/btnNext"
+        android:id="@+id/btnFinish"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/finish"

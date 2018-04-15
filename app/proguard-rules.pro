@@ -116,3 +116,12 @@
 -keepattributes Signature
 #------------------------ 友盟更新 END ---------------------------
 
+
+#---------------- 高德定位 ---------------------
+#定位
+-keep class com.amap.api.location.**{*;}
+-keep class com.amap.api.fence.**{*;}
+-keep class com.autonavi.aps.amapapi.model.**{*;}
+#    搜索
+-keep   class com.amap.api.services.**{*;}
+#-------------- 高德定位 --------------------------

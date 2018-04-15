@@ -32,6 +32,7 @@
             android:textSize="14sp"
             android:text="原注册手机号码"/>
         <EditText
+            android:id="@+id/etAppealOldMobile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/black3"
@@ -60,6 +61,7 @@
             android:textSize="14sp"
             android:text="新的手机号码"/>
         <EditText
+            android:id="@+id/etAppealNewMobile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/black3"
@@ -88,6 +90,7 @@
             android:textSize="14sp"
             android:text="登录密码"/>
         <EditText
+            android:id="@+id/etAppealPassword"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/black3"
@@ -121,7 +124,7 @@
             android:paddingTop="12dp"
             android:text="注册日期"/>
         <TextView
-            android:id="@+id/tvRegisterTime"
+            android:id="@+id/tvAppealRegisterTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@color/black3"
@@ -133,6 +136,7 @@
     </LinearLayout>
     <View style="@style/line" />
     <Button
+        android:id="@+id/btnAppealSubmit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/btnPurpleStyle"

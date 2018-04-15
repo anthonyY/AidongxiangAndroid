@@ -1,12 +1,12 @@
 package com.aiitec.openapi.model;
 
 
-import java.util.List;
-
 import com.aiitec.openapi.json.annotation.JSONField;
 import com.aiitec.openapi.json.enums.AIIAction;
 
-public class UploadFileRequestQuery extends RequestQuery {
+import java.util.List;
+
+public class UploadImageRequestQuery extends RequestQuery {
 
     /**
      * action 组包使用a， 默认空

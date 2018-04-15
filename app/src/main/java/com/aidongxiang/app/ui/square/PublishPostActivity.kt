@@ -10,16 +10,29 @@ import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.CommonRecyclerViewAdapter
 import com.aidongxiang.app.adapter.PublishImageAdapter
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.event.RefreshMicrobolgEvent
 import com.aidongxiang.app.ui.video.VideoPlayerActivity
 import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.SoftKeyboardStateHelper
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.widgets.ItemDialog
+import com.aidongxiang.business.model.Microblog
+import com.aidongxiang.business.request.MicroblogSubmitRequestQuery
+import com.aiitec.openapi.json.enums.AIIAction
+import com.aiitec.openapi.model.FileListResponseQuery
+import com.aiitec.openapi.model.ResponseQuery
+import com.aiitec.openapi.model.UploadImageRequestQuery
+import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.LogUtil
 import com.mabeijianxi.smallvideorecord2.MediaRecorderBase
 import com.mabeijianxi.smallvideorecord2.model.MediaRecorderConfig
 import kotlinx.android.synthetic.main.activity_publish_post.*
+import org.greenrobot.eventbus.EventBus
+import java.io.File
+import java.util.*
 
 
 /**
@@ -33,7 +46,14 @@ class PublishPostActivity : BaseKtActivity() {
 
     var videoUri: String? = null
     lateinit var adapter: PublishImageAdapter
-    var datas = ArrayList<String>()
+    var images = ArrayList<String>()
+    var imageIds = ArrayList<Long>()
+    var parentId : Long = -1
+    var videoId : Long = -1
+    var latitude : Double = -1.0
+    var longitude : Double = -1.0
+    var regionId = -1
+    var address : String ?= null
     lateinit var itemDialog : ItemDialog
     lateinit var softKeyboardStateHelper : SoftKeyboardStateHelper
     companion object {
@@ -43,6 +63,39 @@ class PublishPostActivity : BaseKtActivity() {
     }
 
     override fun init(savedInstanceState: Bundle?) {
+
+        val microblog = bundle.getParcelable<Microblog>(Constants.ARG_MICROBLOG)
+        if(microblog != null){
+            parentId = microblog.id
+            llForward.visibility = View.VISIBLE
+            GlideImgManager.load(this, microblog.user?.imagePath, ivForwardAvatar)
+            tvForwardName.text =  microblog.user?.nickName
+            tvForwardContent.text =  microblog.content
+            recycler_image.visibility = View.GONE
+            llSelectButton.visibility = View.GONE
+        } else {
+            llForward.visibility = View.GONE
+        }
+
+        images.add("add")
+        adapter = PublishImageAdapter(this, images)
+        recycler_image.layoutManager = GridLayoutManager(this, 3)
+        recycler_image.adapter = adapter
+
+        initDialog()
+        initSoftKeyboard()
+        setListener()
+
+        Constants.location?.let {
+            address = it.address
+            regionId = it.adCode!!.toInt()
+            latitude = it.latitude
+            longitude = it.longitude
+            tv_publish_address.text = address
+        }
+    }
+
+    private fun initDialog() {
 
         itemDialog = ItemDialog(this)
         itemDialog.setItems(arrayListOf("拍摄小视频", "选择小视频"))
@@ -56,13 +109,59 @@ class PublishPostActivity : BaseKtActivity() {
                 }
             }
         }
-        datas.add("add")
-        adapter = PublishImageAdapter(this, datas)
-        recycler_image.layoutManager = GridLayoutManager(this, 3)
-        recycler_image.adapter = adapter
+    }
 
+    private fun initSoftKeyboard() {
+
+        softKeyboardStateHelper = SoftKeyboardStateHelper(window.decorView)
+        softKeyboardStateHelper.addSoftKeyboardStateListener(object : SoftKeyboardStateHelper.SoftKeyboardStateListener {
+            override fun onSoftKeyboardOpened(keyboardHeightInPx: Int) {
+                val payoutParams = tempaView.layoutParams
+                payoutParams.height = keyboardHeightInPx- StatusBarUtil.getStatusBarHeight(this@PublishPostActivity)
+                tempaView.layoutParams = payoutParams
+            }
+
+            override fun onSoftKeyboardClosed() {
+                val payoutParams = tempaView.layoutParams
+                payoutParams.height = 0
+                tempaView.layoutParams = payoutParams
+
+            }
+
+        })
+    }
+
+    private fun setListener(){
+        iv_publish_address_delete.setOnClickListener {
+            setAddressData(null)
+        }
+
+        btn_publish.setOnClickListener {
+            if(TextUtils.isEmpty(et_publish_content.text.toString()) && TextUtils.isEmpty(videoUri) && images.size <= 1){
+                //没有任何数据，images.size = 1 时 其实就是一个加号，所以也是没有数据
+                //这三样只要有一样就可以发布
+            } else {
+                if( !TextUtils.isEmpty(videoUri)){
+                    //有视频，先上传视频
+                    requestUploadFile(2)
+                } else if(images.size > 1){
+                    //有图片，先上传图片
+                    requestUploadFile(1)
+                } else {
+                    //没有图片，没有视频，只有文字
+                    requestMicroblogSubmit()
+                }
+            }
+        }
+        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener{
+            v, position ->
+            if(v.id == R.id.iv_item_delete){
+                images.removeAt(position)
+                adapter.update()
+            }
+        }, R.id.iv_item_delete)
         adapter.setOnRecyclerViewItemClickListener { _, position ->
-            if(position == datas.size-1){
+            if(position == images.size-1){
                 if(videoUri != null){
                     toast("不能同时发布图片和视频")
                     return@setOnRecyclerViewItemClickListener
@@ -70,13 +169,6 @@ class PublishPostActivity : BaseKtActivity() {
                 switchToActivityForResult(ImageSelectActivity::class.java, REQUEST_IMAGE)
             }
         }
-        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener{
-            v, position ->
-            if(v.id == R.id.iv_item_delete){
-                datas.removeAt(position)
-                adapter.update()
-            }
-        }, R.id.iv_item_delete)
         rl_publish_video.setOnClickListener {
             if(videoUri != null){
                 switchToActivity(VideoPlayerActivity::class.java, "path" to videoUri!!)
@@ -90,30 +182,24 @@ class PublishPostActivity : BaseKtActivity() {
             switchToActivityForResult(ImageSelectActivity::class.java, REQUEST_IMAGE)
         }
         iv_publish_video.setOnClickListener {
-            if(datas.size > 1){
+            if(images.size > 1){
                 toast("不能同时发布图片和视频")
                 return@setOnClickListener
             }
             itemDialog.show()
         }
 
-        softKeyboardStateHelper = SoftKeyboardStateHelper(window.decorView)
-        softKeyboardStateHelper.addSoftKeyboardStateListener(object : SoftKeyboardStateHelper.SoftKeyboardStateListener {
-            override fun onSoftKeyboardOpened(keyboardHeightInPx: Int) {
-                val payoutParams = tempaView.layoutParams
-                payoutParams.height = keyboardHeightInPx-StatusBarUtil.getStatusBarHeight(this@PublishPostActivity)
-                tempaView.layoutParams = payoutParams
-            }
+    }
 
-            override fun onSoftKeyboardClosed() {
-                val payoutParams = tempaView.layoutParams
-                payoutParams.height = 0
-                tempaView.layoutParams = payoutParams
-
-            }
-
-        })
-
+    private fun setAddressData(addr : String?){
+        if(TextUtils.isEmpty(addr)){
+            tv_publish_address.text = ""
+            iv_publish_address_delete.visibility = View.GONE
+        } else {
+            tv_publish_address.text = addr
+            iv_publish_address_delete.visibility = View.VISIBLE
+        }
+        address = addr
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -135,7 +221,7 @@ class PublishPostActivity : BaseKtActivity() {
 
 
     private fun recordVideo() {
-        if(datas.size > 1){
+        if(images.size > 1){
             toast("不能同时发布图片和视频")
             return
         }
@@ -161,7 +247,7 @@ class PublishPostActivity : BaseKtActivity() {
         MediaRecorderActivity.goSmallVideoRecorder(this, config, REQUEST_RECORD_VIDEO)
     }
     private fun chooseVideo() {
-        if(datas.size > 1){
+        if(images.size > 1){
             toast("不能同时发布图片和视频")
             return
         }
@@ -195,9 +281,12 @@ class PublishPostActivity : BaseKtActivity() {
 //                    } else {
 //                        recycler_image.layoutManager = GridLayoutManager(this, 3)
 //                    }
-                    datas.clear()
-                    datas.addAll(paths)
-                    datas.add("add")//添加按钮，也是一个item
+                    images.clear()
+                    images.addAll(paths)
+                    if(paths.size < 9){
+                        images.add("add")//添加按钮，也是一个item
+                    }
+
                     adapter.update()
                 }
                 rl_publish_video.visibility = View.GONE
@@ -216,6 +305,69 @@ class PublishPostActivity : BaseKtActivity() {
                 recycler_image.visibility = View.GONE
             }
         }
+    }
+
+
+
+    private fun requestMicroblogSubmit(){
+        val query = MicroblogSubmitRequestQuery()
+        val microblog = Microblog()
+        microblog.content = et_publish_content.text.toString()
+        if(imageIds.size > 0){
+            microblog.imageIds = imageIds
+        }
+
+        microblog.videoId = videoId
+        if(!TextUtils.isEmpty(address)){
+            microblog.address = address
+            microblog.regionId = regionId
+            microblog.longitude = longitude
+            microblog.latitude = latitude
+        }
+        if(parentId > 0){
+            microblog.parentId = parentId
+        }
+        query.microblog = microblog
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+
+                EventBus.getDefault().post(RefreshMicrobolgEvent())
+                toast("发布成功")
+                dismissDialog()
+                finish()
+            }
+        })
+    }
+
+    private fun requestUploadFile(action : Int){
+        val query = UploadImageRequestQuery()
+        query.action = AIIAction.valueOf(action)
+        val map = LinkedHashMap<String, Any>()
+        if(action == 2){
+            val file = File(videoUri)
+            map.put(file.name, file)
+        } else {
+            images.filter { !TextUtils.isEmpty(it) && it != "add" }
+                    .map { File(it) }
+                    .forEach { map.put(it.name, it) }
+        }
+        App.aiiRequest.sendFiles(query, map, object : AIIResponse<FileListResponseQuery>(this){
+
+            override fun onSuccess(response: FileListResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.let {
+                    if(index == 2){
+                        if(it.files.size> 0){
+                            videoId = it.files[0].id
+                        }
+                    } else {
+                        imageIds = it.ids as ArrayList<Long>
+                    }
+                    requestMicroblogSubmit()
+                }
+            }
+        }, action)
     }
 }
 

@@ -31,8 +31,8 @@ class MyCollectionActivity : BaseKtActivity() {
         btn_title_confirm.text = "编辑"
         mPagerAdapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
 
-        videoListFragment = VideoListFragment.newInstance(TYPE_COLLECT)
-        audioListFragment = AudioListFragment.newInstance(TYPE_COLLECT)
+        videoListFragment = VideoListFragment.newInstance(TYPE_COLLECT, -1)
+        audioListFragment = AudioListFragment.newInstance(TYPE_COLLECT, -1)
         mPagerAdapter?.addFragment(videoListFragment, "视频")
         mPagerAdapter?.addFragment(audioListFragment, "音频")
 

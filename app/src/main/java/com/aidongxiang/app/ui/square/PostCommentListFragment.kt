@@ -1,17 +1,16 @@
 package com.aidongxiang.app.ui.square
 
 import android.os.Bundle
-import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.CommentAdapter
+import com.aidongxiang.app.adapter.CommonRecyclerViewAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
-import com.aidongxiang.app.ui.home.HomeFragment
-import com.aidongxiang.app.widgets.CommentDialog
+import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.business.model.Comment
-import com.aidongxiang.business.model.User
 import com.aidongxiang.business.response.CommentListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
@@ -34,64 +33,75 @@ class PostCommentListFragment : BaseListKtFragment(){
     lateinit var adapter : CommentAdapter
     val datas = ArrayList<Comment>()
     override fun getDatas(): List<*>? = datas
-    lateinit var commentDialog : CommentDialog
 
-    var postId = -1
-    var type = 1
+    var postId : Long = -1
 
     override fun init(view: View) {
         super.init(view)
 
-        postId = arguments.getInt(ARG_ID)
+        postId = arguments.getLong(ARG_ID)
         adapter = CommentAdapter(activity, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
+        recyclerView?.setPullRefreshEnabled(false)
 
-        commentDialog = CommentDialog(activity)
-        commentDialog.setOnCommentClickListener { requestCommentSubmit(it) }
-        faBtnComment.visibility = View.GONE
-        setDatas()
-
-    }
-
-    fun setDatas(){
-        for(i in 0..9){
-            val comment = Comment()
-            comment.content = "啦啦十大傻傻的啊实打实大收到"
-            comment.praiseNum = 1555+i
-            comment.timestamp = "2017-12-0$i 12:42:15"
-            val user = User()
-            user.id = i
-            if(i > 3){
-                user.imagePath = HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size)]
-            } else {
-                user.imagePath = ""
+        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener { _, position ->
+            if(position < 1){
+                return@OnViewInItemClickListener
             }
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return@OnViewInItemClickListener
+            }
+            val isPraise = datas[position-1].isPraise
+            val id = datas[position-1].id
+            requestPraise(isPraise, id, position-1)
+        })
 
-            user.name = "小淘气"
-            comment.user = user
-            datas.add(comment)
-        }
-        adapter.update()
+        faBtnComment.visibility = View.GONE
+//        setDatas()
+        requestCommentList()
     }
+
+
+    private fun requestPraise(open : Int, id : Long, position : Int) {
+
+        val query = SubmitRequestQuery("PraiseSwitch")
+        query.action = AIIAction.TWO
+        query.id = id
+        query.open = open
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                if(open == 1){
+                    datas[position].isPraise = 2
+                } else {
+                    datas[position].isPraise = 1
+                }
+                adapter.update()
+            }
+        })
+    }
+
     override fun requestData() {
-        Handler().postDelayed({onLoadFinish()}, 1000)
+        requestCommentList()
     }
 
-    fun requestCommentList(){
+    private fun requestCommentList(){
         val listQuery = ListRequestQuery("CommentList")
-        listQuery.action = AIIAction.TWO
+        listQuery.action = AIIAction.THREE
         listQuery.id = postId
         listQuery.table.page = page
-        App.aiiRequest?.send(listQuery, object : AIIResponse<CommentListResponseQuery>(activity){
+        App.aiiRequest.send(listQuery, object : AIIResponse<CommentListResponseQuery>(activity){
             override fun onSuccess(response: CommentListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
-                getCommentList(response!!)
+                response?.let { getCommentList(it) }
             }
 
             override fun onCache(content: CommentListResponseQuery?, index: Int) {
                 super.onCache(content, index)
-                getCommentList(content!!)
+                content?.let { getCommentList(it) }
+
             }
 
             override fun onFailure(content: String?, index: Int) {
@@ -106,18 +116,6 @@ class PostCommentListFragment : BaseListKtFragment(){
         })
     }
 
-    fun requestCommentSubmit(content : String){
-        val query = SubmitRequestQuery("CommentSubmit")
-        query.action = AIIAction.ONE
-        query.id = id
-        query.content = content
-        App.aiiRequest?.send(query, object : AIIResponse<ResponseQuery>(activity){
-            override fun onSuccess(response: ResponseQuery?, index: Int) {
-                super.onSuccess(response, index)
-                toast("评论成功")
-            }
-        })
-    }
 
     private fun getCommentList(response: CommentListResponseQuery) {
         total = response.total
@@ -135,12 +133,10 @@ class PostCommentListFragment : BaseListKtFragment(){
 
     companion object {
         var ARG_ID = "id"
-        var ARG_TYPE = "type"
-        fun newInstance(postId : Int, type : Int) : PostCommentListFragment {
+        fun newInstance(postId : Long) : PostCommentListFragment {
             val fragment = PostCommentListFragment()
             val bundle = Bundle()
-            bundle.putInt(ARG_ID, postId)
-            bundle.putInt(ARG_TYPE, type)
+            bundle.putLong(ARG_ID, postId)
             fragment.arguments = bundle
             return fragment
         }

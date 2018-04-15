@@ -24,6 +24,12 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
         mFragmentTitles.add(title);
     }
 
+    public void clear() {
+        mFragments.clear();
+        mFragmentTitles.clear();
+    }
+
+
     @Override
     public Fragment getItem(int position) {
         return mFragments.get(position);

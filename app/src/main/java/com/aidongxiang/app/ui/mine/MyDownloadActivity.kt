@@ -6,9 +6,6 @@ import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
-import com.aidongxiang.app.ui.audio.AudioListFragment
-import com.aidongxiang.app.ui.audio.AudioListFragment.Companion.TYPE_DOWNLOAD
-import com.aidongxiang.app.ui.video.VideoListFragment
 import kotlinx.android.synthetic.main.activity_mine_tablelayout.*
 import kotlinx.android.synthetic.main.layout_title_bar_with_right_text.*
 
@@ -25,16 +22,16 @@ class MyDownloadActivity : BaseKtActivity() {
     }
     var mPagerAdapter : SimpleFragmentPagerAdapter?= null
     var isEdit = false
-    lateinit var videoListFragment : VideoListFragment
-    lateinit var audioListFragment : AudioListFragment
+    lateinit var videoListFragment : DownloadVideoListFragment
+    lateinit var audioListFragment : DownloadVideoListFragment
     override fun init(savedInstanceState: Bundle?) {
 
         val position = bundle.getInt(ARG_POSITION, 0)
         setTitle("我的下载")
         mPagerAdapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
 
-        videoListFragment = VideoListFragment.newInstance(TYPE_DOWNLOAD)
-        audioListFragment = AudioListFragment.newInstance(TYPE_DOWNLOAD)
+        videoListFragment = DownloadVideoListFragment.newInstance(2)
+        audioListFragment = DownloadVideoListFragment.newInstance(1)
         mPagerAdapter?.addFragment(videoListFragment, "视频")
         mPagerAdapter?.addFragment(audioListFragment, "音频")
 
@@ -56,7 +53,7 @@ class MyDownloadActivity : BaseKtActivity() {
                 audioListFragment.setIsEdit(isEdit)
             }
         }
-        viewpager.setCurrentItem(position)
+        viewpager.currentItem = position
     }
 
 

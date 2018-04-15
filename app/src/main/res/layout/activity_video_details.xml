@@ -11,16 +11,23 @@
     <RelativeLayout
         android:id="@+id/rl_video"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
-        <com.aidongxiang.app.widgets.CustomVideoView
-            android:id="@+id/videoview"
+        android:layout_height="200dp"
+        android:background="@android:color/black">
+        <RelativeLayout
+            android:id="@+id/rl_video2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            />
+            android:layout_height="match_parent">
+            <com.aidongxiang.app.widgets.CustomVideoView
+                android:id="@+id/videoview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                />
+        </RelativeLayout>
+
         <ImageView
             android:id="@+id/iv_video_wait"
             android:layout_width="match_parent"
@@ -98,7 +105,8 @@
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
 
 
 
@@ -170,6 +178,7 @@
                             android:layout_marginLeft="8dp"
                             android:textColor="@color/black5"/>
                         <TextView
+                            android:id="@+id/tv_video_comment_num"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="14sp"

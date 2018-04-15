@@ -11,5 +11,5 @@ import com.aiitec.openapi.model.ListResponseQuery
  */
 class VideoListResponseQuery : ListResponseQuery(){
 
-    var videos : ArrayList<Video> ?= null
+    var audios : ArrayList<Video> ?= null
 }

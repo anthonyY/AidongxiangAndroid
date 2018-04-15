@@ -36,6 +36,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
             <Button
+                android:id="@+id/btn_publish"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="发布"
@@ -64,6 +65,7 @@
                 android:orientation="vertical">
 
                 <EditText
+                    android:id="@+id/et_publish_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
@@ -71,7 +73,43 @@
                     android:minLines="5"
                     android:hint="分享新鲜事..."
                     android:padding="8dp" />
-
+                <LinearLayout
+                    android:id="@+id/llForward"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_screen_left"
+                    android:layout_marginRight="@dimen/margin_screen_right"
+                    android:visibility="gone"
+                    >
+                    <ImageView
+                        android:id="@+id/ivForwardAvatar"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:paddingLeft="8dp"
+                        android:background="@color/item_selected_color">
+                        <TextView
+                            android:id="@+id/tvForwardName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:layout_marginTop="8dp"
+                            android:textColor="@color/black3"
+                            android:text=""/>
+                        <TextView
+                            android:id="@+id/tvForwardContent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textSize="14sp"
+                            android:textColor="@color/gray7"
+                            android:text=""/>
+                    </LinearLayout>
+                </LinearLayout>
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_image"
                     android:layout_width="match_parent"
@@ -88,8 +126,7 @@
                     <ImageView
                         android:id="@+id/iv_video_thumb"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxHeight="200dp"
+                        android:layout_height="200dp"
                         android:paddingBottom="8dp"
                         android:paddingLeft="@dimen/margin_screen_left"
                         android:paddingRight="@dimen/margin_screen_right"
@@ -107,9 +144,48 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/play_big" />
                 </RelativeLayout>
+
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
 
+        <LinearLayout
+            android:layout_above="@+id/llSelectButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_publish_address"
+            android:layout_marginLeft="@dimen/margin_screen_left"
+            android:layout_marginRight="@dimen/margin_screen_left"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/common_btn_adress"/>
+            <TextView
+                android:id="@+id/tv_publish_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="你在哪哪你在哪"
+                android:singleLine="true"
+                android:textSize="12dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:maxWidth="260dp"
+                android:textColor="@color/gray7"/>
+            <View
+                android:layout_height="match_parent"
+                android:layout_width="1dp"
+                android:background="@color/gray_line"/>
+            <ImageView
+                android:id="@+id/iv_publish_address_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:paddingRight="8dp"
+                android:src="@drawable/common_btn_close_red"/>
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/llSelectButton"
             android:layout_width="match_parent"

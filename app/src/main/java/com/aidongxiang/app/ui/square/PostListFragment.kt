@@ -1,7 +1,6 @@
 package com.aidongxiang.app.ui.square
 
 import android.os.Bundle
-import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.util.TypedValue
 import android.view.View
@@ -11,21 +10,27 @@ import com.aidongxiang.app.adapter.CommonRecyclerViewAdapter
 import com.aidongxiang.app.adapter.PostAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
+import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
-import com.aidongxiang.app.ui.home.HomeFragment
+import com.aidongxiang.app.base.Constants.ARG_MICROBLOG
+import com.aidongxiang.app.event.RefreshMicrobolgEvent
+import com.aidongxiang.app.ui.mine.PersonCenterActivity
+import com.aidongxiang.app.widgets.CommentDialog
 import com.aidongxiang.app.widgets.ItemDialog
 import com.aidongxiang.business.model.Microblog
-import com.aidongxiang.business.model.User
+import com.aidongxiang.business.request.FocusSwitchRequestQuery
 import com.aidongxiang.business.response.MicroblogListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
 import com.aiitec.openapi.model.RequestQuery
 import com.aiitec.openapi.model.ResponseQuery
+import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.LogUtil
-import java.util.*
-import kotlin.collections.ArrayList
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /**
  *
@@ -34,27 +39,33 @@ import kotlin.collections.ArrayList
  * @version 1.0
  */
 @ContentView(R.layout.fragment_list)
-class PostListFragment : BaseListKtFragment(){
+class PostListFragment : BaseListKtFragment() {
 
-    lateinit var adapter : PostAdapter
+    val REQUEST_FORWARD = 2
+    lateinit var adapter: PostAdapter
     val datas = ArrayList<Microblog>()
     /**
-     * 0 关注
-     * 1 热门
-     * 2 我的
-     * 3 屏蔽的
+     * 1 关注
+     * 2 热门
+     * 3 我的
+     * 4 微博转发列表
+     * 5 屏蔽的
      */
     var type = 0
+
     override fun getDatas(): List<*>? = datas
-    lateinit var itemDialog : ItemDialog
-    lateinit var shieldDialog : ItemDialog
-    lateinit var deleteDialog : ItemDialog
-    var clickMicroblog : Microblog ?= null
+    lateinit var itemDialog: ItemDialog
+    lateinit var shieldDialog: ItemDialog
+    lateinit var deleteDialog: ItemDialog
+    var clickMicroblog: Microblog? = null
+    var clickPosition = -1
+    lateinit var commentDialog: CommentDialog
 
     override fun requestData() {
         LogUtil.e("type:$type")
-        Handler().postDelayed({onLoadFinish()}, 1000)
+        requestMicroblogList()
     }
+
 
     override fun init(view: View) {
         super.init(view)
@@ -62,70 +73,113 @@ class PostListFragment : BaseListKtFragment(){
         type = arguments.getInt(ARG_TYPE)
         adapter = PostAdapter(context!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
-        if(type == 3){
+        if (type == 3) {
             addHeaderView()
         }
         recyclerView?.adapter = adapter
 
         initDialog()
 
-        adapter.setOnRecyclerViewItemClickListener { v, position ->
-            if(position > 0){
-                val id = datas[position-1]
-                switchToActivity(MicroblogDetailsActivity::class.java, ARG_ID to id)
+        adapter.setOnRecyclerViewItemClickListener { _, position ->
+            if (position > 0) {
+                val microblog = datas[position - 1]
+                switchToActivity(MicroblogDetailsActivity::class.java, ARG_MICROBLOG to microblog)
             }
         }
-        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener{ v, positon ->
-            if(v.id == R.id.ivItemMore){
-                if(positon > 0){
-                    clickMicroblog = datas[positon-1]
-                    itemDialog.show()
-                }
+        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener { v, positon ->
+            if (positon > 0) {
+                when (v.id) {
+                    R.id.ivItemMore -> {
+                        clickMicroblog = datas[positon - 1]
+                        clickPosition = positon - 1
+                        if (Constants.user != null && clickMicroblog!!.user?.id == Constants.user?.id) {
+                            //如果是自己的微博
+                            val itemDatas = ArrayList<String>()
+                            itemDatas.add("删除")
+                            itemDialog.setItems(itemDatas)
+                        } else {
+                            val itemDatas = ArrayList<String>()
+                            itemDatas.add("屏蔽")
+                            itemDatas.add("举报")
+                            if (clickMicroblog!!.isFocus == 2) {
+                                itemDatas.add("取消关注")
+                            }/* else {
+                                itemDatas.add("关注")
+                            }*/
+                            itemDialog.setItems(itemDatas)
+                        }
+                        itemDialog.show()
+                    }
 
+                    R.id.flItemPraise -> {
+                        requestPraise(datas[positon - 1].id, datas[positon - 1].isPraise, positon - 1)
+                    }
+                    R.id.flItemComment -> {
+                        clickMicroblog = datas[positon - 1]
+                        clickPosition = positon - 1
+                        commentDialog.show()
+                    }
+                    R.id.flItemForward -> {
+                        switchToActivityForResult(PublishPostActivity::class.java, REQUEST_FORWARD, ARG_MICROBLOG to datas[positon - 1])
+                    }
+                    R.id.ivItemAvatar -> {
+                        switchToActivity(PersonCenterActivity::class.java, ARG_ID to datas[positon - 1].user!!.id)
+                    }
+                    R.id.tvItemFocus -> {
+                        requestFocusSubmit(datas[positon - 1].id, 1)
+                    }
+                }
             }
-        }, R.id.ivItemMore)
-        for((index, imagePath) in HomeFragment.imgs.withIndex()){
-            val microblog = Microblog()
-            val user = User()
-            user.name = "腊汉尙重"
-            user.imagePath = imagePath
-            microblog.user = user
-            microblog.commentNum = 1125
-            microblog.praiseNum = 16
-            microblog.isFocus = (type+1)%2
-            microblog.repeatNum = 352
-            microblog.timestamp = "2017-12-10 12:15:24"
-            val images = ArrayList<String>()
-            for(i in 0..index){
-                images.add(HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size)])
-            }
-            microblog.images = images
-            microblog.content = "阿三大大飒飒大是是否单独的发按时发斯蒂芬阿斯蒂芬斯蒂芬手动阀手动阀手动阀手动阀 "
-            datas.add(microblog)
-        }
-        adapter.update()
+        }, R.id.ivItemMore, R.id.flItemPraise, R.id.flItemForward, R.id.flItemComment, R.id.ivItemAvatar)
+        requestMicroblogList()
+
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshMicroblog(event: RefreshMicrobolgEvent) {
+        onRefresh()
     }
 
     private fun initDialog() {
 
         itemDialog = ItemDialog(activity)
         val datas = ArrayList<String>()
-        datas.add("屏蔽")
-        datas.add("举报")
+        if(type == 5){
+            //屏蔽列表
+            datas.add("取消屏蔽")
+        } else {
+            datas.add("屏蔽")
+            datas.add("举报")
+            datas.add("取消关注")
+        }
 
-        datas.add("取消关注")
         itemDialog.setItems(datas)
         itemDialog.setOnItemClickListener { item, position ->
             clickMicroblog?.let {
-                when(position){
-                    0->{
-                        shieldDialog.show()
-                    }
-                    1->{
-                        switchToActivity(ReportActivity::class.java, ARG_ID to it.id)
-                    }
-                    2->{
-                        requestFocusSubmit(it.id, 2)
+                if(type == 5) {
+                    //屏蔽列表, 这里取消屏蔽
+                    requestScreenSubmit(it.id, 2)
+                } else {
+                    if (Constants.user != null && it.user?.id == Constants.user?.id) {
+                        deleteDialog.show()
+                    } else {
+                        when (position) {
+                            0 -> {
+                                shieldDialog.show()
+                            }
+                            1 -> {
+                                switchToActivity(ReportActivity::class.java, ARG_ID to it.id)
+                            }
+                            2 -> {
+                                requestFocusSubmit(it.user!!.id, it.isFocus)
+                            }
+                        }
                     }
                 }
             }
@@ -135,29 +189,46 @@ class PostListFragment : BaseListKtFragment(){
         shieldDatas.add("屏蔽此条内容")
         shieldDatas.add("屏蔽此人全部内容")
         shieldDialog.setItems(shieldDatas)
-        shieldDialog.setOnItemClickListener { item, position ->
-            clickMicroblog?.let { requestScreenSubmit(it.id, position+2) }
+        shieldDialog.setOnItemClickListener { _, position ->
+            clickMicroblog?.let {
+                if (position == 0) {
+                    requestScreenSubmit(it.id, 2)
+                } else if (position == 1) {
+                    requestScreenSubmit(it.user!!.id, 1)
+                }
+            }
+
         }
 
         deleteDialog = ItemDialog(activity)
         val deleteDatas = ArrayList<String>()
         deleteDatas.add("删除此条内容")
         deleteDialog.setItems(datas)
-        deleteDialog.setOnItemClickListener { item, position ->
+        deleteDialog.setOnItemClickListener { _, _ ->
             clickMicroblog?.let { requestDeleteAction(it.id) }
+        }
+
+        commentDialog = CommentDialog(activity)
+        commentDialog.setOnCommentClickListener {
+            val content = it
+            clickMicroblog?.let {
+                requestCommentSubmit(it.id, content)
+            }
+
         }
     }
 
     /**
      * 屏蔽
      */
-    private fun requestScreenSubmit(id : Int, action : Int){
-        val query = RequestQuery()
-        query.namespace = "ScreenSubmit"
+    private fun requestScreenSubmit(id: Long, action: Int) {
+        val query = SubmitRequestQuery()
+        query.namespace = "ScreenSwitch"
 //        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
         query.action = AIIAction.valueOf(action)
         query.id = id
-        App.aiiRequest?.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog){
+        query.open = 1
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 onRefresh()
@@ -168,13 +239,13 @@ class PostListFragment : BaseListKtFragment(){
     /**
      * 删除
      */
-    private fun requestDeleteAction(id : Int){
+    private fun requestDeleteAction(id: Long) {
         val query = RequestQuery()
         query.namespace = "DeleteAction"
 //        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
         query.action = AIIAction.TWO
         query.id = id
-        App.aiiRequest?.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog){
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 onRefresh()
@@ -185,16 +256,26 @@ class PostListFragment : BaseListKtFragment(){
     /**
      * 关注 / 取消关注
      */
-    private fun requestFocusSubmit(id : Int, open : Int){
-        val query = RequestQuery()
-        query.namespace = "FocusSubmit"
-//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
-//        query.action = AIIAction.TWO
-        query.id = id
-        App.aiiRequest?.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog){
+    private fun requestFocusSubmit(id: Long, open: Int) {
+        val query = FocusSwitchRequestQuery()
+        query.namespace = "FocusSwitch"
+        query.userId = id
+        query.open = open
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
-                onRefresh()
+//                onRefresh()
+                if(clickPosition >= 0 && clickPosition < datas.size){
+                    if(open == 1){
+                        datas[clickPosition].isFocus = 2
+                    } else {
+                        datas[clickPosition].isFocus = 1
+                    }
+                    adapter.notifyItemChanged(clickPosition + 1)
+                    clickMicroblog = null
+                    clickPosition = -1
+                }
+
             }
         })
     }
@@ -208,26 +289,31 @@ class PostListFragment : BaseListKtFragment(){
         header.text = "已屏蔽的用户"
         header.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
         val padding = resources.getDimension(R.dimen.margin_screen_left).toInt()
-        header.setPadding(padding, padding, padding , padding)
+        header.setPadding(padding, padding, padding, padding)
         adapter.addHeaderView(header)
     }
 
     /**
      * 请求微博列表
      */
-    fun requestMicroblogList(){
+    fun requestMicroblogList() {
+        if (type == 1 && Constants.user == null) {
+            //关注 并且 没有登录
+            return
+        }
         val query = ListRequestQuery("MicroblogList")
         query.table.page = page
-        query.action = AIIAction.valueOf(type+1)
-        App.aiiRequest?.send(query, object : AIIResponse<MicroblogListResponseQuery>(activity){
+        query.action = AIIAction.valueOf(type)
+        App.aiiRequest.send(query, object : AIIResponse<MicroblogListResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: MicroblogListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
-                getMicroblogList(response)
+                response?.let { getMicroblogList(it) }
+
             }
 
             override fun onCache(content: MicroblogListResponseQuery?, index: Int) {
                 super.onCache(content, index)
-                getMicroblogList(content)
+                content?.let { getMicroblogList(it) }
             }
 
             override fun onFailure(content: String?, index: Int) {
@@ -242,21 +328,70 @@ class PostListFragment : BaseListKtFragment(){
         })
     }
 
-    private fun getMicroblogList(response: MicroblogListResponseQuery?) {
-        response?.let {
-            if(page == 1){
-                datas.clear()
-            }
+    private fun getMicroblogList(response: MicroblogListResponseQuery) {
 
-            response.microblogs?.let { datas.addAll(it) }
-
+        total = response.total
+        if (page == 1) {
+            datas.clear()
         }
+        response.microblogs?.let { datas.addAll(it) }
+        adapter.update()
 
     }
 
+
+    private fun requestCommentSubmit(postId: Long, content: String) {
+
+        val query = SubmitRequestQuery("CommentSubmit")
+        query.action = AIIAction.THREE
+        query.id = postId
+        query.content = content
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity) {
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                if(clickPosition >= 0 && clickPosition < datas.size){
+                    datas[clickPosition].commentNum = datas[clickPosition].commentNum + 1
+                    adapter.notifyItemChanged(clickPosition + 1)
+                    clickMicroblog = null
+                    clickPosition = -1
+                }
+            }
+        })
+    }
+
+
+    /**
+     * 请求赞
+     * @param open 1 赞， 2 取消赞
+     */
+    private fun requestPraise(postId : Long, open : Int, position : Int) {
+
+        val query = SubmitRequestQuery("PraiseSwitch")
+        query.action = AIIAction.THREE
+        query.id = postId
+        query.open = open
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                val isPraise = datas[position].isPraise
+                var praiseNum = datas[position].praiseNum
+                if(isPraise == 2){
+                    datas[position].isPraise = 1
+                    praiseNum--
+                    datas[position].praiseNum = praiseNum
+                } else {
+                    datas[position].isPraise = 2
+                    praiseNum++
+                    datas[position].praiseNum = praiseNum
+                }
+                adapter.notifyItemChanged(position+1)
+
+            }
+        })
+    }
     companion object {
         val ARG_TYPE = "type"
-        fun newInstance(type : Int) : PostListFragment{
+        fun newInstance(type: Int): PostListFragment {
             val fragment = PostListFragment()
             val bundle = Bundle()
             bundle.putInt(ARG_TYPE, type)

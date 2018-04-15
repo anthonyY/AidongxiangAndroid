@@ -30,8 +30,9 @@ class DateSelectDialog(context : Context) : AbsCommonDialog(context){
         wheel_date.setCurtain(true)
         wheel_date.isCurved = true
         wheel_date.isCyclic = false
-        wheel_date.selectedItemTextColor = ContextCompat.getColor(context, R.color.black3)
+
         wheel_date.itemTextColor = ContextCompat.getColor(context, R.color.gray9)
+        wheel_date.selectedItemTextColor = ContextCompat.getColor(context, R.color.black3)
         if (startYear > 0 && endYear > 0){
             wheel_date.setYearFrame(startYear, endYear)
         }

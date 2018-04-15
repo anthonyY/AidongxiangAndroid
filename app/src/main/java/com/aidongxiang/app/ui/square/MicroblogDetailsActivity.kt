@@ -1,28 +1,39 @@
 package com.aidongxiang.app.ui.square
 
-import android.content.Intent
+import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
+import android.support.design.widget.AppBarLayout
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.GridLayoutManager
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.TextUtils
+import android.text.style.ClickableSpan
 import android.view.View
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.PostImgAdapter
 import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
-import com.aidongxiang.app.base.Constants.ARG_ID
-import com.aidongxiang.app.ui.home.HomeFragment
-import com.aidongxiang.app.utils.GlideImgManager
-import com.aidongxiang.business.model.Microblog
-import com.aidongxiang.business.model.User
-import kotlinx.android.synthetic.main.activity_microblog_details.*
-import java.util.*
-import kotlin.collections.ArrayList
-import android.support.design.widget.AppBarLayout
+import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.Constants.ARG_MICROBLOG
 import com.aidongxiang.app.interfaces.AppBarStateChangeListener
+import com.aidongxiang.app.ui.login.LoginActivity
+import com.aidongxiang.app.ui.mine.PersonCenterActivity
+import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.StatusBarUtil
-import com.aiitec.openapi.utils.LogUtil
+import com.aidongxiang.app.widgets.CommentDialog
+import com.aidongxiang.business.model.Microblog
+import com.aiitec.openapi.json.enums.AIIAction
+import com.aiitec.openapi.model.ResponseQuery
+import com.aiitec.openapi.model.SubmitRequestQuery
+import com.aiitec.openapi.net.AIIResponse
+import kotlinx.android.synthetic.main.activity_microblog_details.*
+import kotlinx.android.synthetic.main.item_post_forward.*
+import java.util.regex.Pattern
 
 
 /***
@@ -33,17 +44,36 @@ import com.aiitec.openapi.utils.LogUtil
 @ContentView(R.layout.activity_microblog_details)
 class MicroblogDetailsActivity : BaseKtActivity() {
 
-    var postId = 0
+    val REQUEST_FORWARD = 1
+    var postId : Long = 0
+    var microblog : Microblog ?= null
     lateinit var adapter : SimpleFragmentPagerAdapter
+    lateinit var commentDialog : CommentDialog
+    lateinit var commentFragment : PostCommentListFragment
+    lateinit var forwardFragment : PostForwardListFragment
     override fun init(savedInstanceState: Bundle?) {
         StatusBarUtil.addStatusBarView(ll_statusBar2, android.R.color.transparent)
-        postId = bundle.getInt(ARG_ID)
+        microblog = bundle.getParcelable(ARG_MICROBLOG)
+        microblog?.let {
+            postId = it.id
+        }
         title = "微博详情"
         adapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
-        adapter.addFragment(PostCommentListFragment.newInstance(postId, 1), "转发")
-        adapter.addFragment(PostCommentListFragment.newInstance(postId, 2), "评论")
+        commentFragment = PostCommentListFragment.newInstance(postId)
+        forwardFragment = PostForwardListFragment.newInstance(postId)
+        adapter.addFragment(commentFragment, "评论")
+        adapter.addFragment(forwardFragment, "转发")
         adapter.addFragment(PostAppraiseListFragment.newInstance(postId), "赞")
         viewpager.adapter = adapter
+        viewpager.offscreenPageLimit = 2
+
+        commentDialog = CommentDialog(this)
+        commentDialog.setOnCommentClickListener { requestCommentSubmit(it) }
+        setListener()
+        setDatas()
+    }
+
+    private fun setListener() {
 
         rlCommentTab.setOnClickListener { selectFragmentIndex(0) }
         rlForwardTab.setOnClickListener { selectFragmentIndex(1) }
@@ -60,19 +90,85 @@ class MicroblogDetailsActivity : BaseKtActivity() {
 //        val height = llTitleBar2.measuredHeight
         mAppBarLayout.addOnOffsetChangedListener(object : AppBarStateChangeListener() {
             override fun onStateChanged(appBarLayout: AppBarLayout, state: AppBarStateChangeListener.State) {
-                LogUtil.d("STATE", state.name)
-                if (state == AppBarStateChangeListener.State.EXPANDED) {
-                    //展开状态
-                    ll_statusBar2.visibility = View.GONE
-                } else if (state == AppBarStateChangeListener.State.COLLAPSED) {
-                    //折叠状态
-                    ll_statusBar2.visibility = View.VISIBLE
-                } else {
-                    //中间状态
+//                LogUtil.d("STATE", state.name)
+                when (state) {
+                    AppBarStateChangeListener.State.EXPANDED -> //展开状态
+                        ll_statusBar2.visibility = View.GONE
+                    AppBarStateChangeListener.State.COLLAPSED -> //折叠状态
+                        ll_statusBar2.visibility = View.VISIBLE
+                    else -> //中间状态
+                        ll_statusBar2.visibility = View.GONE
                 }
             }
         })
-        setDatas()
+        flForward.setOnClickListener {
+            switchToActivityForResult(PublishPostActivity::class.java, REQUEST_FORWARD, ARG_MICROBLOG to microblog)
+        }
+        flComment.setOnClickListener {
+//            switchToActivityForResult(CommentActivity::class.java, REQUEST_COMMENT)
+            commentDialog.show()
+        }
+        llPraise.setOnClickListener {
+            if(microblog == null){
+               return@setOnClickListener
+            }
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return@setOnClickListener
+            }
+
+            requestPraise(microblog!!.isPraise)
+        }
+    }
+
+    private fun requestPraise(open : Int) {
+
+        val query = SubmitRequestQuery("PraiseSwitch")
+        query.action = AIIAction.THREE
+        query.id = postId
+        query.open = open
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                microblog?.let {
+                    if(it.isPraise == 2){
+                        it.isPraise = 1
+                        val praiseNum = it.praiseNum+1
+                        ivItemPraiseNum.setImageResource(R.drawable.common_btn_like_nor)
+                        tvItemPraiseNum.text = praiseNum.toString()
+                        tv_appraise_num.text = praiseNum.toString()
+                        it.praiseNum = praiseNum
+                    } else {
+                        it.isPraise = 2
+                        val praiseNum = it.praiseNum+1
+                        ivItemPraiseNum.setImageResource(R.drawable.common_btn_like_pre)
+                        tvItemPraiseNum.text = praiseNum.toString()
+                        tv_appraise_num.text = praiseNum.toString()
+                        it.praiseNum = praiseNum
+                    }
+                }
+
+            }
+        })
+    }
+    private fun requestCommentSubmit(content : String) {
+
+        val query = SubmitRequestQuery("CommentSubmit")
+        query.action = AIIAction.THREE
+        query.id = postId
+        query.content = content
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                microblog?.let {
+                    it.commentNum ++
+                    tvItemCommentNum.text = it.commentNum.toString()
+                    tv_comment_num.text = it.commentNum.toString()
+                    commentFragment.onRefresh()
+                }
+
+            }
+        })
     }
 
     fun selectFragmentIndex(index : Int){
@@ -98,45 +194,29 @@ class MicroblogDetailsActivity : BaseKtActivity() {
 
     private fun setDatas() {
 
-        val item = Microblog()
-        item.isFocus = 1
-        item.praiseNum = 1232
-        item.commentNum = 32
-        item.repeatNum = 17552
-        item.timestamp = "2017-12-10 12:12:32"
-        item.content = "第三方发是2017-阿萨飒飒的啊实打实大师的-10手动阀 12:第三方手动阀12:32手动阀手动阀"
-        val user = User()
-        user.name = "张小凡"
-        user.imagePath = HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size)]
-        item.user = user
-
-        val imgs = ArrayList<String>()
-        imgs.add(HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size)])
-        imgs.add(HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size)])
-        imgs.add(HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size)])
-        item.images = imgs
+        val item = microblog ?: return
 
         if(item.isFocus == 1){
             tvItemAttention.visibility = View.GONE
         } else {
             tvItemAttention.visibility = View.VISIBLE
         }
-        var name = ""
+        var nickName = ""
         val timestamp = item.timestamp
         tvItemTime.text = timestamp
         var avatar = ""
         item.user?.let {
-            it.name?.let {  name = it }
+            it.nickName?.let {  nickName = it }
             it.imagePath?.let { avatar = it }
         }
-        GlideImgManager.load(this, avatar, ivItemAvatar)
+        GlideImgManager.load(this, avatar, R.drawable.ic_avatar_default, ivItemAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)
+        tvItemName.text = nickName
 
         var datas = ArrayList<String>()
 
         item.images?.let { datas = it }
         tvItemContent.text = item.content
         val spanCount = if (datas.size == 1) { 1 } else { 3 }
-        ivItemOneImage?.visibility = View.GONE
         recycler_post_img.visibility = View.VISIBLE
         recycler_post_img.layoutManager = GridLayoutManager(this, spanCount)
         val adapter = PostImgAdapter(this, datas)
@@ -144,6 +224,94 @@ class MicroblogDetailsActivity : BaseKtActivity() {
             switchToActivity(BigImageActivity::class.java, BigImageActivity.ARG_IMAGES to datas, BigImageActivity.ARG_POSITION to position)
         }
         recycler_post_img.adapter = adapter
+
+
+        if(item.originMicroblog != null){
+            includeItemForward.visibility = View.VISIBLE
+            var forwardImages = ArrayList<String>()
+
+            item.originMicroblog!!.images?.let { forwardImages = it }
+            val forwardUserName =  item.originMicroblog?.user?.nickName
+//
+
+            val content = "@${forwardUserName}  ${item.originMicroblog!!.content}"
+            val pattern = Pattern.compile("@.*?\\s{1}")
+            val spanableInfo = SpannableString(content)
+            val userId = item.originMicroblog?.user?.id
+            val m = pattern.matcher(content)
+            if (m.find()) {
+                val clickSpan = Clickable(this, userId!!)
+                spanableInfo.setSpan(clickSpan, m.start(), m.end(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+            }
+            tvItemChildContent?.text = spanableInfo
+            val forwardSpanCount = if (forwardImages.size == 1) { 1 } else { 3 }
+            recyclerItemChildImg?.layoutManager = GridLayoutManager(this, forwardSpanCount)
+            val forwardAdapter = PostImgAdapter(this, forwardImages)
+            forwardAdapter.setOnRecyclerViewItemClickListener { _, i ->
+                switchToActivity(BigImageActivity::class.java, BigImageActivity.ARG_IMAGES to forwardImages, BigImageActivity.ARG_POSITION to i)
+            }
+            recyclerItemChildImg?.adapter = forwardAdapter
+
+        } else {
+            includeItemForward.visibility = View.GONE
+        }
+
+
+        if(!TextUtils.isEmpty(item.address)){
+            llItemAddress.visibility = View.VISIBLE
+            tvItemAddress.text = item.address
+        } else {
+            llItemAddress.visibility = View.GONE
+        }
+        tvItemPraiseNum.text = item.praiseNum.toString()
+        tvItemCommentNum.text = item.commentNum.toString()
+        tvItemForwardNum.text = item.repeatNum.toString()
+        tv_appraise_num.text = item.praiseNum.toString()
+        tv_comment_num.text = item.commentNum.toString()
+        tv_forward_num.text = item.repeatNum.toString()
+        if(item.isPraise == 2){
+            ivItemPraiseNum.setImageResource(R.drawable.common_btn_like_pre)
+        } else {
+            ivItemPraiseNum.setImageResource(R.drawable.common_btn_like_nor)
+        }
+    }
+
+
+//    /**
+//     * 请求微博
+//     */
+//    fun requestMicroblogDetails() {
+//
+//        val query = RequestQuery("MicroblogDetails")
+//        query.action = AIIAction.valueOf(type)
+//        App.aiiRequest.send(query, object : AIIResponse<MicroblogListResponseQuery>(this) {
+//            override fun onSuccess(response: MicroblogListResponseQuery?, index: Int) {
+//                super.onSuccess(response, index)
+//
+//            }
+//
+//            override fun onCache(content: MicroblogListResponseQuery?, index: Int) {
+//                super.onCache(content, index)
+//                content?.let { getMicroblogList(it) }
+//            }
+//        })
+//    }
+
+    internal inner class Clickable(val context: Context, val userId : Long ) : ClickableSpan() {
+
+        /**
+         * 重写父类点击事件
+         */
+        override fun onClick(v: View) {
+            (context as BaseKtActivity).switchToActivity(PersonCenterActivity::class.java, Constants.ARG_ID to userId)
+        }
+
+        /**
+         * 重写父类updateDrawState方法  我们可以给TextView设置字体颜色,背景颜色等等...
+         */
+        override fun updateDrawState(ds: TextPaint) {
+            ds.color = Color.BLUE
+        }
     }
 
 }

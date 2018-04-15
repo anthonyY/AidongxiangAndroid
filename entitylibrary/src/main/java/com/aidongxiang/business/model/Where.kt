@@ -9,13 +9,14 @@ import com.aiitec.openapi.model.BaseWhere
  * @version 1.0
  */
 class Where : BaseWhere(){
-    var type: Int = 0
-    var status: Int = 0
-    var code: Int = 0
-    var categoryId: Int = 0
-    var timeType: Int = 0
+    var type = -1
+    var status = -1
+    var code = -1
+    var categoryId = -1
+    var timeType = -1
+    var audioType = -1
     var longitude = -1.0
     var latitude = -1.0
-    var userId: Long = 0
+    var userId: Long = -1
 
 }

@@ -5,14 +5,11 @@ import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.aidongxiang.app.R
-import com.aidongxiang.app.adapter.CommentAdapter
 import com.aidongxiang.app.adapter.PostAppraiseAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
-import com.aidongxiang.app.ui.home.HomeFragment
 import com.aidongxiang.app.widgets.CommentDialog
 import com.aidongxiang.business.model.Comment
-import com.aidongxiang.business.model.User
 import com.aidongxiang.business.response.CommentListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
@@ -37,43 +34,44 @@ class PostAppraiseListFragment : BaseListKtFragment(){
     override fun getDatas(): List<*>? = datas
     lateinit var commentDialog : CommentDialog
 
-    var postId = -1
+    var postId : Long = -1
 
     override fun init(view: View) {
         super.init(view)
 
-        postId = arguments.getInt(ARG_ID)
+        postId = arguments.getLong(ARG_ID)
         adapter = PostAppraiseAdapter(activity, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
+        recyclerView?.setPullRefreshEnabled(false)
 
         commentDialog = CommentDialog(activity)
         commentDialog.setOnCommentClickListener { requestCommentSubmit(it) }
         faBtnComment.visibility = View.GONE
-        setDatas()
-
+//        setDatas()
+        requestCommentList()
     }
 
-    fun setDatas(){
-        for(i in 0..9){
-            val comment = Comment()
-            comment.content = "啦啦十大傻傻的啊实打实大收到"
-            comment.praiseNum = 1555+i
-            comment.timestamp = "2017-12-0$i 12:42:15"
-            val user = User()
-            user.id = i
-            if(i > 3){
-                user.imagePath = HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size)]
-            } else {
-                user.imagePath = ""
-            }
-
-            user.name = "小淘气"
-            comment.user = user
-            datas.add(comment)
-        }
-        adapter.update()
-    }
+//    fun setDatas(){
+//        for(i in 0..9){
+//            val comment = Comment()
+//            comment.content = "啦啦十大傻傻的啊实打实大收到"
+//            comment.praiseNum = 1555+i
+//            comment.timestamp = "2017-12-0$i 12:42:15"
+//            val user = User()
+//            user.id = i
+//            if(i > 3){
+//                user.imagePath = HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size)]
+//            } else {
+//                user.imagePath = ""
+//            }
+//
+//            user.name = "小淘气"
+//            comment.user = user
+//            datas.add(comment)
+//        }
+//        adapter.update()
+//    }
     override fun requestData() {
         Handler().postDelayed({onLoadFinish()}, 1000)
     }
@@ -109,7 +107,7 @@ class PostAppraiseListFragment : BaseListKtFragment(){
     fun requestCommentSubmit(content : String){
         val query = SubmitRequestQuery("CommentSubmit")
         query.action = AIIAction.ONE
-        query.id = id
+        query.id = postId
         query.content = content
         App.aiiRequest?.send(query, object : AIIResponse<ResponseQuery>(activity){
             override fun onSuccess(response: ResponseQuery?, index: Int) {
@@ -135,10 +133,10 @@ class PostAppraiseListFragment : BaseListKtFragment(){
 
     companion object {
         var ARG_ID = "id"
-        fun newInstance(postId : Int) : PostAppraiseListFragment {
+        fun newInstance(postId : Long) : PostAppraiseListFragment {
             val fragment = PostAppraiseListFragment()
             val bundle = Bundle()
-            bundle.putInt(ARG_ID, postId)
+            bundle.putLong(ARG_ID, postId)
             fragment.arguments = bundle
             return fragment
         }

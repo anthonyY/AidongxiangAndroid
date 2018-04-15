@@ -33,7 +33,7 @@ public class RequestQuery extends Entity {
     @JSONField(notCombination = true)
     protected boolean isNeedSession = true;
 
-    private int id;
+    private long id = -1;
     
     public boolean isNeedSession() {
 		return isNeedSession;
@@ -76,11 +76,11 @@ public class RequestQuery extends Entity {
         this.cacheMode = cacheMode;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

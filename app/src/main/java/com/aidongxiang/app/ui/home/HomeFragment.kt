@@ -1,12 +1,8 @@
 package com.aidongxiang.app.ui.home
 
-import android.graphics.drawable.Drawable
-import android.os.Handler
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.Html
-import android.text.Html.ImageGetter
 import android.view.View
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.HomeAudioAdapter
@@ -16,17 +12,17 @@ import com.aidongxiang.app.adapter.HomeVideoAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtFragment
+import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.base.Constants.ARG_TITLE
-import com.aidongxiang.app.base.Constants.ARG_URL
 import com.aidongxiang.app.ui.Main2Activity
 import com.aidongxiang.app.ui.audio.AudioDetailsActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.ui.video.VideoDetailsActivity
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.widgets.NoticeDialog
-import com.aidongxiang.business.model.Ad
 import com.aidongxiang.business.model.Article
 import com.aidongxiang.business.model.Video
+import com.aidongxiang.business.model.Where
 import com.aidongxiang.business.request.AdListRquestQuery
 import com.aidongxiang.business.response.AdListResponseQuery
 import com.aidongxiang.business.response.ArticleListResponseQuery
@@ -37,7 +33,6 @@ import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.AiiUtil
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.layout_title_bar_home.*
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -127,7 +122,7 @@ class HomeFragment : BaseKtFragment() {
         //视频
         homeVideoAdapter = HomeVideoAdapter(activity!!, videoDatas)
         homeVideoAdapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(VideoDetailsActivity::class.java)
+            switchToActivity(VideoDetailsActivity::class.java, ARG_ID to videoDatas[position])
         }
         setLayoutManagerInScroolView(recycler_home_video, videoLayoutManager)
         recycler_home_video.adapter = homeVideoAdapter
@@ -138,18 +133,19 @@ class HomeFragment : BaseKtFragment() {
         setLayoutManagerInScroolView(recycler_home_audio, audioManager)
         homeAudioAdapter = HomeAudioAdapter(activity!!, audioDatas)
         homeAudioAdapter.setOnRecyclerViewItemClickListener { v, position ->
-             switchToActivity(AudioDetailsActivity::class.java)
+             switchToActivity(AudioDetailsActivity::class.java, ARG_ID to audioDatas[position])
         }
         recycler_home_audio.adapter = homeAudioAdapter
 
 
         //新闻
-        homeNewsAdapter = HomeNewsAdapter(activity!!, newsDatas)
+        homeNewsAdapter = HomeNewsAdapter(activity!!, newsDatas, true)
         val newsLayoutManager = LinearLayoutManager(activity)
         setLayoutManagerInScroolView(recycler_home_news, newsLayoutManager)
         recycler_home_news.adapter = homeNewsAdapter
-        homeNewsAdapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(CommonWebViewActivity::class.java, ARG_TITLE to "新闻详情", ARG_URL to "http://www.baidu.com")
+        homeNewsAdapter.setOnRecyclerViewItemClickListener { _, position ->
+            val id = newsDatas[position].id
+            switchToActivity(ArticleDetailsActivity::class.java, ARG_TITLE to "新闻详情", ARG_ID to id)
         }
 
         //分类 （扩展内容）
@@ -157,7 +153,7 @@ class HomeFragment : BaseKtFragment() {
         setLayoutManagerInScroolView(recycler_home_category, gridLayoutManager)
         homeCategoryAdapter = HomeCategoryAdapter(activity!!, categoryDatas)
         recycler_home_category.adapter = homeCategoryAdapter
-        homeCategoryAdapter.setOnRecyclerViewItemClickListener { v, position ->
+        homeCategoryAdapter.setOnRecyclerViewItemClickListener { _, position ->
             when (position) {
                 0 -> {
                     noticeDialog.show()
@@ -166,12 +162,8 @@ class HomeFragment : BaseKtFragment() {
         }
         noticeDialog = NoticeDialog(activity)
 
-        val charSequence = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY, imgGetter, null)
-        } else {
-            Html.fromHtml(content, imgGetter, null)
-        }
-        noticeDialog.setContent(charSequence)
+
+        noticeDialog.setContent(content)
 
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.CHINESE)
         val isShowNoticeToday = AiiUtil.getBoolean(activity, "isShowNotice" + today)
@@ -182,7 +174,8 @@ class HomeFragment : BaseKtFragment() {
         llHomeNewsMore.setOnClickListener { switchToActivity(NewsActivity::class.java) }
         swipe_home_refresh.setOnRefreshListener {
             loadState = 0
-            Handler().postDelayed({ onLoadFinish() }, 1000)
+
+            refresh()
         }
 
         //点更多视频  切换到视频模块
@@ -194,29 +187,25 @@ class HomeFragment : BaseKtFragment() {
         //点击我的下载按钮
         ibtn_nav_menu.setOnClickListener{ switchToActivity(MyDownloadActivity::class.java) }
 
-        setDatas()
+//        setDatas()
+        refresh()
     }
 
+    private fun refresh(){
+        requestAdList()
+        requestAudioList()
+        requestVideoList()
+        requestArticleList()
+    }
     private fun onLoadFinish() {
         loadState++
-//        if(loadState >= 4){
+        if(loadState >= 4){
             swipe_home_refresh.isRefreshing = false
-//        }
-
-    }
-
-    var imgGetter: ImageGetter = ImageGetter { source ->
-        val drawable: Drawable?
-        val url: URL
-        try {
-            url = URL(source)
-            drawable = Drawable.createFromStream(url.openStream(), "")  //获取网路图片
-        } catch (e: Exception) {
-            return@ImageGetter null
         }
-        drawable?.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-        return@ImageGetter drawable
+
     }
+
+
 
     /**
      * 设置RecyclerView 的LayoutManager , 并对其做兼容scrollView 滑动卡顿问题的处理
@@ -231,55 +220,60 @@ class HomeFragment : BaseKtFragment() {
         recyclerView.layoutManager = layoutManager
     }
 
-    /**
-     * 设置数据
-     */
-    private fun setDatas() {
-        val ads = ArrayList<Ad>()
-        for (i in 0..4) {
-            val ad = Ad()
-            ad.name = "广告"
-            ad.link = "http://www.baidu.com"
-            ad.imagePath = imgs[random.nextInt(imgs.size)]
-            if (i < 3) {
-                val video = Video()
-                video.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-                video.audioLength = "12:10"
-                video.name = "精彩斗牛啦啦啦啦"
-                video.timestamp = "07-12"
-                video.playNum = 321
-                videoDatas.add(video)
-                audioDatas.add(video)
-            }
-            val article = Article()
-            article.timestamp = "2018-0$i-1${i + 2} 12:15:34"
-            article.title = "农耕部落初见成效"
-            article.abstract = "农耕部落初见成效农耕部落初见成效农耕部落初见成效"
-            article.id = i
-            article.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-            newsDatas.add(article)
-            ads.add(ad)
-            if (i < 4) {
-                categoryDatas.add(imgs[random.nextInt(imgs.size)])
-            }
+//    /**
+//     * 设置数据
+//     */
+//    private fun setDatas() {
+//        val ads = ArrayList<Ad>()
+//        for (i in 0..4) {
+//            val ad = Ad()
+//            ad.name = "广告"
+//            ad.link = "http://www.baidu.com"
+//            ad.imagePath = imgs[random.nextInt(imgs.size)]
+//            if (i < 3) {
+//                val video = Video()
+//                video.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
+//                video.audioLength = "12:10"
+//                video.name = "精彩斗牛啦啦啦啦"
+//                video.timestamp = "07-12"
+//                video.playNum = 321
+//                videoDatas.add(video)
+//                audioDatas.add(video)
+//            }
+//            val article = Article()
+//            article.timestamp = "2018-0$i-1${i + 2} 12:15:34"
+//            article.title = "农耕部落初见成效"
+//            article.abstract = "农耕部落初见成效农耕部落初见成效农耕部落初见成效"
+//            article.id = i
+//            article.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
+//            newsDatas.add(article)
+//            ads.add(ad)
+//            if (i < 4) {
+//                categoryDatas.add(imgs[random.nextInt(imgs.size)])
+//            }
+//
+//        }
+//        ad_home.startAD(ads.size, 3, true, ads, 0.544f)
+//        homeNewsAdapter.update()
+//        homeVideoAdapter.update()
+//        homeAudioAdapter.update()
+//    }
 
-        }
-        ad_home.startAD(ads.size, 3, true, ads, 0.544f)
-        homeNewsAdapter.update()
-        homeVideoAdapter.update()
-        homeAudioAdapter.update()
-    }
-
-    fun requestAdList() {
+    private fun requestAdList() {
         val query = AdListRquestQuery()
         query.action = AIIAction.ONE
 
-        App.aiiRequest?.send(query, object : AIIResponse<AdListResponseQuery>(activity, false) {
+        App.aiiRequest.send(query, object : AIIResponse<AdListResponseQuery>(activity, false) {
             override fun onSuccess(response: AdListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.ads?.let {
                     ad_home.startAD(it.size, 3, true, it, 0.48f)
                 }
+            }
+
+            override fun onFinish(index: Int) {
+                super.onFinish(index)
+                onLoadFinish()
             }
         })
     }
@@ -287,11 +281,11 @@ class HomeFragment : BaseKtFragment() {
     /**
      * 请求文章列表
      */
-    fun requestArticleList() {
+    private fun requestArticleList() {
         val query = ListRequestQuery("ArticleList")
         query.table.page = 1
-        query.action = AIIAction.TWO
-        App.aiiRequest?.send(query, object : AIIResponse<ArticleListResponseQuery>(activity) {
+        query.action = AIIAction.ONE
+        App.aiiRequest.send(query, object : AIIResponse<ArticleListResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ArticleListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.let { getArticleList(it) }
@@ -322,13 +316,16 @@ class HomeFragment : BaseKtFragment() {
     /**
      * 请求音频列表
      */
-    fun requestAudioList(){
+    private fun requestAudioList(){
 
         val query = ListRequestQuery("AudioList")
         query.table.page = 1
         query.table.limit = 3
         query.action = AIIAction.ONE
-        App.aiiRequest?.send(query, object : AIIResponse<VideoListResponseQuery>(activity){
+        val where = Where()
+        where.audioType = 2
+        query.table.where = where
+        App.aiiRequest.send(query, object : AIIResponse<VideoListResponseQuery>(activity, progressDialog){
             override fun onSuccess(response: VideoListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.let { getAudioList(it) }
@@ -349,13 +346,16 @@ class HomeFragment : BaseKtFragment() {
     /**
      * 请求视频列表
      */
-    fun requestVideoList(){
+    private fun requestVideoList(){
 
-        val query = ListRequestQuery("VideoList")
+        val query = ListRequestQuery("AudioList")
         query.table.page = 1
         query.table.limit = 3
         query.action = AIIAction.ONE
-        App.aiiRequest?.send(query, object : AIIResponse<VideoListResponseQuery>(activity){
+        val where = Where()
+        where.audioType = 1
+        query.table.where = where
+        App.aiiRequest.send(query, object : AIIResponse<VideoListResponseQuery>(activity, progressDialog){
             override fun onSuccess(response: VideoListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.let { getVideoList(it) }
@@ -378,7 +378,7 @@ class HomeFragment : BaseKtFragment() {
      */
     private fun getAudioList(response: VideoListResponseQuery) {
         audioDatas.clear()
-        response.videos?.let { audioDatas.addAll(it) }
+        response.audios?.let { audioDatas.addAll(it) }
         homeAudioAdapter.update()
     }
     /**
@@ -386,7 +386,7 @@ class HomeFragment : BaseKtFragment() {
      */
     private fun getVideoList(response: VideoListResponseQuery) {
         videoDatas.clear()
-        response.videos?.let { videoDatas.addAll(it) }
+        response.audios?.let { videoDatas.addAll(it) }
         homeVideoAdapter.update()
     }
 }

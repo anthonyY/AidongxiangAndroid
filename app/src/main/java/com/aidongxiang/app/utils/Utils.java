@@ -7,8 +7,6 @@ import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Message;
@@ -27,19 +25,12 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
-import com.aidongxiang.app.base.Constants;
-import com.aiitec.openapi.utils.LogUtil;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -286,5 +277,51 @@ public class Utils {
         }
     }
 
+
+    private final static Pattern ATTR_PATTERN = Pattern.compile("<img[^<>]*?\\ssrc=['\"]?(.*?)['\"]?\\s.*?>",Pattern.CASE_INSENSITIVE);
+
+    //替换body里面的图片路径问题
+    public static String getAbsSource(String source, String bigpath) {
+        try {
+            Matcher matcher = ATTR_PATTERN.matcher(source);
+            List<String> list = new ArrayList<String>();  // 装载了匹配整个的Tag
+            List<String> list2 = new ArrayList<String>(); // 装载了src属性的内容
+            while (matcher.find()) {
+                list.add(matcher.group(0));
+                list2.add(matcher.group(1));
+            }
+            StringBuilder sb = new StringBuilder();
+            String[] dataSplit =  source.split("<img");
+            if(dataSplit != null && dataSplit.length > 0){
+                String data0 = dataSplit[0];
+                // 连接<img之前的内容
+                sb.append(data0);
+            }
+            // 遍历list
+            for (int i = 0; i < list.size(); i++) {
+                String imagePath = list2.get(i).substring(1);
+
+                String relace1= list.get(i).replace("img", "img style=\"width:100%\" ");
+                String relaceAfter = "";
+                if(!imagePath.startsWith("http")){
+                    relaceAfter = relace1.replace(list2.get(i), // 对每一个Tag进行替换
+                            bigpath + imagePath);
+                } else {
+                    relaceAfter = relace1;
+                }
+
+                sb.append(relaceAfter);
+            }
+            String[] data = source.split("(?:<img[^<>]*?\\s.*?['\"]?\\s.*?>)+");
+            if(data != null && data.length > 1){
+                sb.append(data[1]);
+            }
+
+            return sb.toString();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return "";
+    }
 
 }

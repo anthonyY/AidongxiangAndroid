@@ -2,93 +2,136 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/my_bg"
-    >
+    android:orientation="vertical">
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:background="@drawable/my_bg"
         android:paddingBottom="16dp">
+
         <ImageButton
             android:id="@+id/ibtn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/common_btn_back"
+            android:background="@drawable/btn_transparent_selector"
             android:minHeight="56dp"
             android:minWidth="40dp"
-            android:background="@drawable/btn_transparent_selector"
-            />
-        <com.aidongxiang.app.widgets.CircleImageView
+            android:src="@drawable/common_btn_back" />
+
+        <ImageView
             android:id="@+id/ivAvatar"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:src="@mipmap/ic_launcher"/>
-        
+            android:src="@drawable/ic_avatar_default" />
+
         <TextView
             android:id="@+id/tvName"
-            android:layout_below="@+id/ivAvatar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:layout_marginTop="10dp"
-            android:layout_centerHorizontal="true"
-            android:text="张小梅"/>
-        <LinearLayout
-            android:layout_below="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/ivAvatar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="张小梅"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvName"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical">
 
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:text="关注"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <TextView
                 android:id="@+id/tvFollow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:text="关注  12"/>
+                android:text="12"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
             <View
                 android:id="@+id/lineTop"
                 android:layout_width="1dp"
                 android:layout_height="12dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:background="@color/white"/>
+                android:background="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:text="粉丝"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tvFans"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:text="粉丝  1233"/>
+                android:text="1233"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
             <View
                 android:id="@+id/lineTop2"
                 android:layout_width="1dp"
                 android:layout_height="12dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:background="@color/white"/>
-       <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:layout_marginLeft="8dp"
-            android:textSize="14sp"
-            android:layout_centerHorizontal="true"
-            android:text="+关注"/>
+                android:background="@color/white" />
+
+            <TextView
+                android:id="@+id/tvFocus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="8dp"
+                android:text="+关注"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
         </LinearLayout>
     </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingRight="@dimen/margin_screen_right"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:background="@drawable/item_selector">
+        <TextView
+            android:id="@+id/tvHeaderMicroblogLabel"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="他的微博"
+            android:textSize="16sp"
+            android:textColor="@color/black3"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/my_btn_enter"/>
+    </LinearLayout>
+    <View style="@style/line"/>
 </LinearLayout>
 

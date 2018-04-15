@@ -25,11 +25,11 @@ class WatchHistoryActivity : BaseKtActivity() {
     lateinit var audioListFragment : AudioListFragment
     override fun init(savedInstanceState: Bundle?) {
 
-        setTitle("观看历史")
+        title = "观看历史"
         mPagerAdapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
 
-        videoListFragment = VideoListFragment.newInstance(AudioListFragment.TYPE_HISTORY)
-        audioListFragment = AudioListFragment.newInstance(VideoListFragment.TYPE_HISTORY)
+        videoListFragment = VideoListFragment.newInstance(AudioListFragment.TYPE_HISTORY, -1)
+        audioListFragment = AudioListFragment.newInstance(VideoListFragment.TYPE_HISTORY, -1)
         mPagerAdapter?.addFragment(videoListFragment, "视频")
         mPagerAdapter?.addFragment(audioListFragment, "音频")
 

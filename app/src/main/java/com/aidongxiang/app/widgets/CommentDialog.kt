@@ -31,6 +31,7 @@ class CommentDialog(context: Context) : AbsCommonDialog(context){
             }
             dismiss()
             listener.invoke(et_dialog_content.text.toString())
+            et_dialog_content.setText("")
         }
     }
 }

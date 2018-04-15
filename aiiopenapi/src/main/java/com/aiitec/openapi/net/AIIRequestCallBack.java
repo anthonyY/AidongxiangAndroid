@@ -1,18 +1,5 @@
 package com.aiitec.openapi.net;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.zip.GZIPInputStream;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -22,7 +9,6 @@ import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 
 import com.aiitec.openapi.cache.AIIPacketCacheManager;
-import com.aiitec.openapi.cache.AiiFileCache;
 import com.aiitec.openapi.constant.AIIConstant;
 import com.aiitec.openapi.constant.AIIStatus;
 import com.aiitec.openapi.constant.CommonKey;
@@ -33,6 +19,19 @@ import com.aiitec.openapi.model.ResponseQuery;
 import com.aiitec.openapi.utils.AiiUtil;
 import com.aiitec.openapi.utils.LogUtil;
 import com.aiitec.openapi.utils.PacketUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.zip.GZIPInputStream;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 /**
  * 协议回调类
@@ -165,7 +164,7 @@ public class AIIRequestCallBack<T> implements Callback {
 			msg.obj = responseContent;
 			handler.sendMessage(msg);
 		} else {
-
+			LogUtil.e("net error http code :"+code);
 			handler.sendEmptyMessage(2);
 		}
 

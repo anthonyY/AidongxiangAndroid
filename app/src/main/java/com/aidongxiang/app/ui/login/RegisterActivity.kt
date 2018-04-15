@@ -8,8 +8,16 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.base.Constants.ARG_MOBILE
+import com.aidongxiang.app.base.Constants.ARG_SMSCODE_ID
 import com.aidongxiang.app.utils.SmscodeCountDown
+import com.aidongxiang.business.model.Where
+import com.aidongxiang.business.response.SMSResponseQuery
+import com.aiitec.openapi.json.enums.AIIAction
+import com.aiitec.openapi.model.SubmitRequestQuery
+import com.aiitec.openapi.net.AIIResponse
 import kotlinx.android.synthetic.main.activity_register.*
 
 /**
@@ -21,6 +29,7 @@ import kotlinx.android.synthetic.main.activity_register.*
 @ContentView(R.layout.activity_register)
 class RegisterActivity : BaseKtActivity(), TextWatcher {
 
+    var smscodeId = -1
     var smscodeCountDown : SmscodeCountDown ?= null
     /**
      * 输入内容变化监听，如果有内容，按钮就可以点击，否则不可点击
@@ -58,7 +67,7 @@ class RegisterActivity : BaseKtActivity(), TextWatcher {
 //                toast("请勾选同意按钮")
 //                return@setOnClickListener
 //            }
-            switchToActivityForResult(PerfectDataActivity::class.java, 1)
+            requestSMSCode(2)
         }
         etMobile.addTextChangedListener(this)
         etSmscode.addTextChangedListener(this)
@@ -72,6 +81,7 @@ class RegisterActivity : BaseKtActivity(), TextWatcher {
                 return@setOnClickListener
             }
             smscodeCountDown?.start()
+            requestSMSCode(1)
         }
     }
 
@@ -87,6 +97,51 @@ class RegisterActivity : BaseKtActivity(), TextWatcher {
         smscodeCountDown?.cancel()
         smscodeCountDown = SmscodeCountDown(1000, 60*1000)
         smscodeCountDown?.setSmscodeBtn(btnSmscode)
+        btnSmscode.text = "获取验证码"
     }
 
+    fun requestSMSCode(action : Int){
+        if(etMobile.text.toString().isEmpty()){
+            toast("请输入手机号")
+            return
+        }
+        val query = SubmitRequestQuery()
+        query.namespace = "SMSCode"
+        query.action = AIIAction.valueOf(action)
+        query.type = 1
+        query.mobile = etMobile.text.toString()
+        if(action == 2){
+            if(etSmscode.text.toString().isEmpty()){
+                toast("请输入验证码")
+                return
+            }
+            val where = Where()
+            val code = etSmscode.text.toString().toInt()
+            where.code = code
+            query.where = where
+        }
+        App.aiiRequest.send(query, object : AIIResponse<SMSResponseQuery>(this){
+
+            override fun onSuccess(response: SMSResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.let {
+                    if(index == 1) {
+                        smscodeId = it.id.toInt()
+                        it.code?.let { etSmscode.setText(it) }
+
+                    } else if(index == 2){
+                        switchToActivityForResult(PerfectDataActivity::class.java, 1, ARG_MOBILE to etMobile.text.toString(), ARG_SMSCODE_ID to smscodeId)
+                    } else {
+
+                    }
+                }
+            }
+
+            override fun onFailure(content: String?, index: Int) {
+                super.onFailure(content, index)
+                cancelCountDown()
+            }
+
+        }, action)
+    }
 }

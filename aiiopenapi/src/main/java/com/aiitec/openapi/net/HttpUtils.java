@@ -1,6 +1,19 @@
 package com.aiitec.openapi.net;
 
 
+import android.text.TextUtils;
+
+import com.aiitec.openapi.constant.AIIConstant;
+import com.aiitec.openapi.enums.GetCombinationType;
+import com.aiitec.openapi.enums.VerifyType;
+import com.aiitec.openapi.json.annotation.JSONField;
+import com.aiitec.openapi.json.enums.AIIAction;
+import com.aiitec.openapi.model.Entity;
+import com.aiitec.openapi.model.RequestQuery;
+import com.aiitec.openapi.utils.Encrypt;
+import com.aiitec.openapi.utils.LogUtil;
+import com.aiitec.openapi.utils.PacketUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,18 +30,6 @@ import java.util.Map.Entry;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import android.text.TextUtils;
-
-import com.aiitec.openapi.constant.AIIConstant;
-import com.aiitec.openapi.enums.GetCombinationType;
-import com.aiitec.openapi.enums.VerifyType;
-import com.aiitec.openapi.json.annotation.JSONField;
-import com.aiitec.openapi.json.enums.AIIAction;
-import com.aiitec.openapi.model.Entity;
-import com.aiitec.openapi.model.RequestQuery;
-import com.aiitec.openapi.utils.Encrypt;
-import com.aiitec.openapi.utils.LogUtil;
-import com.aiitec.openapi.utils.PacketUtil;
 
 public class HttpUtils {
 
@@ -208,6 +209,10 @@ public class HttpUtils {
 	// "form-data; name=\"file[]\";filename=\"" + key + " \"");
 	// }
 	public static <T> MultipartBody.Builder combinationFileParems(String url, Map<String, Object> datas) {
+		String key = "file[]";
+		if(datas.size() == 1){
+			key = "file";
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(url).append("?");
 		MultipartBody.Builder multipart = new MultipartBody.Builder();
@@ -226,7 +231,7 @@ public class HttpUtils {
 					RequestBody fileBody = RequestBody.create(mediaType, value);
 					// multipart.addPart(getFileHeader(value.getName()),
 					// fileBody);
-					multipart.addFormDataPart("file[]", value.getName(),
+					multipart.addFormDataPart(key, value.getName(),
 							fileBody);
 
 				} else if (InputStream.class.isAssignableFrom(entry.getValue()
@@ -240,7 +245,7 @@ public class HttpUtils {
 								data);
 						// multipart.addPart(getFileHeader(entry.getKey()),
 						// fileBody);
-						multipart.addFormDataPart("file[]", entry.getKey(),
+						multipart.addFormDataPart(key, entry.getKey(),
 								fileBody);
 
 					} catch (IOException e) {
@@ -254,7 +259,7 @@ public class HttpUtils {
 					RequestBody fileBody = RequestBody.create(mediaType, value);
 					// multipart.addPart(getFileHeader(entry.getKey()),
 					// fileBody);
-					multipart.addFormDataPart("file[]", entry.getKey(),
+					multipart.addFormDataPart(key, entry.getKey(),
 							fileBody);
 
 				} else if (entry.getValue().getClass().equals(String.class)) {

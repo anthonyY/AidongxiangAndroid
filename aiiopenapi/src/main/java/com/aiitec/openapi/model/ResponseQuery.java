@@ -17,6 +17,8 @@ public class ResponseQuery extends Entity{
 	
 	protected String expire;
 
+	protected long id;
+
 	public String getTimestamp() {
 		return timestamp;
 	}
@@ -47,6 +49,14 @@ public class ResponseQuery extends Entity{
 
 	public void setExpire(String expire) {
 		this.expire = expire;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public ResponseQuery() {

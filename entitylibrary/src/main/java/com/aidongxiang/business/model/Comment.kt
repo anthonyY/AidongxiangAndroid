@@ -12,8 +12,9 @@ import com.aiitec.openapi.model.Entity
 class Comment : Entity(){
 
     @Unique
-    var id = 0
+    var id : Long = 0
     var praiseNum = 0
+    var isPraise = 0
     var name : String ?= null
     var timestamp : String ?= null
     var content : String ?= null

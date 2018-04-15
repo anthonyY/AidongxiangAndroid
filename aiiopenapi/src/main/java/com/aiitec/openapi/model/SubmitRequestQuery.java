@@ -10,10 +10,10 @@ public class SubmitRequestQuery extends RequestQuery {
 	private String password;
 	@JSONField(isPassword=true)
 	private String passwordNew;
-	private int type ;
-    private int smscodeId ;
-    private int commentId ;
-	private int open ;
+	private int type = -1;
+    private int smscodeId = -1;
+    private int commentId = -1;
+	private int open = -1;
 	private String mobile;
 	private String message;
 	private String content;

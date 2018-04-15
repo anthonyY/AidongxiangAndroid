@@ -7,9 +7,11 @@ package com.aidongxiang.app.base;
  */
 
 public class Api {
-    public static final String BASE_URL = "https://app.fsenv.cn";
+//    public static final String BASE_URL = "http://139.199.14.52";
+    public static final String BASE_URL = "http://test.aidongxiang.com";
+//    public static final String BASE_URL = "http://www.aidongxiang.com";
     /**API 请求地址*/
-    public static final String API = BASE_URL+"/api";
+    public static final String API = BASE_URL+"/api/index";
     /**图片前缀地址*/
     public static final String IMAGE_URL = BASE_URL + "/uploadfiles/";
     /**版本更新地址*/

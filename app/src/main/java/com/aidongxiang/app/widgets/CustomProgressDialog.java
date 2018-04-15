@@ -19,7 +19,7 @@ public class CustomProgressDialog extends Dialog {
 	 private Context context = null;
 	    private static CustomProgressDialog customProgressDialog = null;
 	     
-	    public CustomProgressDialog(Context context){
+	    private CustomProgressDialog(Context context){
 	        super(context);
 	        this.context = context;
 	    }

@@ -27,6 +27,9 @@ import com.aiitec.openapi.utils.AiiUtil;
 import com.aiitec.openapi.utils.LogUtil;
 import com.aiitec.openapi.utils.PacketUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,9 +39,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
@@ -508,6 +508,7 @@ public class AIIRequest {
     					return null;//页面已销毁的话，就不需要调用回调接口了
     				}
     			}
+    			LogUtil.i("操作太快\n"+requestJson);
                 aiiResponse.onOptionFast(0, index);
                 // 操作太快就获取不到数据，那么久给他缓存
                 readCache(aiiPacketCacheManager, aiiResponse, cacheKey, index, combinationType);

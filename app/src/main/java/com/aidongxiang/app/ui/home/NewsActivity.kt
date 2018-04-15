@@ -10,7 +10,7 @@ import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.business.model.Category
 import com.aidongxiang.business.response.CategoryListResponseQuery
 import com.aiitec.openapi.json.enums.AIIAction
-import com.aiitec.openapi.model.RequestQuery
+import com.aiitec.openapi.model.ListRequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import kotlinx.android.synthetic.main.activity_news.*
 
@@ -34,22 +34,23 @@ class NewsActivity : BaseKtActivity() {
 
         viewpager.adapter = mPagerAdapter
         tablayout.setupWithViewPager(viewpager)
+        requestCategoryList()
 
-        setDatas()
 
     }
 
     private fun setDatas(){
         //测试数据
-        val titles = arrayOf("热点新闻","旅游指南","民族风情","侗乡美食","摄影分享")
-        for(i in 1 until titles.size){
-            val category = Category()
-            category.id = i+1
-            category.name = titles[i]
-        }
+//        val titles = arrayOf("热点新闻","旅游指南","民族风情","侗乡美食","摄影分享")
+//        for(i in 1 until titles.size){
+//            val category = Category()
+//            category.id = i+1L
+//            category.name = titles[i]
+//        }
 
+        mPagerAdapter.clear()
         for(category in categorys){
-            mPagerAdapter.addFragment(NewsListFragment.newInstance(category.id), category.name)
+            mPagerAdapter.addFragment(NewsListFragment.newInstance(category.id.toInt()), category.name)
         }
         if(categorys.size > 4){
             tablayout.tabMode = TabLayout.MODE_SCROLLABLE
@@ -66,10 +67,10 @@ class NewsActivity : BaseKtActivity() {
 
 
     fun requestCategoryList() {
-        val query = RequestQuery("CategoryList")
-        query.action = AIIAction.FOUR
+        val query = ListRequestQuery("CategoryList")
+        query.action = AIIAction.THREE
 
-        App.aiiRequest?.send(query, object : AIIResponse<CategoryListResponseQuery>(this, progressDialog) {
+        App.aiiRequest.send(query, object : AIIResponse<CategoryListResponseQuery>(this, progressDialog) {
             override fun onSuccess(response: CategoryListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 categorys.clear()

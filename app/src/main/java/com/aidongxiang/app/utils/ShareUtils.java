@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.aidongxiang.app.R;
 import com.aiitec.openapi.utils.LogUtil;
 import com.aiitec.openapi.utils.ToastUtil;
+import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.ShareAction;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
@@ -69,8 +70,8 @@ public class ShareUtils {
 		// ActivityCompat.requestPermissions((Activity)context,mPermissionList,
 		// 100);
 
-//		PlatformConfig.setWeixin(context.getString(R.string.weixinId),
-//				context.getString(R.string.weixinSecret));
+		PlatformConfig.setWeixin(context.getString(R.string.weixinId),
+				context.getString(R.string.weixinSecret));
 
 
 	}

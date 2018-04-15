@@ -10,8 +10,14 @@ import android.view.View
 import android.widget.TextView
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.base.Constants.ARG_MOBILE
+import com.aidongxiang.app.base.Constants.ARG_SMSCODE_ID
 import com.aidongxiang.app.widgets.CommonDialog
+import com.aidongxiang.business.response.SMSResponseQuery
+import com.aiitec.openapi.model.SubmitRequestQuery
+import com.aiitec.openapi.net.AIIResponse
 import kotlinx.android.synthetic.main.activity_set_new_password.*
 
 /**
@@ -22,6 +28,8 @@ import kotlinx.android.synthetic.main.activity_set_new_password.*
 @ContentView(R.layout.activity_set_new_password)
 class SetNewPasswordActivity : BaseKtActivity(), TextWatcher {
 
+    var smscodeId = -1
+    var mobile : String ?= null
     lateinit var successDialog : CommonDialog
     /**
      * 输入内容变化监听，如果有内容，按钮就可以点击，否则不可点击
@@ -35,6 +43,8 @@ class SetNewPasswordActivity : BaseKtActivity(), TextWatcher {
 
     override fun init(savedInstanceState: Bundle?) {
         title = "设置新密码"
+        smscodeId = bundle.getInt(ARG_SMSCODE_ID)
+        mobile = bundle.getString(ARG_MOBILE)
         btnFinish.setOnClickListener {
             if(TextUtils.isEmpty(etPassword.text.toString())){
                 toast("请输入密码")
@@ -58,7 +68,8 @@ class SetNewPasswordActivity : BaseKtActivity(), TextWatcher {
                 etPasswordAgain.setText("")
                 return@setOnClickListener
             }
-            successDialog.show()
+            requestUserResetPassword()
+
         }
         etPassword.addTextChangedListener(this)
         etPasswordAgain.addTextChangedListener(this)
@@ -77,4 +88,21 @@ class SetNewPasswordActivity : BaseKtActivity(), TextWatcher {
     }
 
 
+    private fun requestUserResetPassword(){
+        val password = etPasswordAgain.text.toString()
+        val query = SubmitRequestQuery()
+        query.namespace = "UserResetPassword"
+        query.mobile = mobile
+        query.password = password
+        query.smscodeId = smscodeId
+
+        App.aiiRequest.send(query, object : AIIResponse<SMSResponseQuery>(this, progressDialog){
+
+            override fun onSuccess(response: SMSResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                successDialog.show()
+            }
+
+        })
+    }
 }

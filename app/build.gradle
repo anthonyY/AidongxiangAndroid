@@ -88,4 +88,9 @@ dependencies {
     //滚轮选择器
     implementation 'com.github.open-android:WheelPicker:v1.0.0'
     implementation project(':FlowTaglibrary')
+
+
+    compile 'com.amap.api:search:latest.integration'
+//    定位
+    compile 'com.amap.api:location:latest.integration'
 }

@@ -41,10 +41,10 @@
                 android:layout_height="1dp"
                 android:layout_weight="1"/>
             <TextView
+                android:id="@+id/tvAccountSecurityMobile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:text="15211123336"
                 android:layout_marginRight="8dp"
                 android:textColor="@color/black5"
                 />
@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:textSize="16sp"
-                android:text="@string/password_login"
+                android:text="@string/login_password"
                 android:textColor="@color/black5"
                 />
             <android.support.v4.widget.Space

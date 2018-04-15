@@ -8,10 +8,12 @@ import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.HomeAudioAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
+import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.ui.home.HomeFragment
 import com.aidongxiang.app.widgets.AdvertisementLayout
 import com.aidongxiang.business.model.Ad
 import com.aidongxiang.business.model.Video
+import com.aidongxiang.business.model.Where
 import com.aidongxiang.business.request.AdListRquestQuery
 import com.aidongxiang.business.response.AdListResponseQuery
 import com.aidongxiang.business.response.VideoListResponseQuery
@@ -38,27 +40,31 @@ class AudioListFragment : BaseListKtFragment(){
     val random = Random()
     var isEdit = false
     var headerView : AdvertisementLayout ?= null
-    var type = TYPE_HONE
+    var type = TYPE_HOME
+    var categoryId = -1
 
     companion object {
         val ARG_TYPE = "type"
+        val ARG_CATEGORY_ID = "categoryId"
         /**主页 带广告*/
-        val TYPE_HONE = 1
+        val TYPE_HOME = 1
         /**下载 不带广告*/
         val TYPE_DOWNLOAD = 4
         /**下载 不带广告*/
         val TYPE_COLLECT = 2
         /**观看历史 不带广告*/
         val TYPE_HISTORY = 3
-        fun newInstance(type : Int) : AudioListFragment {
+        fun newInstance(type : Int, categoryId : Int) : AudioListFragment {
             val fragment = AudioListFragment()
             val bundle = Bundle()
             bundle.putInt(ARG_TYPE, type)
+            bundle.putInt(ARG_CATEGORY_ID, categoryId)
             fragment.arguments = bundle
             return fragment
         }
     }
     override fun requestData() {
+        requestAudioList()
     }
 
     override fun init(view: View) {
@@ -69,14 +75,16 @@ class AudioListFragment : BaseListKtFragment(){
 
         arguments?.let {
             type = it.getInt(ARG_TYPE)
+            categoryId = it.getInt(ARG_CATEGORY_ID)
         }
-        if(type == TYPE_HONE){
+        if(type == TYPE_HOME){
             headerView = LayoutInflater.from(activity).inflate(R.layout.advertisement, null, false) as AdvertisementLayout
             adapter.addHeaderView(headerView)
             setHeaderData()
         }
         adapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(AudioDetailsActivity::class.java)
+            val id = datas[position-1].id
+            switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
         }
         tv_select_all.setOnClickListener {
             for(data in datas){
@@ -88,16 +96,20 @@ class AudioListFragment : BaseListKtFragment(){
             datas.filter { it.isSelected }.forEach { datas.remove(it) }
             adapter.update()
         }
-        for (i in 0..10){
-            val video = Video()
-            video.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-            video.audioLength = "12:10"
-            video.name = "丢就不见长相思"
-            video.timestamp = "07-12"
-            video.playNum = 321
-            datas.add(video)
+//        for (i in 0..10){
+//            val video = Video()
+//            video.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
+//            video.audioLength = "12:10"
+//            video.name = "丢就不见长相思"
+//            video.timestamp = "07-12"
+//            video.playNum = 321
+//            datas.add(video)
+//        }
+//        adapter.update()
+        if(type == TYPE_HOME){
+            requestAdList()
         }
-        adapter.update()
+        requestAudioList()
 
     }
 
@@ -128,7 +140,7 @@ class AudioListFragment : BaseListKtFragment(){
         val query = AdListRquestQuery()
         query.action = AIIAction.THREE
 
-        App.aiiRequest?.send(query, object : AIIResponse<AdListResponseQuery>(activity, false){
+        App.aiiRequest.send(query, object : AIIResponse<AdListResponseQuery>(activity, false){
             override fun onSuccess(response: AdListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.ads?.let {
@@ -146,7 +158,11 @@ class AudioListFragment : BaseListKtFragment(){
         val query = ListRequestQuery("AudioList")
         query.table.page = page
         query.action = AIIAction.valueOf(type)
-        App.aiiRequest?.send(query, object : AIIResponse<VideoListResponseQuery>(activity){
+        val where = Where()
+        where.audioType = 2
+        where.categoryId = categoryId
+        query.table.where = where
+        App.aiiRequest.send(query, object : AIIResponse<VideoListResponseQuery>(activity, progressDialog){
             override fun onSuccess(response: VideoListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.let {
@@ -176,8 +192,8 @@ class AudioListFragment : BaseListKtFragment(){
         if(page == 1){
             datas.clear()
         }
-        if(response.videos != null){
-            datas.addAll(response.videos!!)
+        if(response.audios != null){
+            datas.addAll(response.audios!!)
         }
         adapter.update()
         if(datas.size == 0){

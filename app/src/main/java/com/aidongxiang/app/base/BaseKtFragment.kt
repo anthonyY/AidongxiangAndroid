@@ -37,7 +37,7 @@ abstract class BaseKtFragment : Fragment() {
     var tv_title: TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        progressDialog = CustomProgressDialog(activity)
+        progressDialog = CustomProgressDialog.createDialog(activity)
         setHasOptionsMenu(true)
         aiiRequest = AIIRequest(activity, Api.API)
     }
@@ -84,7 +84,7 @@ abstract class BaseKtFragment : Fragment() {
             context = App.context
         }
         if (progressDialog == null) {
-            progressDialog = CustomProgressDialog(context!!)
+            progressDialog = CustomProgressDialog.createDialog(context!!)
         }
 
     }
@@ -132,44 +132,47 @@ abstract class BaseKtFragment : Fragment() {
         activity?.overridePendingTransition(anim_in, anim_out)
     }
 
-    fun switchToActivity(clazz: Class<*>, vararg  pairs: Pair<String, Any>) {
+    fun switchToActivity(clazz: Class<*>, vararg  pairs: Pair<String, Any?>) {
         val intent = Intent(activity, clazz)
         intent.putExtras(getBundleExtras(pairs))
         startActivity(intent)
     }
-    fun switchToActivityForResult(clazz: Class<*>, requestCode: Int,  vararg  pairs: Pair<String, Any>) {
+    fun switchToActivityForResult(clazz: Class<*>, requestCode: Int,  vararg  pairs: Pair<String, Any?>) {
         val intent = Intent(activity, clazz)
         intent.putExtras(getBundleExtras(pairs))
         startActivityForResult(intent, requestCode)
     }
-    private fun getBundleExtras( pairs: Array<out Pair<String, Any>>) : Bundle{
+    private fun getBundleExtras( pairs: Array<out Pair<String, Any?>>) : Bundle{
         val bundle = Bundle()
 
         for (pair in pairs){
-            if(Integer::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putInt(pair.first, pair.second as Int)
-            }
-            else if(String::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putString(pair.first, pair.second as String)
-            }
-            else if(Float::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putFloat(pair.first, pair.second as Float)
-            }
-            else if(Double::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putDouble(pair.first, pair.second as Double)
-            }
-            else if(Long::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putLong(pair.first, pair.second as Long)
-            }
-            else if(Serializable::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putSerializable(pair.first, pair.second as Serializable)
-            }
-            else if(Parcelable::class.java.isAssignableFrom(pair.second::class.java) ){
-                bundle.putParcelable(pair.first, pair.second as Parcelable)
-            }
-            else {
+            pair.second?.let {
+                if(Integer::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putInt(pair.first, it as Int)
+                }
+                else if(String::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putString(pair.first, it as String)
+                }
+                else if(Float::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putFloat(pair.first, it as Float)
+                }
+                else if(Double::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putDouble(pair.first, it as Double)
+                }
+                else if(Long::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putLong(pair.first, it as Long)
+                }
+                else if(Serializable::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putSerializable(pair.first, it as Serializable)
+                }
+                else if(Parcelable::class.java.isAssignableFrom(it::class.java) ){
+                    bundle.putParcelable(pair.first, it as Parcelable)
+                }
+                else {
 
+                }
             }
+            
         }
         return bundle
     }
