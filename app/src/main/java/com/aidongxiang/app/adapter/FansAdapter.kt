@@ -39,7 +39,7 @@ class FansAdapter(context: Context, datas: MutableList<Fans>) : CommonRecyclerVi
             }
         }
 
-        GlideImgManager.load(context, item.imagePath, ivAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)
+        GlideImgManager.load(context, item.imagePath, R.drawable.ic_avatar_default, ivAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)
     }
 
     override fun getLayoutViewId(viewType: Int): Int = R.layout.item_fans

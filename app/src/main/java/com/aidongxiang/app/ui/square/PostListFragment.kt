@@ -13,11 +13,13 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.base.Constants.ARG_MICROBLOG
+import com.aidongxiang.app.base.Constants.ARG_TYPE
 import com.aidongxiang.app.event.RefreshMicrobolgEvent
 import com.aidongxiang.app.ui.mine.PersonCenterActivity
 import com.aidongxiang.app.widgets.CommentDialog
 import com.aidongxiang.app.widgets.ItemDialog
 import com.aidongxiang.business.model.Microblog
+import com.aidongxiang.business.model.Where
 import com.aidongxiang.business.request.FocusSwitchRequestQuery
 import com.aidongxiang.business.response.MicroblogListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
@@ -60,7 +62,7 @@ class PostListFragment : BaseListKtFragment() {
     var clickMicroblog: Microblog? = null
     var clickPosition = -1
     lateinit var commentDialog: CommentDialog
-
+    var userId : Long = -1
     override fun requestData() {
         LogUtil.e("type:$type")
         requestMicroblogList()
@@ -71,9 +73,10 @@ class PostListFragment : BaseListKtFragment() {
         super.init(view)
 
         type = arguments.getInt(ARG_TYPE)
+        userId = arguments.getLong(ARG_ID)
         adapter = PostAdapter(context!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
-        if (type == 3) {
+        if (type == 5) {
             addHeaderView()
         }
         recyclerView?.adapter = adapter
@@ -304,6 +307,12 @@ class PostListFragment : BaseListKtFragment() {
         val query = ListRequestQuery("MicroblogList")
         query.table.page = page
         query.action = AIIAction.valueOf(type)
+        if(type == 3){
+            val where = Where()
+            where.userId = userId
+            query.table.where = where
+        }
+
         App.aiiRequest.send(query, object : AIIResponse<MicroblogListResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: MicroblogListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
@@ -390,11 +399,14 @@ class PostListFragment : BaseListKtFragment() {
         })
     }
     companion object {
-        val ARG_TYPE = "type"
         fun newInstance(type: Int): PostListFragment {
+            return newInstance(type, -1)
+        }
+        fun newInstance(type: Int, userId : Long): PostListFragment {
             val fragment = PostListFragment()
             val bundle = Bundle()
             bundle.putInt(ARG_TYPE, type)
+            bundle.putLong(ARG_ID, userId)
             fragment.arguments = bundle
             return fragment
         }

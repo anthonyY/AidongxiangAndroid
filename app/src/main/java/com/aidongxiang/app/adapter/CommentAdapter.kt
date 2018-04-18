@@ -42,7 +42,7 @@ class CommentAdapter(context: Context, datas: MutableList<Comment>) : CommonRecy
         item.user?.name?.let{ tvName.text = it }
 
         tvTime.text = DateUtil.formatStr(item.timestamp, "yyyy-MM-dd HH:mm:ss", "MM-dd HH:mm")
-        GlideImgManager.load(context, item.user?.imagePath, ivItemAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)
+        GlideImgManager.load(context, item.user?.imagePath, R.drawable.ic_avatar_default, ivItemAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)
 
     }
 

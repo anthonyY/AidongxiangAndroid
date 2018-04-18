@@ -1,81 +1,151 @@
 package com.aiitec.openapi.utils;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 public class LogUtil {
+	public static final String DEFAULT_TAG = "TAG_AII_NET";
+	public static boolean showLog = false;
+	private static final int MAX = 3900;
 
-	public static final String DEFAULT_TAG = "TAG_AIDONGXIANG";
-	public static boolean showLog = true;
+	private static void logIntercept(String tag, String logText, LogLevel level) {
+		if (TextUtils.isEmpty(logText)) {
+			return;
+		}
+		if (logText.length() > MAX) {
+			int start = 0;
+			int index = 0;
+			while (logText.length() - start > MAX) {
+				log(tag + index, logText.substring(start, start + MAX), level);
+				start += MAX;
+				index++;
+			}
+			if (start < logText.length()) {
+				log(tag + index, logText.substring(start, logText.length()), level);
+			}
+
+		} else {
+			log(tag, logText, level);
+		}
+	}
+
+	private static void log(String tag, String logText, LogLevel level) {
+		switch (level) {
+			case VERBOSE:
+				Log.v(tag, logText);
+				break;
+			case DEBUG:
+				Log.d(tag, logText);
+				break;
+			case INFO:
+				Log.i(tag, logText);
+				break;
+			case WARN:
+				Log.w(tag, logText);
+				break;
+			case ERROR:
+				Log.e(tag, logText);
+				break;
+			default:
+				break;
+
+		}
+	}
+
+	public enum LogLevel {
+		/**冗长的*/
+		VERBOSE,
+		/**调试*/
+		DEBUG,
+		/**INFO*/
+		INFO,
+		/**警告*/
+		WARN,
+		/**错误*/
+		ERROR
+	}
 
 	public static void v(String logText) {
 		if (showLog) {
-			Log.v(DEFAULT_TAG, String.valueOf(logText));
+			logIntercept(DEFAULT_TAG, String.valueOf(logText), LogLevel.VERBOSE);
 		}
 	}
 
 	public static void v(String TAG, String logText) {
 		if (showLog) {
-			Log.v(TAG,  logText);
+			logIntercept(TAG, logText, LogLevel.VERBOSE);
 		}
 	}
 
 	public static void d(String logText) {
 		if (showLog) {
-			Log.d(DEFAULT_TAG, String.valueOf(logText));
-		}
-	}
-
-	public static void e(String logText) {
-		if (showLog) {
-			Log.e(DEFAULT_TAG, String.valueOf(logText));
+			logIntercept(DEFAULT_TAG, String.valueOf(logText), LogLevel.DEBUG);
 		}
 	}
 
 	public static void d(String TAG, String logText) {
 		if (showLog) {
-			Log.d(TAG,  logText);
+			logIntercept(TAG, logText, LogLevel.DEBUG);
 		}
 	}
 
 	public static void i(String logText) {
 		if (showLog) {
-			Log.i(DEFAULT_TAG,  logText);
+			logIntercept(DEFAULT_TAG, logText, LogLevel.INFO);
 		}
 	}
-	
+
 	public static void i(String TAG, String logText) {
 		if (showLog) {
-			Log.i(TAG, logText);
+			logIntercept(TAG, logText, LogLevel.INFO);
 		}
 	}
 
 	public static void w(String TAG, String logText) {
 		if (showLog) {
-			Log.w(TAG,  logText);
+			logIntercept(TAG, logText, LogLevel.WARN);
 		}
 	}
 
 	public static void w(String logText) {
 		if (showLog) {
-			Log.w(DEFAULT_TAG, String.valueOf(logText));
+			logIntercept(DEFAULT_TAG, logText, LogLevel.WARN);
+		}
+	}
+
+	public static void e(String logText) {
+		if (showLog) {
+			logIntercept(DEFAULT_TAG, logText, LogLevel.ERROR);
 		}
 	}
 
 	public static void e(String TAG, String logText) {
 		if (showLog) {
-			Log.e(TAG,  logText);
+			logIntercept(TAG, logText, LogLevel.ERROR);
 		}
 	}
 
 	public static void d(Class<?> c, String logText) {
 		if (showLog) {
-			Log.d(DEFAULT_TAG, "[" + c.getSimpleName() + "]" + logText);
+			logIntercept(DEFAULT_TAG, "[" + c.getSimpleName() + "]" + logText, LogLevel.DEBUG);
 		}
 	}
-	
+
 	public static void d(Object c, String logText) {
 		if (showLog) {
-			Log.d(DEFAULT_TAG, "[" + c.getClass().getSimpleName() + "]" + logText);
+			logIntercept(DEFAULT_TAG, "[" + c.getClass().getSimpleName() + "]" + logText, LogLevel.DEBUG);
 		}
 	}
+	public static void println(String logText) {
+		if (showLog) {
+			System.out.println(logText);
+		}
+	}
+	public static void print(String logText) {
+		if (showLog) {
+			System.out.print(logText);
+		}
+	}
+
+
 }

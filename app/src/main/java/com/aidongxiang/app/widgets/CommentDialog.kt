@@ -34,4 +34,9 @@ class CommentDialog(context: Context) : AbsCommonDialog(context){
             et_dialog_content.setText("")
         }
     }
+
+    override fun show() {
+        super.show()
+        et_dialog_content.requestFocus()
+    }
 }

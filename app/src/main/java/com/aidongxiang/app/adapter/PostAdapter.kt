@@ -1,8 +1,10 @@
 package com.aidongxiang.app.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -14,14 +16,20 @@ import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.aidongxiang.app.R
+import com.aidongxiang.app.base.Api
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.ui.mine.PersonCenterActivity
 import com.aidongxiang.app.ui.square.BigImageActivity
 import com.aidongxiang.app.utils.GlideImgManager
+import com.aidongxiang.app.widgets.CustomVideoView
 import com.aidongxiang.business.model.Microblog
+import com.aiitec.openapi.utils.LogUtil
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.collections.ArrayList
@@ -53,11 +61,24 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
         val tvItemChildContent = h.getView<TextView>(R.id.tvItemChildContent)
         val recyclerItemChildImg = h.getView<RecyclerView>(R.id.recyclerItemChildImg)
         val includeItemForward = h.getView<View>(R.id.includeItemForward)
+        val videoview = h.getView<CustomVideoView>(R.id.videoview_item)
+        val videoviewChild = h.getView<CustomVideoView>(R.id.videoviewItemChild)
+        val rlItemVideoPlay = h.getView<RelativeLayout>(R.id.rlItemVideoPlay)
+        val ivItemVideoPlay = h.getView<ImageView>(R.id.ivItemVideoPlay)
 
-        if(item.isFocus == 2){
+        val rlItemChildVideoPlay = h.getView<RelativeLayout>(R.id.rlItemChildVideoPlay)
+        val ivItemChildVideoPlay = h.getView<ImageView>(R.id.ivItemChildVideoPlay)
+        val loadingChild = h.getView<View>(R.id.loadingChild)
+        val loading = h.getView<View>(R.id.loading)
+
+        if (item.isFocus == 2) {
             tvItemFocus.visibility = View.GONE
         } else {
-            tvItemFocus.visibility = View.VISIBLE
+            if (Constants.user != null && Constants.user!!.id == item.user!!.id) {
+                tvItemFocus.visibility = View.GONE
+            } else {
+                tvItemFocus.visibility = View.VISIBLE
+            }
         }
         tvItemPraiseNum.text = item.praiseNum.toString()
         tvItemCommentNum.text = item.commentNum.toString()
@@ -67,14 +88,14 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
         tvItemTime.text = timestamp
         var avatar = ""
         item.user?.let {
-            it.nickName?.let {  nickName = it }
+            it.nickName?.let { nickName = it }
             it.imagePath?.let { avatar = it }
         }
         GlideImgManager.load(context, avatar, R.drawable.ic_avatar_default, ivItemAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)
 
         tvItemName.text = nickName
 
-        if(item.isPraise == 2){
+        if (item.isPraise == 2) {
             ivItemPraiseNum.setImageResource(R.drawable.common_btn_like_pre)
         } else {
             ivItemPraiseNum.setImageResource(R.drawable.common_btn_like_nor)
@@ -83,8 +104,12 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
         var datas = ArrayList<String>()
 
         item.images?.let { datas = it }
-        if(datas.size > 0){
-            val spanCount = if (datas.size == 1) { 1 } else { 3 }
+        if (datas.size > 0) {
+            val spanCount = if (datas.size == 1) {
+                1
+            } else {
+                3
+            }
             recyclerView?.visibility = View.VISIBLE
             recyclerView?.layoutManager = GridLayoutManager(context, spanCount)
             val adapter = PostImgAdapter(context, datas)
@@ -102,20 +127,59 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
             recyclerView?.visibility = View.GONE
         }
 
-        if(!TextUtils.isEmpty(item.address)){
+        if (!TextUtils.isEmpty(item.address)) {
             llItemAddress.visibility = View.VISIBLE
             tvItemAddress.text = item.address
         } else {
             llItemAddress.visibility = View.GONE
         }
 
+        if (!TextUtils.isEmpty(item.videoPath)) {
+            rlItemVideoPlay.visibility = View.VISIBLE
+            var path : String ?= ""
+            if (item.videoPath!!.startsWith("http")) {
+                path = item.videoPath
 
-        if(item.originMicroblog != null){
+            } else {
+                path = Api.IMAGE_URL + item.videoPath
+            }
+            videoview.setVideoPath(path)
+            resetVideoWidth(videoview, path)
+        } else {
+            rlItemVideoPlay.visibility = View.GONE
+        }
+        ivItemVideoPlay.setOnClickListener {
+            videoview.start()
+        }
+        videoview.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
+            override fun onPlay() {
+                ivItemVideoPlay.visibility = View.GONE
+            }
+
+            override fun onPause() {
+                ivItemVideoPlay.visibility = View.VISIBLE
+            }
+
+        })
+        videoview.setOnCompletionListener {
+            ivItemVideoPlay.visibility = View.VISIBLE
+        }
+        videoview.setOnPreparedListener {
+            it.setOnBufferingUpdateListener { _, percent ->
+                if(percent == 100){
+                    loading.visibility = View.GONE
+                } else {
+                    loading.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        if (item.originMicroblog != null) {
             includeItemForward.visibility = View.VISIBLE
             var forwardImages = ArrayList<String>()
 
             item.originMicroblog!!.images?.let { forwardImages = it }
-            val forwardUserName =  item.originMicroblog?.user?.nickName
+            val forwardUserName = item.originMicroblog?.user?.nickName
 //
 
             val content = "@${forwardUserName}  ${item.originMicroblog!!.content}"
@@ -128,7 +192,11 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
                 spanableInfo.setSpan(clickSpan, m.start(), m.end(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
             }
             tvItemChildContent?.text = spanableInfo
-            val forwardSpanCount = if (forwardImages.size == 1) { 1 } else { 3 }
+            val forwardSpanCount = if (forwardImages.size == 1) {
+                1
+            } else {
+                3
+            }
             recyclerItemChildImg?.layoutManager = GridLayoutManager(context, forwardSpanCount)
             val forwardAdapter = PostImgAdapter(context, forwardImages)
             forwardAdapter.setOnRecyclerViewItemClickListener { _, i ->
@@ -141,7 +209,44 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
                 context.startActivity(intent)
             }
             recyclerItemChildImg?.adapter = forwardAdapter
+            if (!TextUtils.isEmpty(item.originMicroblog?.videoPath)) {
+                rlItemChildVideoPlay.visibility = View.VISIBLE
+                var path : String ?= null
+                if (item.originMicroblog?.videoPath!!.startsWith("http")) {
+                    path = item.originMicroblog?.videoPath
+                } else {
+                    path = Api.IMAGE_URL + item.originMicroblog?.videoPath
+                }
+                videoviewChild.setVideoPath(path)
+                resetVideoWidth(videoviewChild, path)
+            } else {
+                rlItemChildVideoPlay.visibility = View.GONE
+            }
+            ivItemChildVideoPlay.setOnClickListener {
+                videoviewChild.start()
+            }
+            videoviewChild.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
+                override fun onPlay() {
+                    ivItemChildVideoPlay.visibility = View.GONE
+                }
 
+                override fun onPause() {
+                    ivItemChildVideoPlay.visibility = View.VISIBLE
+                }
+
+            })
+            videoviewChild.setOnCompletionListener {
+                ivItemChildVideoPlay.visibility = View.VISIBLE
+            }
+            videoviewChild.setOnPreparedListener {
+                it.setOnBufferingUpdateListener { _, percent ->
+                    if(percent == 100){
+                        loadingChild.visibility = View.GONE
+                    } else {
+                        loadingChild.visibility = View.VISIBLE
+                    }
+                }
+            }
         } else {
             includeItemForward.visibility = View.GONE
         }
@@ -149,7 +254,7 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
 
     override fun getLayoutViewId(viewType: Int): Int = R.layout.item_post
 
-    internal inner class Clickable(val context: Context, val userId : Long ) : ClickableSpan() {
+    internal inner class Clickable(val context: Context, val userId: Long) : ClickableSpan() {
 
         /**
          * 重写父类点击事件
@@ -163,6 +268,63 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
          */
         override fun updateDrawState(ds: TextPaint) {
             ds.color = Color.BLUE
+        }
+    }
+
+
+    private fun resetVideoWidth(videoView: CustomVideoView, path : String?) {
+        App.app.cachedThreadPool.execute {
+
+            LogUtil.e("path:$path")
+            var videoHeight = 0
+            var videoWidth = 0
+            try {
+                val retr = MediaMetadataRetriever()
+                retr.setDataSource(path, HashMap<String, String>())
+                val videoHeightStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                val videoWidthStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                videoHeight = Integer.parseInt(videoHeightStr) // 视频高度
+                videoWidth = Integer.parseInt(videoWidthStr) // 视频宽度
+            } catch (e : Exception){
+                e.printStackTrace()
+            }
+            var mVideoWidth = 0
+            var mVideoHeight = 0
+            (context as Activity).runOnUiThread {
+                if (videoWidth > 0 && videoHeight > 0) {
+                    val videoScale = videoWidth.toFloat() / videoHeight
+                    LogUtil.e("videoWidth:" + videoWidth + "   videoHeight:" + videoHeight + "    videoScale:$videoScale")
+                    val parentView = videoView.parent as View
+                    if (videoScale != 0f) {
+                        if (videoWidth > videoHeight) {
+
+                            mVideoHeight = parentView.measuredHeight
+                            mVideoWidth = (mVideoHeight / videoScale).toInt()
+                            val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
+                            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                            parentView.layoutParams = layoutParams
+
+//                            mVideoWidth = videoView.measuredWidth
+//                            mVideoHeight = ((mVideoWidth / videoScale).toInt())
+                        } else {
+
+                            mVideoHeight = parentView.measuredHeight
+                            mVideoWidth = (mVideoHeight * videoScale).toInt()
+                            val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
+                            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                            parentView.layoutParams = layoutParams
+
+//                            mVideoHeight = videoView.measuredHeight
+//                            mVideoWidth = ((mVideoHeight * videoScale).toInt())
+                        }
+                    }
+                    // 设置surfaceview画布大小
+                    videoView.holder.setFixedSize(mVideoWidth, mVideoHeight)
+                    // 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
+                    videoView.setMeasure(mVideoWidth, mVideoHeight)
+                    videoView.requestLayout()
+                }
+            }
         }
     }
 }

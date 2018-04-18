@@ -7,6 +7,7 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.BaseKtFragment
 import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.observer.IUserInfoChangeObserver
 import com.aidongxiang.app.observer.UserInfoSubject
 import com.aidongxiang.app.utils.GlideImgManager
@@ -49,7 +50,8 @@ class MineFragment : BaseKtFragment(), IUserInfoChangeObserver {
             switchToActivity(WatchHistoryActivity::class.java)
         }
         llMineUserInfo.setOnClickListener {
-            switchToActivity(PersonCenterActivity::class.java)
+            Constants.user?.let { switchToActivity(PersonCenterActivity::class.java, ARG_ID to it.id) }
+
         }
         ivMineAvatar.setOnClickListener { switchToActivity(UserInfoActivity::class.java) }
         ll_mine_fans.setOnClickListener { switchToActivity(FansListActivity::class.java, Constants.ARG_TYPE to 2) }

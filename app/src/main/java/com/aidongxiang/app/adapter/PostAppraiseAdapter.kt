@@ -6,7 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.aidongxiang.app.R
 import com.aidongxiang.app.utils.GlideImgManager
-import com.aidongxiang.business.model.Comment
+import com.aidongxiang.business.model.User
 
 /**
  * 微博赞 adapter
@@ -14,19 +14,19 @@ import com.aidongxiang.business.model.Comment
  * createTime 2017/12/7.
  * @version 1.0
  */
-class PostAppraiseAdapter(context: Context, datas: MutableList<Comment>) : CommonRecyclerViewAdapter<Comment>(context, datas){
-    override fun convert(h: CommonRecyclerViewHolder, item: Comment, position: Int) {
+class PostAppraiseAdapter(context: Context, datas: MutableList<User>) : CommonRecyclerViewAdapter<User>(context, datas){
+    override fun convert(h: CommonRecyclerViewHolder, item: User, position: Int) {
 
         val tvName = h.getView<TextView>(R.id.tv_item_name)
         val ivItemAvatar = h.getView<ImageView>(R.id.ivItemAvatar)
 
-        val name = item.user?.name
+        val name = item.name
         if(TextUtils.isEmpty(name)){
             tvName.text = ""
         } else {
             tvName.text = name
         }
-        GlideImgManager.load(context, item.user?.imagePath, ivItemAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)
+        GlideImgManager.load(context, item.imagePath, R.drawable.ic_avatar_default, ivItemAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)
 
     }
 

@@ -50,6 +50,7 @@ class GuideActivity : BaseKtActivity() {
             imageView.setImageResource(drawableId)
             val params = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             imageView.layoutParams = params
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
             viewList.add(imageView)
         }
         myPagerAdapter = MyPagerAdapter(viewList)

@@ -2,6 +2,7 @@ package com.aidongxiang.app.ui.square
 
 import android.content.Context
 import android.graphics.Color
+import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.v4.view.ViewPager
@@ -12,10 +13,12 @@ import android.text.TextPaint
 import android.text.TextUtils
 import android.text.style.ClickableSpan
 import android.view.View
+import android.widget.RelativeLayout
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.PostImgAdapter
 import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.Api
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
@@ -26,14 +29,18 @@ import com.aidongxiang.app.ui.mine.PersonCenterActivity
 import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.widgets.CommentDialog
+import com.aidongxiang.app.widgets.CustomVideoView
 import com.aidongxiang.business.model.Microblog
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
+import com.aiitec.openapi.utils.LogUtil
 import kotlinx.android.synthetic.main.activity_microblog_details.*
 import kotlinx.android.synthetic.main.item_post_forward.*
+import java.util.HashMap
 import java.util.regex.Pattern
+import kotlin.collections.ArrayList
 
 
 /***
@@ -69,6 +76,86 @@ class MicroblogDetailsActivity : BaseKtActivity() {
 
         commentDialog = CommentDialog(this)
         commentDialog.setOnCommentClickListener { requestCommentSubmit(it) }
+
+
+        if (!TextUtils.isEmpty(microblog!!.videoPath)) {
+            rlItemVideoPlay.visibility = View.VISIBLE
+            var path : String ?= ""
+            if (microblog!!.videoPath!!.startsWith("http")) {
+                path = microblog!!.videoPath
+
+            } else {
+                path = Api.IMAGE_URL + microblog!!.videoPath
+            }
+            videoview_item.setVideoPath(path)
+            resetVideoWidth(videoview_item, path)
+        } else {
+            rlItemVideoPlay.visibility = View.GONE
+        }
+        ivItemVideoPlay.setOnClickListener {
+            videoview_item.start()
+        }
+        videoview_item.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
+            override fun onPlay() {
+                ivItemVideoPlay.visibility = View.GONE
+            }
+
+            override fun onPause() {
+                ivItemVideoPlay.visibility = View.VISIBLE
+            }
+
+        })
+        videoview_item.setOnCompletionListener {
+            ivItemVideoPlay.visibility = View.VISIBLE
+        }
+        videoview_item.setOnPreparedListener {
+            it.setOnBufferingUpdateListener { _, percent ->
+                if(percent == 100){
+                    loading.visibility = View.GONE
+                } else {
+                    loading.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        if (!TextUtils.isEmpty(microblog?.originMicroblog?.videoPath)) {
+            rlItemChildVideoPlay.visibility = View.VISIBLE
+            var path : String ?= null
+            if (microblog?.originMicroblog?.videoPath!!.startsWith("http")) {
+                path = microblog?.originMicroblog?.videoPath
+            } else {
+                path = Api.IMAGE_URL + microblog?.originMicroblog?.videoPath
+            }
+            videoviewItemChild.setVideoPath(path)
+            resetVideoWidth(videoviewItemChild, path)
+        } else {
+            rlItemChildVideoPlay.visibility = View.GONE
+        }
+        ivItemChildVideoPlay.setOnClickListener {
+            videoviewItemChild.start()
+        }
+        videoviewItemChild.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
+            override fun onPlay() {
+                ivItemChildVideoPlay.visibility = View.GONE
+            }
+
+            override fun onPause() {
+                ivItemChildVideoPlay.visibility = View.VISIBLE
+            }
+
+        })
+        videoviewItemChild.setOnCompletionListener {
+            ivItemChildVideoPlay.visibility = View.VISIBLE
+        }
+        videoviewItemChild.setOnPreparedListener {
+            it.setOnBufferingUpdateListener { _, percent ->
+                if(percent == 100){
+                    loadingChild.visibility = View.GONE
+                } else {
+                    loadingChild.visibility = View.VISIBLE
+                }
+            }
+        }
         setListener()
         setDatas()
     }
@@ -314,4 +401,59 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         }
     }
 
+    private fun resetVideoWidth(videoView: CustomVideoView, path : String?) {
+        App.app.cachedThreadPool.execute {
+
+            LogUtil.e("path:$path")
+            var videoHeight = 0
+            var videoWidth = 0
+            try {
+                val retr = MediaMetadataRetriever()
+                retr.setDataSource(path, HashMap<String, String>())
+                val videoHeightStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                val videoWidthStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                videoHeight = Integer.parseInt(videoHeightStr) // 视频高度
+                videoWidth = Integer.parseInt(videoWidthStr) // 视频宽度
+            } catch (e : Exception){
+                e.printStackTrace()
+            }
+            var mVideoWidth = 0
+            var mVideoHeight = 0
+            runOnUiThread {
+                if (videoWidth > 0 && videoHeight > 0) {
+                    val videoScale = videoWidth.toFloat() / videoHeight
+                    LogUtil.e("videoWidth:" + videoWidth + "   videoHeight:" + videoHeight + "    videoScale:$videoScale")
+                    val parentView = videoView.parent as View
+                    if (videoScale != 0f) {
+                        if (videoWidth > videoHeight) {
+
+                            mVideoHeight = parentView.measuredHeight
+                            mVideoWidth = (mVideoHeight / videoScale).toInt()
+                            val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
+                            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                            parentView.layoutParams = layoutParams
+
+//                            mVideoWidth = videoView.measuredWidth
+//                            mVideoHeight = ((mVideoWidth / videoScale).toInt())
+                        } else {
+
+                            mVideoHeight = parentView.measuredHeight
+                            mVideoWidth = (mVideoHeight * videoScale).toInt()
+                            val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
+                            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                            parentView.layoutParams = layoutParams
+
+//                            mVideoHeight = videoView.measuredHeight
+//                            mVideoWidth = ((mVideoHeight * videoScale).toInt())
+                        }
+                    }
+                    // 设置surfaceview画布大小
+                    videoView.holder.setFixedSize(mVideoWidth, mVideoHeight)
+                    // 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
+                    videoView.setMeasure(mVideoWidth, mVideoHeight)
+                    videoView.requestLayout()
+                }
+            }
+        }
+    }
 }

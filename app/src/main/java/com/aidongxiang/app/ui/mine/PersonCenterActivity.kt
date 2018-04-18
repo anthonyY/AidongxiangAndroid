@@ -13,6 +13,7 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseListKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
+import com.aidongxiang.app.base.Constants.ARG_NAME
 import com.aidongxiang.app.ui.square.MicroblogDetailsActivity
 import com.aidongxiang.app.ui.square.PublishPostActivity
 import com.aidongxiang.app.ui.square.ReportActivity
@@ -60,7 +61,7 @@ class PersonCenterActivity : BaseListKtActivity() {
     lateinit var tvHeaderMicroblogLabel : TextView
 
     override fun getDatas(): List<*>? = datas
-
+    var userName : String ?= null
 
     override fun requestData() {
         requestMicroblogList()
@@ -69,6 +70,7 @@ class PersonCenterActivity : BaseListKtActivity() {
     override fun init(savedInstanceState: Bundle?) {
         super.init(savedInstanceState)
         title = "个人资料"
+        id = bundle.getLong(ARG_ID)
         adapter = PostAdapter(this, datas)
         recyclerView?.layoutManager = LinearLayoutManager(this)
 
@@ -82,9 +84,9 @@ class PersonCenterActivity : BaseListKtActivity() {
         tvFocus = headerView.findViewById(R.id.tvFocus)
         lineTop2 = headerView.findViewById(R.id.lineTop2)
         tvHeaderMicroblogLabel = headerView.findViewById(R.id.tvHeaderMicroblogLabel)
+        tvHeaderMicroblogLabel.setOnClickListener { switchToActivity(MyMicroblogActivity::class.java, ARG_ID to id, ARG_NAME to userName) }
 
 
-        id = bundle.getLong(ARG_ID)
         adapter.addHeaderView(headerView)
         recyclerView?.adapter = adapter
         (recyclerView as XRecyclerView).setLoadingMoreEnabled(false)
@@ -398,6 +400,7 @@ class PersonCenterActivity : BaseListKtActivity() {
     }
     fun getUserDetails(user: User){
 
+        userName = user.nickName
         tvFans.text = user.fansNum.toString()
         tvFollow.text = user.focusNum.toString()
         GlideImgManager.load(this, user.imagePath, R.drawable.ic_avatar_default, ivAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)
@@ -408,7 +411,7 @@ class PersonCenterActivity : BaseListKtActivity() {
             lineTop2.visibility = View.GONE
             tvHeaderMicroblogLabel.text = "Ta的微博"
         } else {
-            tvHeaderMicroblogLabel.text = "他的微博"
+            tvHeaderMicroblogLabel.text = "Ta的微博"
             tvFocus.visibility = View.VISIBLE
             lineTop2.visibility = View.VISIBLE
             if(user.isFocus == 2){
