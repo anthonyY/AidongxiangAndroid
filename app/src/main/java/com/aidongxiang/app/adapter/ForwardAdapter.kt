@@ -7,7 +7,6 @@ import android.widget.TextView
 import com.aidongxiang.app.R
 import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.business.model.Microblog
-import com.aiitec.openapi.constant.AIIConstant
 import com.aiitec.openapi.utils.DateUtil
 
 /**
@@ -27,7 +26,7 @@ class ForwardAdapter(context: Context, datas: MutableList<Microblog>) : CommonRe
         val ivItemPraise = h.getView<ImageView>(R.id.ivItemPraise)
         tvContent.text = item.content
 
-        if(item.user != null && item.user!!.id == AIIConstant.USER_ID){
+        if(item.isPraise == 2){
             ivItemPraise.setImageResource(R.drawable.common_btn_like_pre)
             tvItemPraise.setTextColor(ContextCompat.getColor(context, R.color.purple))
         } else {

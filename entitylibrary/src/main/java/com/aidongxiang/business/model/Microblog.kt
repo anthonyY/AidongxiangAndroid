@@ -17,6 +17,7 @@ class Microblog() : Entity(), Parcelable {
     var content : String ?= null
     var timestamp : String ?= null
     var address : String ?= null
+    var accessUrl : String ?= null
     var praiseNum = -1
     var commentNum = -1
     var repeatNum = -1
@@ -38,6 +39,7 @@ class Microblog() : Entity(), Parcelable {
         content = parcel.readString()
         timestamp = parcel.readString()
         address = parcel.readString()
+        accessUrl = parcel.readString()
         praiseNum = parcel.readInt()
         commentNum = parcel.readInt()
         repeatNum = parcel.readInt()
@@ -61,6 +63,7 @@ class Microblog() : Entity(), Parcelable {
         parcel.writeString(content)
         parcel.writeString(timestamp)
         parcel.writeString(address)
+        parcel.writeString(accessUrl)
         parcel.writeInt(praiseNum)
         parcel.writeInt(commentNum)
         parcel.writeInt(repeatNum)

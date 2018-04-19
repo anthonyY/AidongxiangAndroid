@@ -21,11 +21,13 @@ import com.aidongxiang.app.ui.video.VideoDetailsActivity
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.widgets.NoticeDialog
 import com.aidongxiang.business.model.Article
+import com.aidongxiang.business.model.Navigation
 import com.aidongxiang.business.model.Video
 import com.aidongxiang.business.model.Where
 import com.aidongxiang.business.request.AdListRquestQuery
 import com.aidongxiang.business.response.AdListResponseQuery
 import com.aidongxiang.business.response.ArticleListResponseQuery
+import com.aidongxiang.business.response.NavigationListListResponseQuery
 import com.aidongxiang.business.response.VideoListResponseQuery
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
@@ -109,7 +111,7 @@ class HomeFragment : BaseKtFragment() {
     val videoDatas = ArrayList<Video>()
     val audioDatas = ArrayList<Video>()
     val newsDatas = ArrayList<Article>()
-    val categoryDatas = ArrayList<String>()
+    val categoryDatas = ArrayList<Navigation>()
     val random = Random()
     var loadState = 0
 
@@ -196,10 +198,11 @@ class HomeFragment : BaseKtFragment() {
         requestAudioList()
         requestVideoList()
         requestArticleList()
+        requestNavigationList()
     }
     private fun onLoadFinish() {
         loadState++
-        if(loadState >= 4){
+        if(loadState >= 5){
             swipe_home_refresh.isRefreshing = false
         }
 
@@ -301,6 +304,39 @@ class HomeFragment : BaseKtFragment() {
                 response?.let { getArticleList(it) }
             }
         })
+    }
+    /**
+     * 请求导航列表
+     */
+    private fun requestNavigationList() {
+        val query = ListRequestQuery("NavigationList")
+        query.table.page = 1
+        query.action = AIIAction.ONE
+        App.aiiRequest.send(query, object : AIIResponse<NavigationListListResponseQuery>(activity, progressDialog) {
+            override fun onSuccess(response: NavigationListListResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.let { getNavigationListListResponseQuery(it) }
+            }
+
+            override fun onFinish(index: Int) {
+                super.onFinish(index)
+                onLoadFinish()
+            }
+
+            override fun onCache(response: NavigationListListResponseQuery?, index: Int) {
+                super.onCache(response, index)
+                response?.let { getNavigationListListResponseQuery(it) }
+            }
+        })
+    }
+
+    /**
+     * 获取新闻数据，设置到adapter里
+     */
+    private fun getNavigationListListResponseQuery(response: NavigationListListResponseQuery) {
+        categoryDatas.clear()
+        response.navigations?.let { categoryDatas.addAll(it) }
+        homeCategoryAdapter.update()
     }
 
     /**

@@ -10,7 +10,6 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
-import com.aidongxiang.app.base.Constants.ARG_SMSCODE_ID
 import com.aidongxiang.app.utils.SmscodeCountDown
 import com.aidongxiang.business.model.Where
 import com.aidongxiang.business.response.SMSResponseQuery
@@ -33,7 +32,7 @@ class ChangeMobileNextActivity : BaseKtActivity() {
     lateinit var smscodeCountDown : SmscodeCountDown
     override fun init(savedInstanceState: Bundle?) {
         mobile = Constants.user?.mobile
-        smscodeId = bundle.getInt(ARG_SMSCODE_ID)
+//        smscodeId = bundle.getInt(ARG_SMSCODE_ID)
         title = "修改手机"
         smscodeCountDown = SmscodeCountDown(60*1000, 1000)
         smscodeCountDown.setSmscodeBtn(btnSmscode)
