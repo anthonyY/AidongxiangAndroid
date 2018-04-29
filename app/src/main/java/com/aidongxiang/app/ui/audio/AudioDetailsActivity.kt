@@ -16,7 +16,6 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
-import com.aidongxiang.app.model.Video
 import com.aidongxiang.app.observer.IMusicPlayObserver
 import com.aidongxiang.app.observer.MusicPlaySubject
 import com.aidongxiang.app.service.MusicService
@@ -24,6 +23,7 @@ import com.aidongxiang.app.ui.home.HomeFragment
 import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.utils.Utils
+import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.business.model.Ad
 import com.aidongxiang.business.model.Audio
 import com.aidongxiang.business.response.AudioDetailsResponseQuery
@@ -57,9 +57,39 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
     var isPlaying = false
     var isFirstPlay = true
     var audio: Audio ?= null
+    lateinit var downloadCofirmDialog : CommonDialog
     override fun init(savedInstanceState: Bundle?) {
         id = bundle.getLong(ARG_ID)
 
+        initDialog()
+        setListener()
+        val random = Random()
+        val ads = ArrayList<Ad>()
+        for(i in 0..5){
+            val ad = Ad()
+            ad.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
+            ad.name = "广告"
+            ads.add(ad)
+        }
+
+        adAudioDetails.startAD(ads.size, 4, true, ads)
+
+        requestVideoDetails()
+    }
+
+    private fun initDialog() {
+
+        downloadCofirmDialog = CommonDialog(this)
+        downloadCofirmDialog.setTitle("下载音频")
+        downloadCofirmDialog.setContent("确定下载？")
+        downloadCofirmDialog.setOnConfirmClickListener {
+            downloadCofirmDialog.dismiss()
+            audio?.let { download(it) }
+        }
+
+    }
+
+    private fun setListener(){
         ivAudioDetailsPlay.setOnClickListener {
             if(isFirstPlay){
                 startPlay()
@@ -78,7 +108,6 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
                     startService(intent)
                 }
             }
-
             override fun onStartTrackingTouch(p0: SeekBar?) {}
             override fun onStopTrackingTouch(p0: SeekBar?) {}
 
@@ -104,20 +133,11 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
             }
             requestPraiseSwitch(audio!!.isPraise)
         }
-        val random = Random()
-        val ads = ArrayList<Ad>()
-        for(i in 0..5){
-            val ad = Ad()
-            ad.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-            ad.name = "广告"
-            ads.add(ad)
+
+        iv_audio_download.setOnClickListener {
+            audio?.let { downloadCofirmDialog.show()}
         }
-
-        adAudioDetails.startAD(ads.size, 4, true, ads)
-
-        requestVideoDetails()
     }
-
     override fun onDestroy() {
         super.onDestroy()
 
@@ -188,7 +208,7 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         if(TextUtils.isEmpty(audioPath)){
             return
         }
-        LogUtil.e("开始播放 audioPath:"+audioPath)
+        LogUtil.i("开始播放 audioPath:"+audioPath)
         ivAudioDetailsPlay.setImageResource(R.drawable.video_btn_stop2)
         val intent = Intent(this@AudioDetailsActivity, MusicService::class.java)
         intent.putExtra(MusicService.ARG_TYPE, MusicService.TYPE_PLAY)
@@ -231,7 +251,6 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
                 ivAudioDetailsPlay.setImageResource(R.drawable.video_btn_play2)
             }
         }
-
         this.currentPosition = current
         this.duration = duration
         if(duration == 0){
@@ -318,7 +337,7 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
     }
 
 
-    private fun download(vedio : Video){
+    private fun download(vedio : Audio){
 
         var download = App.aiidbManager.findObjectFromId(Download::class.java, vedio.id)
         var fileExists = false
@@ -331,8 +350,8 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
             val downloadManager = DownloadManager.getInstance(this)
             download = Download()
             download.id = vedio.id
-            download.path = vedio.path
-            download.imagePath = vedio.thumbPath
+            download.path = vedio.audioPath
+            download.imagePath = vedio.imagePath
             download.title = vedio.name
             download.type = 2
             downloadManager.download(download)
@@ -369,7 +388,7 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         this.audio = audio
         audioPath = audio.audioPath
 
-
+        downloadCofirmDialog.setContent("确定下载${audio.name}？")
         webview_audio.settings.javaScriptEnabled = true
         val audiosSynopsis = Utils.getAbsSource(audio.description, Api.BASE_URL + "/")
         webview_audio.loadData(audiosSynopsis,"text/html; charset=UTF-8", null)

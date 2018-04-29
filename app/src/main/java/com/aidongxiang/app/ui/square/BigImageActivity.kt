@@ -4,11 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.ViewGroup
 import android.support.v4.view.PagerAdapter
 import android.view.View
+import android.view.ViewGroup
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.Api
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.utils.GlideImgManager
@@ -47,7 +48,11 @@ class BigImageActivity : BaseKtActivity() {
             viewPager.currentItem = position
         }
         floatingSave.setOnClickListener {
-            val path = datas[viewPager.currentItem]
+            var path = datas[viewPager.currentItem]
+            if(!path.startsWith("http")){
+                path = Api.IMAGE_URL + path
+            }
+
             val index = path.lastIndexOf("/")
             var fileName = ""
             fileName = if(index != -1){
@@ -62,7 +67,7 @@ class BigImageActivity : BaseKtActivity() {
                 dir.mkdir()
             }
             val file = File(cachePath, fileName)
-            App.aiiRequest?.download(path, file, object : ProgressResponseBody.ProgressListener{
+            App.aiiRequest.download(path, file, object : ProgressResponseBody.ProgressListener{
                 override fun onPreExecute(contentLength: Long) {
                 }
 

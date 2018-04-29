@@ -16,16 +16,18 @@ import com.aidongxiang.app.base.Constants.ARG_MICROBLOG
 import com.aidongxiang.app.base.Constants.ARG_TYPE
 import com.aidongxiang.app.event.RefreshMicrobolgEvent
 import com.aidongxiang.app.ui.mine.PersonCenterActivity
+import com.aidongxiang.app.ui.video.VideoPlayerActivity2
 import com.aidongxiang.app.widgets.CommentDialog
+import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.app.widgets.ItemDialog
 import com.aidongxiang.business.model.Microblog
 import com.aidongxiang.business.model.Where
+import com.aidongxiang.business.request.DeleteActionRequestQuery
 import com.aidongxiang.business.request.FocusSwitchRequestQuery
 import com.aidongxiang.business.response.MicroblogListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
-import com.aiitec.openapi.model.RequestQuery
 import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
@@ -58,7 +60,7 @@ class PostListFragment : BaseListKtFragment() {
     override fun getDatas(): List<*>? = datas
     lateinit var itemDialog: ItemDialog
     lateinit var shieldDialog: ItemDialog
-    lateinit var deleteDialog: ItemDialog
+    lateinit var deleteDialog: CommonDialog
     var clickMicroblog: Microblog? = null
     var clickPosition = -1
     lateinit var commentDialog: CommentDialog
@@ -129,11 +131,34 @@ class PostListFragment : BaseListKtFragment() {
                         switchToActivity(PersonCenterActivity::class.java, ARG_ID to datas[positon - 1].user!!.id)
                     }
                     R.id.tvItemFocus -> {
-                        requestFocusSubmit(datas[positon - 1].id, 1)
+                        datas[positon - 1].user?.let {
+                            requestFocusSubmit(it.id, 1, positon-1)
+                        }
+
+                    }
+                    R.id.rlItemVideoPlay -> {
+                        datas[positon - 1].videoPath?.let {
+                            switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it)
+                        }
+                    }
+                    R.id.rlItemChildVideoPlay -> {
+                        datas[positon - 1].originMicroblog?.videoPath?.let {
+                            switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it)
+                        }
                     }
                 }
             }
-        }, R.id.ivItemMore, R.id.flItemPraise, R.id.flItemForward, R.id.flItemComment, R.id.ivItemAvatar)
+        }, R.id.ivItemMore, R.id.flItemPraise, R.id.flItemForward, R.id.flItemComment, R.id.tvItemFocus, R.id.ivItemAvatar, R.id.rlItemVideoPlay, R.id.rlItemChildVideoPlay)
+//        rlItemVideoPlay.setOnClickListener {
+//            microblog?.let {
+//
+//            }
+//        }
+//        rlItemChildVideoPlay.setOnClickListener {
+//            microblog?.originMicroblog?.let {
+//                switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it.videoPath)
+//            }
+//        }
         requestMicroblogList()
 
         EventBus.getDefault().register(this)
@@ -169,6 +194,9 @@ class PostListFragment : BaseListKtFragment() {
                     //屏蔽列表, 这里取消屏蔽
                     requestScreenSubmit(it.id, 2)
                 } else {
+                    if (Constants.user != null){
+                        LogUtil.e("myId : "+Constants.user?.id +"    microbolg_user_id:"+it.user?.id+"    "+(it.user?.id == Constants.user?.id))
+                    }
                     if (Constants.user != null && it.user?.id == Constants.user?.id) {
                         deleteDialog.show()
                     } else {
@@ -180,7 +208,7 @@ class PostListFragment : BaseListKtFragment() {
                                 switchToActivity(ReportActivity::class.java, ARG_ID to it.id)
                             }
                             2 -> {
-                                requestFocusSubmit(it.user!!.id, it.isFocus)
+                                requestFocusSubmit(it.user!!.id, it.isFocus, clickPosition)
                             }
                         }
                     }
@@ -203,11 +231,14 @@ class PostListFragment : BaseListKtFragment() {
 
         }
 
-        deleteDialog = ItemDialog(activity)
-        val deleteDatas = ArrayList<String>()
-        deleteDatas.add("删除此条内容")
-        deleteDialog.setItems(datas)
-        deleteDialog.setOnItemClickListener { _, _ ->
+        deleteDialog = CommonDialog(activity)
+        deleteDialog.setTitle("删除微博")
+        deleteDialog.setContent("确定删除这条微博？")
+//        val deleteDatas = ArrayList<String>()
+//        deleteDatas.add("删除此条内容")
+//        deleteDialog.setItems(datas)
+        deleteDialog.setOnConfirmClickListener {
+            deleteDialog.dismiss()
             clickMicroblog?.let { requestDeleteAction(it.id) }
         }
 
@@ -243,14 +274,15 @@ class PostListFragment : BaseListKtFragment() {
      * 删除
      */
     private fun requestDeleteAction(id: Long) {
-        val query = RequestQuery()
+        val query = DeleteActionRequestQuery()
         query.namespace = "DeleteAction"
 //        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
         query.action = AIIAction.TWO
-        query.id = id
+        query.ids = arrayListOf(id)
         App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
+                toast("删除成功")
                 onRefresh()
             }
         })
@@ -259,7 +291,7 @@ class PostListFragment : BaseListKtFragment() {
     /**
      * 关注 / 取消关注
      */
-    private fun requestFocusSubmit(id: Long, open: Int) {
+    private fun requestFocusSubmit(id: Long, open: Int, position: Int) {
         val query = FocusSwitchRequestQuery()
         query.namespace = "FocusSwitch"
         query.userId = id
@@ -268,15 +300,15 @@ class PostListFragment : BaseListKtFragment() {
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
 //                onRefresh()
-                if(clickPosition >= 0 && clickPosition < datas.size){
+                if(position >= 0 && position < datas.size){
                     if(open == 1){
-                        datas[clickPosition].isFocus = 2
+                        datas[position].isFocus = 2
+                        toast("关注成功")
                     } else {
-                        datas[clickPosition].isFocus = 1
+                        toast("已取消关注")
+                        datas[position].isFocus = 1
                     }
-                    adapter.notifyItemChanged(clickPosition + 1)
-                    clickMicroblog = null
-                    clickPosition = -1
+                    adapter.notifyItemChanged(position + 1)
                 }
 
             }
@@ -355,10 +387,11 @@ class PostListFragment : BaseListKtFragment() {
         query.action = AIIAction.THREE
         query.id = postId
         query.content = content
-        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity) {
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 if(clickPosition >= 0 && clickPosition < datas.size){
+                    toast("评论成功")
                     datas[clickPosition].commentNum = datas[clickPosition].commentNum + 1
                     adapter.notifyItemChanged(clickPosition + 1)
                     clickMicroblog = null
@@ -379,7 +412,7 @@ class PostListFragment : BaseListKtFragment() {
         query.action = AIIAction.THREE
         query.id = postId
         query.open = open
-        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity){
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, false){
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 val isPraise = datas[position].isPraise

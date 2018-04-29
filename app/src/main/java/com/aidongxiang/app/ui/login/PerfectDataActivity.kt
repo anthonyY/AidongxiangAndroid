@@ -1,6 +1,5 @@
 package com.aidongxiang.app.ui.login
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -13,6 +12,7 @@ import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants.ARG_IS_THIRTY_PART_LOGIN
 import com.aidongxiang.app.base.Constants.ARG_MOBILE
 import com.aidongxiang.app.base.Constants.ARG_SMSCODE_ID
+import com.aidongxiang.app.ui.Main2Activity
 import com.aidongxiang.app.utils.UploadPhotoHelper
 import com.aidongxiang.app.utils.Utils
 import com.aidongxiang.business.request.UserRegisterRequestQuery
@@ -139,9 +139,11 @@ class PerfectDataActivity : BaseKtActivity(), TextWatcher {
                 super.onSuccess(response, index)
 
                 dismissDialog()
-                toast("注册成功，请重新登录")
-                setResult(Activity.RESULT_OK)
-                finish()
+                toast("注册成功")
+                switchToActivity(Main2Activity::class.java)
+                requestUserDetails()
+//                setResult(Activity.RESULT_OK)
+//                finish()
 
             }
         })

@@ -3,107 +3,143 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:background="@android:color/black"
     android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/rl_video"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        >
-        <com.aidongxiang.app.widgets.CustomVideoView
-            android:id="@+id/videoview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:background="@android:color/black"
-            android:saveEnabled="true" />
+        android:layout_height="match_parent">
 
-
+        <View
+            android:id="@+id/viewMarginTop"
+            android:layout_width="1dp"
+            android:layout_height="20dp"/>
         <RelativeLayout
-            android:id="@+id/rl_video_control"
+            android:id="@+id/rl_video"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
-            <ImageView
-                android:id="@+id/play_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            android:background="@android:color/black">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:contentDescription="@string/imageview_content_description"
-                android:src="@drawable/common_btn_play"
-                android:visibility="visible" />
+                >
+
+                <com.aidongxiang.app.widgets.CustomVideoView
+                    android:id="@+id/videoview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:saveEnabled="true" />
+
+                <ImageView
+                    android:id="@+id/ivVideoThumb"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
 
             <ProgressBar
                 android:id="@+id/loading"
                 style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="@dimen/margin_screen_left"
-                android:paddingRight="4dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:background="#5000">
-                <TextView
-                    android:id="@+id/tv_video_current_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:text="00:00"
-                    android:layout_alignLeft="@+id/seekbar_video"
-                    android:layout_above="@+id/seekbar_video"
-                    android:textColor="@color/white"/>
+                android:layout_centerInParent="true"
+                android:visibility="gone" />
 
-                <SeekBar
-                    android:id="@+id/seekbar_video"
-                    android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@+id/iv_full_screen"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:max="100"
-                    android:progress="50"
-                    style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-                    android:maxHeight="8dp"/>
-                <TextView
-                    android:id="@+id/tv_video_duration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:layout_alignRight="@+id/seekbar_video"
-                    android:layout_above="@+id/seekbar_video"
-                    android:text="23:01"
-                    android:layout_marginRight="4dp"
-                    android:textColor="@color/white"/>
+
+            <RelativeLayout
+                android:id="@+id/rl_video_control"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
                 <ImageView
-                    android:id="@+id/iv_full_screen"
+                    android:id="@+id/play_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:contentDescription="@string/imageview_content_description"
+                    android:src="@drawable/common_btn_play"
+                    android:visibility="visible" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
-                    android:visibility="visible"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:clickable="true"
-                    android:background="@drawable/btn_transparent_selector"
-                    android:src="@drawable/fullscreen"/>
-            </LinearLayout>
+                    android:background="#5000"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="12dp"
+                    android:paddingLeft="@dimen/margin_screen_left"
+                    android:paddingRight="4dp"
+                    android:paddingTop="12dp">
+
+                    <TextView
+                        android:id="@+id/tv_video_current_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/seekbar_video"
+                        android:layout_alignLeft="@+id/seekbar_video"
+                        android:text="00:00"
+                        android:textColor="@color/white"
+                        android:textSize="12sp" />
+
+                    <SeekBar
+                        android:id="@+id/seekbar_video"
+                        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_toLeftOf="@+id/iv_full_screen"
+                        android:layout_weight="1"
+                        android:max="100"
+                        android:maxHeight="8dp"
+                        android:progress="50" />
+
+                    <TextView
+                        android:id="@+id/tv_video_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/seekbar_video"
+                        android:layout_alignRight="@+id/seekbar_video"
+                        android:layout_marginRight="4dp"
+                        android:text="23:01"
+                        android:textColor="@color/white"
+                        android:textSize="12sp" />
+
+                    <ImageView
+                        android:id="@+id/iv_full_screen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/btn_transparent_selector"
+                        android:clickable="true"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="8dp"
+                        android:src="@drawable/fullscreen"
+                        android:visibility="visible" />
+                </LinearLayout>
+
+            </RelativeLayout>
 
         </RelativeLayout>
 
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/common_btn_back"
+            android:layout_below="@+id/viewMarginTop"
+            android:paddingLeft="@dimen/margin_screen_left"
+            android:paddingRight="@dimen/margin_screen_right"
+            android:paddingBottom="12dp"
+            android:paddingTop="12dp"
+            android:visibility="visible" />
+
     </RelativeLayout>
+
 </LinearLayout>

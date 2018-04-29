@@ -107,8 +107,13 @@ public class GlideImgManager {
     }
     public static void loadFile(Context context, File file, int emptyImg,  int erroImg, ImageView iv, GlideType type, int roundDp) {
 
-        emptyImg = getRandomDefaultImage();
-        erroImg = getRandomDefaultImage();
+        if(emptyImg <= 0){
+            emptyImg = getRandomDefaultImage();
+        }
+        if(erroImg <= 0){
+            erroImg = getRandomDefaultImage();
+        }
+
         DrawableRequestBuilder<File> request = Glide.with(context).load(file).placeholder(emptyImg).error(erroImg);
 
         if (GlideType.TYPE_CIRCLE == type) {

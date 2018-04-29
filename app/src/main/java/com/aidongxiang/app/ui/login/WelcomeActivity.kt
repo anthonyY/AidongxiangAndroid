@@ -2,10 +2,14 @@ package com.aidongxiang.app.ui.login
 
 import android.os.Bundle
 import android.os.Handler
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ACTION
 import com.aidongxiang.app.ui.Main2Activity
+import com.aidongxiang.business.response.SettingResponseQuery
+import com.aiitec.openapi.model.RequestQuery
+import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.AiiUtil
 
 class WelcomeActivity : BaseKtActivity() {
@@ -30,7 +34,19 @@ class WelcomeActivity : BaseKtActivity() {
 
 
         requestUserDetails(false)
+        requestSetting()
 
+    }
+
+    private fun requestSetting(){
+        val query = RequestQuery("Setting")
+        App.aiiRequest.send(query, object : AIIResponse<SettingResponseQuery>(this, false){
+
+            override fun onSuccess(response: SettingResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                Constants.poster = response?.poster
+            }
+        })
     }
 
 }

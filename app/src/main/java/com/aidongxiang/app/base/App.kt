@@ -18,6 +18,7 @@ import com.mabeijianxi.smallvideorecord2.DeviceUtils
 import com.mabeijianxi.smallvideorecord2.JianXiCamera
 import com.umeng.socialize.PlatformConfig
 import com.umeng.socialize.UMShareAPI
+import java.io.File
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -145,20 +146,29 @@ class App : Application (){
      */
     fun initSmallVideo(context: Context) {
         //设置视频缩略图路径
-        Constants.VIDEOS_DIR = Companion.context!!.filesDir.absolutePath + "/video"
+//        context.filesDir.absolutePath + "/video"
         // 设置拍摄视频缓存路径
-        val dcim = Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+        val dcim = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+        var path = ""
         if (DeviceUtils.isZte()) {
             if (dcim.exists()) {
-                JianXiCamera.setVideoCachePath(dcim.absolutePath + "/mabeijianxi/")
+                path = dcim.absolutePath + "/aidongxiang/"
+
             } else {
-                JianXiCamera.setVideoCachePath(dcim.path.replace("/sdcard/",
-                        "/sdcard-ext/") + "/mabeijianxi/")
+                path = dcim.path.replace("/sdcard/", "/sdcard-ext/") + "/aidongxiang/"
             }
         } else {
-            JianXiCamera.setVideoCachePath(dcim.absolutePath + "/mabeijianxi/")
+            path = dcim.absolutePath + "/aidongxiang/"
         }
+        Constants.VIDEOS_DIR = path
+        val dirFile = File(Constants.VIDEOS_DIR)
+        if(!dirFile.exists()){
+            if(!dirFile.parentFile.exists()){
+                dirFile.parentFile.mkdir()
+            }
+            dirFile.mkdir()
+        }
+        JianXiCamera.setVideoCachePath(path)
         JianXiCamera.initialize(false, null)
     }
 

@@ -516,12 +516,9 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 // 拉伸比例
             videoScale =  mVideoWidth.toFloat()/ mVideoHeight
 // 视频资源拉伸至屏幕宽度，横屏竖屏需结合传感器等特殊处理
-
-            LogUtil.e("videoWidth:"+videoWidth+"   videoHeight:"+videoHeight+"    videoScale:$videoScale" )
 // 拉伸VideoView高度
             if(videoScale != 0f){
                 if(mVideoWidth > mVideoHeight){
-                    LogUtil.e("mVideoWidth > mVideoHeight================isFullScreen:"+isFullScreen )
 //                    if(isFullScreen){
 //                        mVideoViewLayoutParams2 = rl_video2.layoutParams
 //                        val layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)

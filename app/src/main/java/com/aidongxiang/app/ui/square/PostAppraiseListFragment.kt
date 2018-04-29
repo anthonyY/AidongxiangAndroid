@@ -51,7 +51,7 @@ class PostAppraiseListFragment : BaseListKtFragment(){
         listQuery.action = AIIAction.THREE
         listQuery.id = postId
         listQuery.table.page = page
-        App.aiiRequest.send(listQuery, object : AIIResponse<UserListResponseQuery>(activity){
+        App.aiiRequest.send(listQuery, object : AIIResponse<UserListResponseQuery>(activity, false){
             override fun onSuccess(response: UserListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.let { getUserList(it) }

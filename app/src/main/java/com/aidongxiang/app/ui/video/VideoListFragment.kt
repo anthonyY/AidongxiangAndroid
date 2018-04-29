@@ -2,20 +2,14 @@ package com.aidongxiang.app.ui.video
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
 import android.view.View
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.HomeVideoAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.Constants.ARG_ID
-import com.aidongxiang.app.ui.home.HomeFragment
-import com.aidongxiang.app.widgets.AdvertisementLayout
-import com.aidongxiang.business.model.Ad
 import com.aidongxiang.business.model.Video
 import com.aidongxiang.business.model.Where
-import com.aidongxiang.business.request.AdListRquestQuery
-import com.aidongxiang.business.response.AdListResponseQuery
 import com.aidongxiang.business.response.VideoListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
@@ -38,7 +32,7 @@ class VideoListFragment : BaseListKtFragment(){
     override fun getDatas(): List<*>? = datas
     val random = Random()
     var isEdit = false
-    var headerView : AdvertisementLayout ?= null
+//    var headerView : AdvertisementLayout ?= null
     var type = TYPE_HOME
     var categoryId : Long = -1
 
@@ -75,11 +69,11 @@ class VideoListFragment : BaseListKtFragment(){
             type = it.getInt(ARG_TYPE)
             categoryId = it.getLong(ARG_CATEGORY_ID)
         }
-        if(type == TYPE_HOME){
-            headerView = LayoutInflater.from(activity).inflate(R.layout.advertisement, null, false) as AdvertisementLayout
-            adapter.addHeaderView(headerView)
-            setHeaderData()
-        }
+//        if(type == TYPE_HOME){
+//            headerView = LayoutInflater.from(activity).inflate(R.layout.advertisement, null, false) as AdvertisementLayout
+//            adapter.addHeaderView(headerView)
+//            setHeaderData()
+//        }
         adapter.setOnRecyclerViewItemClickListener { v, position ->
             val id = datas[position-1].id
             switchToActivity(VideoDetailsActivity::class.java, ARG_ID to id)
@@ -105,25 +99,25 @@ class VideoListFragment : BaseListKtFragment(){
 //        }
 //        adapter.update()
 
-        if(type == TYPE_HOME) {
-            requestAdList()
-        }
+//        if(type == TYPE_HOME) {
+//            requestAdList()
+//        }
 
         requestVideoList()
 
     }
-    fun setHeaderData(){
-        val ads = ArrayList<Ad>()
-        for(i in 0..6){
-            val ad = Ad()
-            ad.name = "广告"
-            ad.link = "http://www.baidu.com"
-            ad.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-            ads.add(ad)
-        }
-        headerView?.startAD(ads.size, 3, true, ads, 0.47f)
-
-    }
+//    fun setHeaderData(){
+//        val ads = ArrayList<Ad>()
+//        for(i in 0..6){
+//            val ad = Ad()
+//            ad.name = "广告"
+//            ad.link = "http://www.baidu.com"
+//            ad.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
+//            ads.add(ad)
+//        }
+//        headerView?.startAD(ads.size, 3, true, ads, 0.47f)
+//
+//    }
 
     fun setIsEdit(isEdit : Boolean ){
         this.isEdit = isEdit
@@ -136,19 +130,19 @@ class VideoListFragment : BaseListKtFragment(){
     }
 
 
-    fun requestAdList(){
-        val query = AdListRquestQuery()
-        query.action = AIIAction.TWO
-
-        App.aiiRequest.send(query, object : AIIResponse<AdListResponseQuery>(activity, false){
-            override fun onSuccess(response: AdListResponseQuery?, index: Int) {
-                super.onSuccess(response, index)
-                response?.ads?.let {
-                    headerView?.startAD(it.size, 3, true, it, 0.48f)
-                }
-            }
-        })
-    }
+//    fun requestAdList(){
+//        val query = AdListRquestQuery()
+//        query.action = AIIAction.TWO
+//
+//        App.aiiRequest.send(query, object : AIIResponse<AdListResponseQuery>(activity, false){
+//            override fun onSuccess(response: AdListResponseQuery?, index: Int) {
+//                super.onSuccess(response, index)
+//                response?.ads?.let {
+//                    headerView?.startAD(it.size, 3, true, it, 0.48f)
+//                }
+//            }
+//        })
+//    }
 
     fun requestVideoList(){
         if(type == 4){

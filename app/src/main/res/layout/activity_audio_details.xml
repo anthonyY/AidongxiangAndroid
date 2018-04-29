@@ -57,7 +57,7 @@
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
-                        android:max="0"
+                        android:max="100"
                         android:progress="0"
                         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
                         android:maxHeight="8dp"/>

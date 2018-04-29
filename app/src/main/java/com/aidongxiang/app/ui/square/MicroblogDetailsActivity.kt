@@ -2,7 +2,6 @@ package com.aidongxiang.app.ui.square
 
 import android.content.Context
 import android.graphics.Color
-import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.v4.view.ViewPager
@@ -13,34 +12,36 @@ import android.text.TextPaint
 import android.text.TextUtils
 import android.text.style.ClickableSpan
 import android.view.View
-import android.widget.RelativeLayout
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.PostImgAdapter
 import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
-import com.aidongxiang.app.base.Api
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_MICROBLOG
+import com.aidongxiang.app.event.RefreshMicrobolgEvent
 import com.aidongxiang.app.interfaces.AppBarStateChangeListener
 import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.PersonCenterActivity
+import com.aidongxiang.app.ui.video.VideoPlayerActivity2
 import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.StatusBarUtil
+import com.aidongxiang.app.utils.Utils
 import com.aidongxiang.app.widgets.CommentDialog
-import com.aidongxiang.app.widgets.CustomVideoView
+import com.aidongxiang.app.widgets.CommonDialog
+import com.aidongxiang.app.widgets.ItemDialog
 import com.aidongxiang.business.model.Microblog
+import com.aidongxiang.business.request.DeleteActionRequestQuery
+import com.aidongxiang.business.request.FocusSwitchRequestQuery
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
-import com.aiitec.openapi.utils.LogUtil
 import kotlinx.android.synthetic.main.activity_microblog_details.*
 import kotlinx.android.synthetic.main.item_post_forward.*
-import java.util.HashMap
+import org.greenrobot.eventbus.EventBus
 import java.util.regex.Pattern
-import kotlin.collections.ArrayList
 
 
 /***
@@ -58,6 +59,10 @@ class MicroblogDetailsActivity : BaseKtActivity() {
     lateinit var commentDialog : CommentDialog
     lateinit var commentFragment : PostCommentListFragment
     lateinit var forwardFragment : PostForwardListFragment
+    lateinit var itemDialog: ItemDialog
+    lateinit var shieldDialog: ItemDialog
+    lateinit var deleteDialog: CommonDialog
+
     override fun init(savedInstanceState: Bundle?) {
         StatusBarUtil.addStatusBarView(ll_statusBar2, android.R.color.transparent)
         microblog = bundle.getParcelable(ARG_MICROBLOG)
@@ -74,90 +79,79 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         viewpager.adapter = adapter
         viewpager.offscreenPageLimit = 2
 
+
+        initDialog()
+
+        setListener()
+        setDatas()
+    }
+
+    private fun initDialog() {
         commentDialog = CommentDialog(this)
         commentDialog.setOnCommentClickListener { requestCommentSubmit(it) }
 
-
-        if (!TextUtils.isEmpty(microblog!!.videoPath)) {
-            rlItemVideoPlay.visibility = View.VISIBLE
-            var path : String ?= ""
-            if (microblog!!.videoPath!!.startsWith("http")) {
-                path = microblog!!.videoPath
-
-            } else {
-                path = Api.IMAGE_URL + microblog!!.videoPath
-            }
-            videoview_item.setVideoPath(path)
-            resetVideoWidth(videoview_item, path)
+        itemDialog = ItemDialog(this)
+        val datas = ArrayList<String>()
+        if(microblog?.isScreen == 2){
+            //屏蔽列表
+            datas.add("取消屏蔽")
         } else {
-            rlItemVideoPlay.visibility = View.GONE
+            datas.add("屏蔽")
+            datas.add("举报")
+            datas.add("取消关注")
         }
-        ivItemVideoPlay.setOnClickListener {
-            videoview_item.start()
-        }
-        videoview_item.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
-            override fun onPlay() {
-                ivItemVideoPlay.visibility = View.GONE
-            }
 
-            override fun onPause() {
-                ivItemVideoPlay.visibility = View.VISIBLE
-            }
-
-        })
-        videoview_item.setOnCompletionListener {
-            ivItemVideoPlay.visibility = View.VISIBLE
-        }
-        videoview_item.setOnPreparedListener {
-            it.setOnBufferingUpdateListener { _, percent ->
-                if(percent == 100){
-                    loading.visibility = View.GONE
+        itemDialog.setItems(datas)
+        itemDialog.setOnItemClickListener { item, position ->
+            microblog?.let {
+                if(it.isScreen == 2) {
+                    //屏蔽列表, 这里取消屏蔽
+                    requestScreenSubmit(it.id, 2)
                 } else {
-                    loading.visibility = View.VISIBLE
+                    if (Constants.user != null && it.user?.id == Constants.user?.id) {
+                        deleteDialog.show()
+                    } else {
+                        when (position) {
+                            0 -> {
+                                shieldDialog.show()
+                            }
+                            1 -> {
+                                switchToActivity(ReportActivity::class.java, Constants.ARG_ID to it.id)
+                            }
+                            2 -> {
+                                requestFocusSubmit(it.user!!.id, it.isFocus)
+                            }
+                        }
+                    }
                 }
             }
         }
-
-        if (!TextUtils.isEmpty(microblog?.originMicroblog?.videoPath)) {
-            rlItemChildVideoPlay.visibility = View.VISIBLE
-            var path : String ?= null
-            if (microblog?.originMicroblog?.videoPath!!.startsWith("http")) {
-                path = microblog?.originMicroblog?.videoPath
-            } else {
-                path = Api.IMAGE_URL + microblog?.originMicroblog?.videoPath
-            }
-            videoviewItemChild.setVideoPath(path)
-            resetVideoWidth(videoviewItemChild, path)
-        } else {
-            rlItemChildVideoPlay.visibility = View.GONE
-        }
-        ivItemChildVideoPlay.setOnClickListener {
-            videoviewItemChild.start()
-        }
-        videoviewItemChild.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
-            override fun onPlay() {
-                ivItemChildVideoPlay.visibility = View.GONE
-            }
-
-            override fun onPause() {
-                ivItemChildVideoPlay.visibility = View.VISIBLE
-            }
-
-        })
-        videoviewItemChild.setOnCompletionListener {
-            ivItemChildVideoPlay.visibility = View.VISIBLE
-        }
-        videoviewItemChild.setOnPreparedListener {
-            it.setOnBufferingUpdateListener { _, percent ->
-                if(percent == 100){
-                    loadingChild.visibility = View.GONE
-                } else {
-                    loadingChild.visibility = View.VISIBLE
+        shieldDialog = ItemDialog(this)
+        val shieldDatas = ArrayList<String>()
+        shieldDatas.add("屏蔽此条内容")
+        shieldDatas.add("屏蔽此人全部内容")
+        shieldDialog.setItems(shieldDatas)
+        shieldDialog.setOnItemClickListener { _, position ->
+            microblog?.let {
+                if (position == 0) {
+                    requestScreenSubmit(it.id, 2)
+                } else if (position == 1) {
+                    requestScreenSubmit(it.user!!.id, 1)
                 }
             }
+
         }
-        setListener()
-        setDatas()
+
+        deleteDialog = CommonDialog(this)
+        deleteDialog.setTitle("删除微博")
+        deleteDialog.setContent("确定删除这条微博？")
+//        val deleteDatas = ArrayList<String>()
+//        deleteDatas.add("删除此条内容")
+//        deleteDialog.setItems(datas)
+        deleteDialog.setOnConfirmClickListener {
+            deleteDialog.dismiss()
+            microblog?.let { requestDeleteAction(it.id) }
+        }
     }
 
     private fun setListener() {
@@ -206,6 +200,40 @@ class MicroblogDetailsActivity : BaseKtActivity() {
 
             requestPraise(microblog!!.isPraise)
         }
+        ivItemMore.setOnClickListener {
+            if (Constants.user != null && microblog?.user?.id == Constants.user?.id) {
+                //如果是自己的微博
+                val itemDatas = ArrayList<String>()
+                itemDatas.add("删除")
+                itemDialog.setItems(itemDatas)
+            } else {
+                val itemDatas = ArrayList<String>()
+                itemDatas.add("屏蔽")
+                itemDatas.add("举报")
+                if (microblog?.isFocus == 2) {
+                    itemDatas.add("取消关注")
+                }
+                itemDialog.setItems(itemDatas)
+            }
+            itemDialog.show()
+        }
+
+        tvItemAttention.setOnClickListener {
+            microblog?.user?.let {
+                requestFocusSubmit(it.id, 1)
+            }
+
+        }
+        rlItemVideoPlay.setOnClickListener {
+            microblog?.videoPath?.let {
+                switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it)
+            }
+        }
+        rlItemChildVideoPlay.setOnClickListener {
+            microblog?.originMicroblog?.videoPath?.let {
+                switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it)
+            }
+        }
     }
 
     private fun requestPraise(open : Int) {
@@ -214,7 +242,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         query.action = AIIAction.THREE
         query.id = postId
         query.open = open
-        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this){
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this, progressDialog){
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 microblog?.let {
@@ -244,7 +272,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         query.action = AIIAction.THREE
         query.id = postId
         query.content = content
-        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this){
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this, progressDialog){
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 microblog?.let {
@@ -283,7 +311,9 @@ class MicroblogDetailsActivity : BaseKtActivity() {
 
         val item = microblog ?: return
 
-        if(item.isFocus == 1){
+        if(item.isFocus == 2){
+            tvItemAttention.visibility = View.GONE
+        } else if(Constants.user?.id == item.user?.id){
             tvItemAttention.visibility = View.GONE
         } else {
             tvItemAttention.visibility = View.VISIBLE
@@ -311,6 +341,9 @@ class MicroblogDetailsActivity : BaseKtActivity() {
             switchToActivity(BigImageActivity::class.java, BigImageActivity.ARG_IMAGES to datas, BigImageActivity.ARG_POSITION to position)
         }
         recycler_post_img.adapter = adapter
+
+        Utils.setMicoblogVideoInfo(this, videoview_item, item.videoPath, rlItemVideoPlay, ivVideoThumb, ivItemVideoPlay, loading)
+        Utils.setMicoblogVideoInfo(this, videoviewItemChild, microblog?.originMicroblog?.videoPath, rlItemChildVideoPlay, ivVideoThumbChild, ivItemChildVideoPlay, loadingChild)
 
 
         if(item.originMicroblog != null){
@@ -401,59 +434,79 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         }
     }
 
-    private fun resetVideoWidth(videoView: CustomVideoView, path : String?) {
-        App.app.cachedThreadPool.execute {
 
-            LogUtil.e("path:$path")
-            var videoHeight = 0
-            var videoWidth = 0
-            try {
-                val retr = MediaMetadataRetriever()
-                retr.setDataSource(path, HashMap<String, String>())
-                val videoHeightStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-                val videoWidthStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-                videoHeight = Integer.parseInt(videoHeightStr) // 视频高度
-                videoWidth = Integer.parseInt(videoWidthStr) // 视频宽度
-            } catch (e : Exception){
-                e.printStackTrace()
-            }
-            var mVideoWidth = 0
-            var mVideoHeight = 0
-            runOnUiThread {
-                if (videoWidth > 0 && videoHeight > 0) {
-                    val videoScale = videoWidth.toFloat() / videoHeight
-                    LogUtil.e("videoWidth:" + videoWidth + "   videoHeight:" + videoHeight + "    videoScale:$videoScale")
-                    val parentView = videoView.parent as View
-                    if (videoScale != 0f) {
-                        if (videoWidth > videoHeight) {
-
-                            mVideoHeight = parentView.measuredHeight
-                            mVideoWidth = (mVideoHeight / videoScale).toInt()
-                            val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
-                            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-                            parentView.layoutParams = layoutParams
-
-//                            mVideoWidth = videoView.measuredWidth
-//                            mVideoHeight = ((mVideoWidth / videoScale).toInt())
-                        } else {
-
-                            mVideoHeight = parentView.measuredHeight
-                            mVideoWidth = (mVideoHeight * videoScale).toInt()
-                            val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
-                            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-                            parentView.layoutParams = layoutParams
-
-//                            mVideoHeight = videoView.measuredHeight
-//                            mVideoWidth = ((mVideoHeight * videoScale).toInt())
-                        }
+    /**
+     * 屏蔽
+     */
+    private fun requestScreenSubmit(id: Long, action: Int) {
+        val query = SubmitRequestQuery()
+        query.namespace = "ScreenSwitch"
+//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+        query.action = AIIAction.valueOf(action)
+        query.id = id
+        query.open = 1
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this, progressDialog) {
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                microblog?.let {
+                    if(it.isScreen == 2){
+                        it.isScreen = 1
+                    } else {
+                        it.isScreen = 2
                     }
-                    // 设置surfaceview画布大小
-                    videoView.holder.setFixedSize(mVideoWidth, mVideoHeight)
-                    // 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
-                    videoView.setMeasure(mVideoWidth, mVideoHeight)
-                    videoView.requestLayout()
+                    EventBus.getDefault().post(RefreshMicrobolgEvent())
                 }
             }
-        }
+        })
     }
+
+    /**
+     * 删除
+     */
+    private fun requestDeleteAction(id: Long) {
+        val query = DeleteActionRequestQuery()
+        query.namespace = "DeleteAction"
+//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+        query.action = AIIAction.TWO
+        query.ids = arrayListOf(id)
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this, progressDialog) {
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                toast("删除成功")
+                EventBus.getDefault().post(RefreshMicrobolgEvent())
+                dismissDialog()
+                finish()
+            }
+        })
+    }
+
+
+    /**
+     * 关注 / 取消关注
+     */
+    private fun requestFocusSubmit(id: Long, open: Int) {
+        val query = FocusSwitchRequestQuery()
+        query.namespace = "FocusSwitch"
+        query.userId = id
+        query.open = open
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this, progressDialog) {
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                microblog?.let {
+                    if(open == 1){
+                        it.isFocus = 2
+                        tvItemAttention.visibility = View.GONE
+                    } else {
+                        it.isFocus = 1
+                        if(Constants.user?.id == it.user?.id){
+                            tvItemAttention.visibility = View.GONE
+                        } else {
+                            tvItemAttention.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        })
+    }
+
 }

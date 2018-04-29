@@ -13,6 +13,7 @@ import com.aidongxiang.app.base.BaseFragment
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.utils.Utils
+import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.business.model.Audio
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.Download
@@ -36,12 +37,22 @@ class VideoSynopsisFragment : BaseFragment(){
 
     var video: Audio  ?= null
     var id : Long  = -1
+    lateinit var downloadCofirmDialog : CommonDialog
+
     override fun initView(view: View?) {
+
+        downloadCofirmDialog = CommonDialog(activity)
+        downloadCofirmDialog.setTitle("下载视频")
+        downloadCofirmDialog.setContent("确定下载？")
+        downloadCofirmDialog.setOnConfirmClickListener {
+            downloadCofirmDialog.dismiss()
+            video?.let { download(it) }
+        }
         iv_video_share?.setOnClickListener {
 
         }
         iv_video_download?.setOnClickListener {
-            video?.let { download(it) }
+            video?.let { downloadCofirmDialog.show() }
         }
         video?.let { setVideoData(it) }
         iv_video_collection.setOnClickListener {

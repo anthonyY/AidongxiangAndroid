@@ -2,16 +2,13 @@ package com.aidongxiang.app.service
 
 import android.app.Service
 import android.content.Context
-import android.media.AudioManager.OnAudioFocusChangeListener
-import android.widget.Toast
-import android.media.AudioManager
 import android.content.Intent
-import android.os.IBinder
-import android.content.Context.AUDIO_SERVICE
+import android.media.AudioManager
+import android.media.AudioManager.OnAudioFocusChangeListener
 import android.media.MediaPlayer
 import android.os.Handler
+import android.os.IBinder
 import android.text.TextUtils
-import com.aidongxiang.app.R.id.*
 import com.aidongxiang.app.observer.MusicPlaySubject
 import com.aidongxiang.app.receiver.MusicPlayReceiver
 import com.aiitec.openapi.utils.LogUtil
@@ -83,7 +80,7 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
         val result = audioManager.requestAudioFocus(mListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
         val type = intent.getIntExtra(ARG_TYPE, TYPE_PLAY)
         val title = intent.getStringExtra(ARG_TITLE)
-        LogUtil.e("title:"+title)
+        LogUtil.i(TAG, "title:"+title)
         when(type){
             TYPE_PLAY->{
 

@@ -31,7 +31,7 @@ class VideoAdapter(context : Context, datas:MutableList<Video>) : CommonRecycler
         GlideImgManager.loadFile(context, item.path, ivImage)
         val hour = item.duration/1000/60/60
         val minute = item.duration/1000/60%60
-        val second = item.duration/1000
+        val second = item.duration/1000%60
         val hourStr = formatNumber(hour.toInt())
         val minuteStr = formatNumber(minute.toInt())
         val secondStr = formatNumber(second.toInt())

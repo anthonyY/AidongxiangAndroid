@@ -54,8 +54,9 @@ class ChangeMobileNextActivity : BaseKtActivity() {
                 toast("手机号码长度必须是11位")
                 return@setOnClickListener
             }
+            requestSMSCode(1)
             smscodeCountDown.start()
-            tvChangeMobileSendTo.text = "验证码已发送至${etMobile.text.toString()}手机"
+
         }
 
         btnFinish.setOnClickListener {
@@ -89,7 +90,12 @@ class ChangeMobileNextActivity : BaseKtActivity() {
 
             override fun onSuccess(response: SMSResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
-                requestUserUpdateMobile()
+                if(index == 1) {
+                    smscodeId = response!!.id.toInt()
+                    tvChangeMobileSendTo.text = "验证码已发送至${etMobile.text.toString()}手机"
+                } else if(index == 2) {
+                    requestUserUpdateMobile()
+                }
             }
 
         }, action)

@@ -10,8 +10,12 @@ import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtFragment
+import com.aidongxiang.app.base.Constants.ARG_TYPE
+import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.business.model.Category
+import com.aidongxiang.business.request.AdListRquestQuery
+import com.aidongxiang.business.response.AdListResponseQuery
 import com.aidongxiang.business.response.CategoryListResponseQuery
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
@@ -34,16 +38,18 @@ class VideoFragment : BaseKtFragment() {
         setTitle("视频")
         StatusBarUtil.addStatusBarView(titlebar, android.R.color.transparent)
         mPagerAdapter = SimpleFragmentPagerAdapter(childFragmentManager, activity)
-        viewpager.offscreenPageLimit = 5
-        viewpager.adapter = mPagerAdapter
-        tablayout.setupWithViewPager(viewpager)
+        viewpager_video.offscreenPageLimit = 5
+        viewpager_video.adapter = mPagerAdapter
+        tablayout.setupWithViewPager(viewpager_video)
         if(categorys.size > 4){
             tablayout.tabMode = TabLayout.MODE_SCROLLABLE
         } else {
             tablayout.tabMode = TabLayout.MODE_FIXED
         }
-
+        ibtn_nav_menu.setOnClickListener { switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 0) }
+        ibtn_title_search.setOnClickListener { switchToActivity(SearchActivity::class.java, ARG_TYPE to SearchActivity.TYPE_VIDEO) }
         requestCategoryList()
+        requestAdList()
 
     }
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -92,5 +98,19 @@ class VideoFragment : BaseKtFragment() {
             }
             mPagerAdapter?.notifyDataSetChanged()
         }
+    }
+
+    fun requestAdList(){
+        val query = AdListRquestQuery()
+        query.action = AIIAction.THREE
+        query.positionId = 2
+        App.aiiRequest.send(query, object : AIIResponse<AdListResponseQuery>(activity, false){
+            override fun onSuccess(response: AdListResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.ads?.let {
+                    ad_video.startAD(it.size, 3, true, it, 0.48f)
+                }
+            }
+        })
     }
 }

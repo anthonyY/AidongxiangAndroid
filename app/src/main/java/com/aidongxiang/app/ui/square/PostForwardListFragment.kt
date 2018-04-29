@@ -13,6 +13,7 @@ import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
 import com.aiitec.openapi.net.AIIResponse
+import kotlinx.android.synthetic.main.fragment_video_comment.*
 import java.util.*
 
 /**
@@ -38,7 +39,7 @@ class PostForwardListFragment : BaseListKtFragment(){
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
         recyclerView?.setPullRefreshEnabled(false)
-
+        faBtnComment.visibility = View.GONE
 
         requestMicroblogList()
     }
@@ -55,7 +56,7 @@ class PostForwardListFragment : BaseListKtFragment(){
         query.table.page = page
         query.action = AIIAction.FOUR
         query.id = postId
-        App.aiiRequest.send(query, object : AIIResponse<MicroblogListResponseQuery>(activity) {
+        App.aiiRequest.send(query, object : AIIResponse<MicroblogListResponseQuery>(activity, false) {
             override fun onSuccess(response: MicroblogListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.let { getMicroblogList(it) }

@@ -2,6 +2,7 @@ package com.aidongxiang.business.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.aiitec.openapi.json.annotation.JSONField
 import com.aiitec.openapi.model.Entity
 
 /**
@@ -27,11 +28,13 @@ class Microblog() : Entity(), Parcelable {
     var user : User ?= null
     var videoId : Long = -1
     var regionId : Int = -1
+    var isScreen : Int = -1
     var parentId : Long = -1
     var longitude : Double = -1.0
     var latitude : Double = -1.0
     var images  : ArrayList<String> ?= null
     var imageIds  : ArrayList<Long> ?= null
+    @JSONField(name = "parent")
     var originMicroblog  : Microblog ?= null
 
     constructor(parcel: Parcel) : this() {
@@ -49,6 +52,7 @@ class Microblog() : Entity(), Parcelable {
         user = parcel.readParcelable(User::class.java.classLoader)
         videoId = parcel.readLong()
         regionId = parcel.readInt()
+        isScreen = parcel.readInt()
         parentId = parcel.readLong()
         longitude = parcel.readDouble()
         latitude = parcel.readDouble()
@@ -73,6 +77,7 @@ class Microblog() : Entity(), Parcelable {
         parcel.writeParcelable(user, flags)
         parcel.writeLong(videoId)
         parcel.writeInt(regionId)
+        parcel.writeInt(isScreen)
         parcel.writeLong(parentId)
         parcel.writeDouble(longitude)
         parcel.writeDouble(latitude)

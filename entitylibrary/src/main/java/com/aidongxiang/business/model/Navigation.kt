@@ -13,5 +13,7 @@ class Navigation : Entity(){
     var icon : String ?= null
     var name : String ?= null
     var link : String ?= null
+    var fromType : Int ?= null
+    var fromId : Long ?= null
 
 }

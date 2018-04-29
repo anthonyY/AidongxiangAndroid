@@ -14,8 +14,8 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.event.RefreshMicrobolgEvent
-import com.aidongxiang.app.ui.video.VideoPlayerActivity
-import com.aidongxiang.app.utils.CosManager
+import com.aidongxiang.app.ui.video.VideoPlayerActivity2
+import com.aidongxiang.app.ui.video.VideoPlayerActivity2.Companion.ARG_PATH
 import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.SoftKeyboardStateHelper
 import com.aidongxiang.app.utils.StatusBarUtil
@@ -33,7 +33,6 @@ import com.mabeijianxi.smallvideorecord2.model.MediaRecorderConfig
 import kotlinx.android.synthetic.main.activity_publish_post.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
-import java.lang.Exception
 import java.util.*
 
 
@@ -147,28 +146,28 @@ class PublishPostActivity : BaseKtActivity() {
             }
             if (!TextUtils.isEmpty(videoUri)) {
                 //有视频，先上传视频
-//                    requestUploadFile(2)
-                CosManager().upload(File(videoUri), object : CosManager.OnUploadListener {
-                    override fun onStart() {
-                        progressDialogShow()
-                    }
-
-                    override fun onFinish() {
-                        progressDialogDismiss()
-                    }
-
-                    override fun onSuccess(accessUrl: String?) {
-                        requestMicroblogSubmit(accessUrl)
-                    }
-
-                    override fun onFailure(e: Exception?) {
-                        LogUtil.e("上传失败"+e?.message)
-                    }
-
-                    override fun onUploadProgress(progress: Long, max: Long) {
-                    }
-
-                })
+                    requestUploadFile(3)
+//                CosManager().upload(File(videoUri), object : CosManager.OnUploadListener {
+//                    override fun onStart() {
+//                        progressDialogShow()
+//                    }
+//
+//                    override fun onFinish() {
+//                        progressDialogDismiss()
+//                    }
+//
+//                    override fun onSuccess(accessUrl: String?) {
+//                        requestMicroblogSubmit(accessUrl)
+//                    }
+//
+//                    override fun onFailure(e: Exception?) {
+//                        LogUtil.e("上传失败"+e?.message)
+//                    }
+//
+//                    override fun onUploadProgress(progress: Long, max: Long) {
+//                    }
+//
+//                })
             } else if (images.size > 1) {
                 //有图片，先上传图片
                 requestUploadFile(1)
@@ -194,9 +193,7 @@ class PublishPostActivity : BaseKtActivity() {
             }
         }
         rl_publish_video.setOnClickListener {
-            if (videoUri != null) {
-                switchToActivity(VideoPlayerActivity::class.java, "path" to videoUri!!)
-            }
+            videoUri?.let { switchToActivity(VideoPlayerActivity2::class.java, ARG_PATH to it) }
         }
         iv_publish_image.setOnClickListener {
             if (!TextUtils.isEmpty(videoUri)) {
@@ -259,8 +256,8 @@ class PublishPostActivity : BaseKtActivity() {
 //                )
 
 
-//                .smallVideoWidth(720 )
-//                .smallVideoHeight(720)
+                .smallVideoWidth(720 )
+                .smallVideoHeight(720)
                 .recordTimeMax(10 * 1000)
                 .maxFrameRate(20)
                 .captureThumbnailsTime(3)
@@ -337,18 +334,11 @@ class PublishPostActivity : BaseKtActivity() {
 
 
     private fun requestMicroblogSubmit() {
-        requestMicroblogSubmit(null)
-    }
-
-    private fun requestMicroblogSubmit(accessUrl: String?) {
         val query = MicroblogSubmitRequestQuery()
         val microblog = Microblog()
         microblog.content = et_publish_content.text.toString()
         if (imageIds.size > 0) {
             microblog.imageIds = imageIds
-        }
-        if (!TextUtils.isEmpty(accessUrl)) {
-            microblog.accessUrl = accessUrl
         }
         microblog.videoId = videoId
         if (!TextUtils.isEmpty(address)) {
@@ -377,7 +367,7 @@ class PublishPostActivity : BaseKtActivity() {
         val query = UploadImageRequestQuery()
         query.action = AIIAction.valueOf(action)
         val map = LinkedHashMap<String, Any>()
-        if (action == 2) {
+        if(!TextUtils.isEmpty(videoUri)){
             val file = File(videoUri)
             map.put(file.name, file)
         } else {
@@ -390,7 +380,7 @@ class PublishPostActivity : BaseKtActivity() {
             override fun onSuccess(response: FileListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.let {
-                    if (index == 2) {
+                    if(!TextUtils.isEmpty(videoUri)){
                         if (it.files.size > 0) {
                             videoId = it.files[0].id
                         }

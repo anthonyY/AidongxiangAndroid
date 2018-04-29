@@ -2,57 +2,49 @@ package com.aidongxiang.app.ui.video
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.view.View
+import android.text.TextUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.HomeVideoAdapter
-import com.aidongxiang.app.adapter.Tag2Adapter
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseListKtActivity
-import com.aidongxiang.app.ui.home.HomeFragment
-import com.aidongxiang.business.model.SearchText
+import com.aidongxiang.app.base.Constants.ARG_ID
+import com.aidongxiang.app.base.Constants.ARG_SEARCH_KEY
+import com.aidongxiang.app.base.Constants.ARG_TYPE
+import com.aidongxiang.app.ui.audio.AudioDetailsActivity
 import com.aidongxiang.business.model.Video
-import com.aiitec.openapi.db.AIIDBManager
-import kotlinx.android.synthetic.main.activity_search.*
+import com.aidongxiang.business.model.Where
+import com.aidongxiang.business.response.VideoListResponseQuery
+import com.aiitec.openapi.json.enums.AIIAction
+import com.aiitec.openapi.model.ListRequestQuery
+import com.aiitec.openapi.net.AIIResponse
 import kotlinx.android.synthetic.main.layout_title_bar_search.*
-import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * @author Anthony
  * 视频搜索页
  * createTime 2018-01-20
  */
-@ContentView(R.layout.activity_search)
+@ContentView(R.layout.activity_search_result)
 class VideoSearchActivity : BaseListKtActivity() {
 
     var datas = ArrayList<Video>()
-    lateinit var aiidbManager : AIIDBManager
-    lateinit var latelyAdapter : Tag2Adapter<SearchText>
-    lateinit var hotAdapter : Tag2Adapter<SearchText>
     lateinit var videoAdapter : HomeVideoAdapter
-    var latelyDatas = ArrayList<SearchText>()
-    var hotDatas = ArrayList<SearchText>()
-
+    var TYPE_VIDEO = 1
+    var TYPE_AUDIO = 2
+    var type = TYPE_VIDEO
+    var searchKey : String ?= ""
     override fun getDatas(): List<*>? = datas
 
     override fun requestData() {
+        requestVideoList()
     }
 
     override fun init(savedInstanceState: Bundle?) {
         super.init(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        aiidbManager = AIIDBManager(this)
-
-        latelyAdapter = Tag2Adapter(this, latelyDatas)
-        hotAdapter = Tag2Adapter(this, hotDatas)
-        hotDatas.add(SearchText("斗牛"))
-        hotDatas.add(SearchText("牯藏节"))
-        hotDatas.add(SearchText("侗族大歌"))
-        flow_hot.adapter = hotAdapter
-
-        flow_lately.adapter = latelyAdapter
 
         videoAdapter = HomeVideoAdapter(this, datas)
         recyclerView?.layoutManager = LinearLayoutManager(this)
@@ -60,73 +52,116 @@ class VideoSearchActivity : BaseListKtActivity() {
 
         tv_empty_nodata?.text = "暂时没有找到你要的内容"
 
+        type = bundle.getInt(ARG_TYPE)
+        searchKey = bundle.getString(ARG_SEARCH_KEY)
+        searchKey?.let {  searchView.setText(it) }
+
         setListener()
-        setLatelyDatas()
+
+        requestVideoList()
     }
 
     private fun setListener() {
         searchView.setOnEditorActionListener(TextView.OnEditorActionListener { tv, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH ) {
-                startSearch(searchView.text.toString())
+                requestVideoList()
                 return@OnEditorActionListener true
             }
             false
         })
         btn_search.setOnClickListener {
-            startSearch(searchView.text.toString())
+            requestVideoList()
         }
         videoAdapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(VideoDetailsActivity::class.java)
+            if(position > 0){
+                val id = datas[position-1].id
+                if(type == TYPE_AUDIO){
+                    switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
+                } else {
+                    switchToActivity(VideoDetailsActivity::class.java, ARG_ID to id)
+                }
+            }
         }
-        flow_hot.setOnTagClickListener { parent, view, position ->
-            val text = hotAdapter.getItem(position).text!!
-            startSearch(text)
-        }
-        flow_lately.setOnTagClickListener { parent, view, position ->
-            val text = latelyAdapter.getItem(position).text!!
-            startSearch(text)
-        }
-        iv_search_delete_history.setOnClickListener {
-            latelyDatas.clear()
-            latelyAdapter.update()
-            aiidbManager.deleteAll(SearchText::class.java)
-        }
+
         ibtn_back.setOnClickListener{ finish() }
     }
 
-    private fun setLatelyDatas() {
+//    fun startSearch(text : String){
+//        aiidbManager.save(SearchText(text))
+//        ll_search_hot.visibility = View.GONE
+//        ll_search_lately.visibility = View.GONE
+//        if(text.equals("空")){
+//            tv_empty_nodata?.visibility = View.VISIBLE
+//            datas.clear()
+//            videoAdapter.update()
+//        } else {
+//            datas.clear()
+//            for(i in 0..5){
+//                val video = Video()
+//                video.timestamp = "2017-12-03 15:12:24"
+//                video.name = "精彩斗牛集锦"
+//                video.playNum = 32
+//                video.audioLength = "12:10"
+//                video.imagePath = HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size-1)]
+//                datas.add(video)
+//            }
+//            videoAdapter.update()
+//
+//            tv_empty_nodata?.visibility = View.GONE
+//
+//        }
+//    }
 
-        val searchHistory = aiidbManager.findAll(SearchText::class.java, null, null, null)
-        latelyDatas.clear()
-        searchHistory?.filterIndexed { index, search -> index < 10 }?.forEach { latelyDatas.add(it) }
-        latelyAdapter.update()
 
+    fun requestVideoList(){
+        searchKey = searchView.text.toString()
+        if(TextUtils.isEmpty(searchKey)){
+            toast("请输入关键字")
+            return
+        }
+        val query = ListRequestQuery("AudioList")
+        query.table.page = page
+        val where = Where()
+        where.audioType = type
+        where.searchKey = searchKey
+        query.table.where = where
+        query.action = AIIAction.valueOf(type)
+        App.aiiRequest.send(query, object : AIIResponse<VideoListResponseQuery>(this, progressDialog){
+            override fun onSuccess(response: VideoListResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                response?.let {
+                    getVideoList(it)
+                }
+            }
+
+            override fun onFinish(index: Int) {
+                super.onFinish(index)
+                onLoadFinish()
+            }
+
+            override fun onCache(response: VideoListResponseQuery?, index: Int) {
+                super.onCache(response, index)
+                response?.let {
+                    getVideoList(it)
+                }
+            }
+        })
     }
 
-    fun startSearch(text : String){
-        aiidbManager.save(SearchText(text))
-        ll_search_hot.visibility = View.GONE
-        ll_search_lately.visibility = View.GONE
-        if(text.equals("空")){
-            tv_empty_nodata?.visibility = View.VISIBLE
+    /**
+     * 获取视频/音频数据，设置到adapter里
+     */
+    private fun getVideoList(response: VideoListResponseQuery) {
+        total = response.total
+        if(page == 1){
             datas.clear()
-            videoAdapter.update()
-        } else {
-            datas.clear()
-            for(i in 0..5){
-                val video = Video()
-                video.timestamp = "2017-12-03 15:12:24"
-                video.name = "精彩斗牛集锦"
-                video.playNum = 32
-                video.audioLength = "12:10"
-                video.imagePath = HomeFragment.imgs[Random().nextInt(HomeFragment.imgs.size-1)]
-                datas.add(video)
-            }
-            videoAdapter.update()
-
-            tv_empty_nodata?.visibility = View.GONE
-
+        }
+        if(response.audios != null){
+            datas.addAll(response.audios!!)
+        }
+        videoAdapter.update()
+        if(datas.size == 0){
+            onNoData()
         }
     }
-
 }

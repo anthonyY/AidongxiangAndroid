@@ -3,9 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/item_selected_color"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     android:orientation="vertical">
 
-    <TextView
+    <io.github.rockerhieu.emojicon.EmojiconTextView
         android:id="@+id/tvItemChildContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,6 +41,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                />
+            <ImageView
+                android:id="@+id/ivVideoThumbChild"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </RelativeLayout>
 
         <ImageView

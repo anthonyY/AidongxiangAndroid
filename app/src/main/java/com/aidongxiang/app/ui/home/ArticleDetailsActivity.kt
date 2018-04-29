@@ -112,7 +112,6 @@ class ArticleDetailsActivity : BaseKtActivity() {
                     }
                     webview.loadData(it.content,"text/html; charset=UTF-8", null)
                 }
-
             }
         })
     }

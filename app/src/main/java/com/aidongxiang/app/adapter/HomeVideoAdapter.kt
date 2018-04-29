@@ -39,7 +39,12 @@ class HomeVideoAdapter(context: Context, datas:MutableList<Video>) : CommonRecyc
         } else {
             ivItemSelect?.visibility = View.GONE
         }
-        ivAudio?.setImageResource(R.drawable.common_icon_play)
+        if(item.audioType == 2){
+            ivAudio?.setImageResource(R.drawable.common_icon_music)
+        } else {
+            ivAudio?.setImageResource(R.drawable.common_icon_play)
+        }
+
         GlideImgManager.load(context, item.imagePath, ivImg)
         tvTitle?.text = item.name
         var audioLength = ""

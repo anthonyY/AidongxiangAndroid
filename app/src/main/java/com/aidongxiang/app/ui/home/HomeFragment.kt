@@ -3,6 +3,7 @@ package com.aidongxiang.app.ui.home
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.view.View
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.HomeAudioAdapter
@@ -12,8 +13,11 @@ import com.aidongxiang.app.adapter.HomeVideoAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtFragment
+import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.Constants.ARG_ACTION
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.base.Constants.ARG_TITLE
+import com.aidongxiang.app.base.Constants.ARG_URL
 import com.aidongxiang.app.ui.Main2Activity
 import com.aidongxiang.app.ui.audio.AudioDetailsActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
@@ -58,51 +62,6 @@ class HomeFragment : BaseKtFragment() {
                 "http://e.hiphotos.baidu.com/image/h%3D300/sign=91aecc5808087bf462ec51e9c2d3575e/37d3d539b6003af3b6bc2f733f2ac65c1038b69b.jpg"
         )
     }
-
-    val content = "<p style=\"word-wrap: break-word; font-family: &quot;sans serif&quot;, tahoma, verdana, helvetica; font-size: 12px; white-space: normal;\">\n" +
-            "    时逢丁酉盛世，金秋佳节，五谷丰登，各家族大武正精力旺盛，正适宜斗武比赛，发扬民族文化。经牯藏头组织，各家族商议，决定农历八月十三（公历10月1日国庆节）在巴命牛场举行斗牛大赛，欢迎各位村民和外来游客参加观赏。赛况如下：<br/>\n" +
-            "</p>\n" +
-            "<ol style=\"font-family: &quot;sans serif&quot;, tahoma, verdana, helvetica; font-size: 12px; white-space: normal;\" class=\" list-paddingleft-2\">\n" +
-            "    <li>\n" +
-            "        <p>\n" +
-            "            务弄八大家 pk 牯藏头&nbsp; 5分钟\n" +
-            "        </p>\n" +
-            "    </li>\n" +
-            "    <li>\n" +
-            "        <p>\n" +
-            "            务弄孟孖 pk 高赧&nbsp; 3分钟\n" +
-            "        </p>\n" +
-            "    </li>\n" +
-            "    <li>\n" +
-            "        <p>\n" +
-            "            顿路宰便 pk 纪登&nbsp; 5分钟\n" +
-            "        </p>\n" +
-            "    </li>\n" +
-            "    <li>\n" +
-            "        <p>\n" +
-            "            绞洞 pk 宰瓜 3分钟\n" +
-            "        </p>\n" +
-            "    </li>\n" +
-            "    <li>\n" +
-            "        <p>\n" +
-            "            顿路腊王 pk 尚重宰虎 5分钟\n" +
-            "        </p>\n" +
-            "    </li>\n" +
-            "    <li>\n" +
-            "        <p>\n" +
-            "            平养登云 pk 尚重大水井 10分钟\n" +
-            "        </p>\n" +
-            "    </li>\n" +
-            "</ol>\n" +
-            "<p>\n" +
-            "    <br/><span style=\"font-family: &quot;sans serif&quot;, tahoma, verdana, helvetica; font-size: 12px;\">&nbsp;&nbsp;&nbsp;&nbsp;</span><span style=\"font-family: &quot;sans serif&quot;, tahoma, verdana, helvetica; font-size: 12px;\">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span><span style=\"font-family: &quot;sans serif&quot;, tahoma, verdana, helvetica; font-size: 12px;\">牯藏头宰海宣</span><br/><span style=\"font-family: &quot;sans serif&quot;, tahoma, verdana, helvetica; font-size: 12px;\">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span><span style=\"font-family: &quot;sans serif&quot;, tahoma, verdana, helvetica; font-size: 12px;\">农历2017年8月初五</span><br/>\n" +
-            "</p>\n" +
-            "<p style=\"word-wrap: break-word; font-family: &quot;sans serif&quot;, tahoma, verdana, helvetica; font-size: 12px; white-space: normal;\">\n" +
-            "    <br/>\n" +
-            "</p>\n" +
-            "<p>\n" +
-            "    <br/>\n" +
-            "</p>"
     lateinit var homeVideoAdapter: HomeVideoAdapter
     lateinit var homeAudioAdapter: HomeAudioAdapter
     lateinit var homeNewsAdapter: HomeNewsAdapter
@@ -156,16 +115,30 @@ class HomeFragment : BaseKtFragment() {
         homeCategoryAdapter = HomeCategoryAdapter(activity!!, categoryDatas)
         recycler_home_category.adapter = homeCategoryAdapter
         homeCategoryAdapter.setOnRecyclerViewItemClickListener { _, position ->
-            when (position) {
-                0 -> {
+//            ：1外部链接，2视频 3音频 4资讯
+            val navigation = categoryDatas[position]
+            val id = navigation.fromId
+            val url = navigation.link
+            when(navigation.fromType){
+                1->{
+                    switchToActivity(CommonWebViewActivity::class.java, ARG_URL to url, ARG_TITLE to navigation.name)
+                }
+                2->{
+                    switchToActivity(VideoDetailsActivity::class.java, ARG_ID to id)
+                }
+                3->{
+                    switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
+                }
+                4->{
+                    switchToActivity(ArticleDetailsActivity::class.java, ARG_ID to id, ARG_ACTION to 1)
+                }
+                5->{
                     noticeDialog.show()
                 }
             }
+
         }
         noticeDialog = NoticeDialog(activity)
-
-
-        noticeDialog.setContent(content)
 
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.CHINESE)
         val isShowNoticeToday = AiiUtil.getBoolean(activity, "isShowNotice" + today)
@@ -335,6 +308,14 @@ class HomeFragment : BaseKtFragment() {
      */
     private fun getNavigationListListResponseQuery(response: NavigationListListResponseQuery) {
         categoryDatas.clear()
+        if(!TextUtils.isEmpty(Constants.poster)){
+            val navigation = Navigation()
+            navigation.fromType = 5
+            navigation.link = Constants.poster
+            navigation.name = "海报"
+            noticeDialog.setContent(Constants.poster)
+            categoryDatas.add(navigation)
+        }
         response.navigations?.let { categoryDatas.addAll(it) }
         homeCategoryAdapter.update()
     }

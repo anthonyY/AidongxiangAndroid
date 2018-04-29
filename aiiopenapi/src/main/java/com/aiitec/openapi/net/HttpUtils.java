@@ -220,7 +220,7 @@ public class HttpUtils {
 		if (datas != null && !datas.isEmpty()) {
 			Iterator<Entry<String, Object>> it = datas.entrySet().iterator();
 			while (it.hasNext()) {
-				Entry<String, Object> entry = (Entry<String, Object>) it.next();
+				Entry<String, Object> entry = it.next();
 				MediaType mediaType = MediaType
 						.parse("application/octet-stream");
 				if (entry.getValue().getClass().equals(File.class)) {

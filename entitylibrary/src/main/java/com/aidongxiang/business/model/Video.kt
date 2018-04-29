@@ -17,6 +17,7 @@ class Video : Entity(){
     var name: String ?= null
     var timestamp: String ?= null
     var isSelected = false
+    var audioType = 1
 
 
 

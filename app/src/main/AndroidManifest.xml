@@ -54,6 +54,10 @@
         <activity android:name=".ui.square.ImageSelectActivity" />
         <activity android:name=".ui.square.MicroblogDetailsActivity" />
         <activity android:name=".ui.square.BigImageActivity" />
+        <activity
+            android:name=".ui.square.ReportActivity"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.login.ForgetPasswordActivity" />
         <activity android:name=".ui.login.SetNewPasswordActivity" />
@@ -82,13 +86,19 @@
         <activity android:name=".ui.mine.MyScreenActivity" />
         <activity android:name=".ui.mine.FansListActivity" />
         <activity android:name=".ui.mine.SignatureActivity" />
+        <activity android:name=".ui.mine.MyMicroblogActivity" />
+        <activity android:name=".ui.mine.ChangeMobileNextActivity"/>
+
         <activity android:name=".ui.audio.AudioDetailsActivity" />
+
         <activity
-            android:name=".ui.video.VideoPlayerActivity"
+            android:name=".ui.video.VideoPlayerActivity2"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".ui.video.VideoDetailsActivity"
             android:configChanges="orientation|screenSize" />
+        <activity android:name=".ui.video.SearchActivity" />
+        <activity android:name=".ui.video.VideoSearchActivity"/>
 
         <service android:name=".service.MusicService">
             <intent-filter>
@@ -106,12 +116,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.mine.MyMicroblogActivity" />
-        <activity
-            android:name=".ui.square.ReportActivity"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ui.video.VideoSearchActivity"/>
-        <activity android:name=".ui.mine.ChangeMobileNextActivity"/>
+
 
         <!--友盟相关-->
         <activity

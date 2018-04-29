@@ -2,6 +2,7 @@ package com.aidongxiang.business.model
 
 import com.aiitec.openapi.db.annotation.Unique
 import com.aiitec.openapi.model.Entity
+import java.util.*
 
 /**
  *
@@ -13,7 +14,9 @@ class SearchText() : Entity(){
 
     @Unique
     var text : String ?= null
-    constructor(text : String) : this(){
+    var timestamp : Date ?= null
+    constructor(text : String, timestamp : Date) : this(){
         this.text = text
+        this.timestamp = timestamp
     }
 }

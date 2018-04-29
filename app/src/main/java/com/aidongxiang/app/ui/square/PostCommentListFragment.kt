@@ -70,7 +70,7 @@ class PostCommentListFragment : BaseListKtFragment(){
         query.action = AIIAction.TWO
         query.id = id
         query.open = open
-        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity){
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, false){
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 if(open == 1){
