@@ -7,6 +7,7 @@ import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtFragment
 import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.utils.StatusBarUtil
 import kotlinx.android.synthetic.main.fragment_square.*
 
@@ -26,9 +27,7 @@ class SquareFragment : BaseKtFragment() {
         setToolBar(toolbar)
         StatusBarUtil.addStatusBarView(titlebar, android.R.color.transparent)
         mPagerAdapter = SimpleFragmentPagerAdapter(childFragmentManager, activity)
-
-
-
+        setTitle("热门微博")
 
         viewpager.adapter = mPagerAdapter
 //        tablayout.setupWithViewPager(viewpager)
@@ -51,6 +50,10 @@ class SquareFragment : BaseKtFragment() {
         })
         ibtn_title_search.setImageResource(R.drawable.common_btn_photograph)
         ibtn_title_search.setOnClickListener{
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return@setOnClickListener
+            }
             switchToActivity(PublishPostActivity::class.java)
         }
     }
@@ -63,13 +66,17 @@ class SquareFragment : BaseKtFragment() {
                 mPagerAdapter?.addFragment(PostListFragment.newInstance(1), "关注")
                 mPagerAdapter?.addFragment(PostListFragment.newInstance(2), "热门")
                 mPagerAdapter?.notifyDataSetChanged()
+                radioGroupSquare.visibility = View.VISIBLE
+                tv_title?.visibility = View.GONE
             }
 
         } else {
             if(mPagerAdapter?.count != 1) {
                 mPagerAdapter?.clear()
-                mPagerAdapter?.addFragment(PostListFragment.newInstance(1), "热门")
+                mPagerAdapter?.addFragment(PostListFragment.newInstance(2), "热门")
                 mPagerAdapter?.notifyDataSetChanged()
+                radioGroupSquare.visibility = View.GONE
+                tv_title?.visibility = View.VISIBLE
             }
         }
     }

@@ -14,6 +14,7 @@ import com.aidongxiang.app.R;
 import com.aidongxiang.app.utils.ContentViewUtils;
 import com.aidongxiang.app.utils.StatusBarUtil;
 import com.aidongxiang.app.widgets.CustomProgressDialog;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * Activity基类
@@ -186,13 +187,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-//        MobclickAgent.onResume(this); // 统计时长
+        MobclickAgent.onResume(this); // 统计时长
         //	Bugtags.onResume(this);
     }
 
     protected void onPause() {
         super.onPause();
-//        MobclickAgent.onPause(this);
+        MobclickAgent.onPause(this);
         //Bugtags.onPause(this);
     }
 

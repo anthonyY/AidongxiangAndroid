@@ -19,6 +19,7 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.Constants.ARG_ACTION
 import com.aidongxiang.app.base.Constants.ARG_MICROBLOG
 import com.aidongxiang.app.event.RefreshMicrobolgEvent
 import com.aidongxiang.app.interfaces.AppBarStateChangeListener
@@ -116,7 +117,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
                                 shieldDialog.show()
                             }
                             1 -> {
-                                switchToActivity(ReportActivity::class.java, Constants.ARG_ID to it.id)
+                                switchToActivity(ReportActivity::class.java, Constants.ARG_ID to it.id, ARG_ACTION to 1)
                             }
                             2 -> {
                                 requestFocusSubmit(it.user!!.id, it.isFocus)
@@ -504,6 +505,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
                             tvItemAttention.visibility = View.VISIBLE
                         }
                     }
+                    EventBus.getDefault().post(RefreshMicrobolgEvent())
                 }
             }
         })

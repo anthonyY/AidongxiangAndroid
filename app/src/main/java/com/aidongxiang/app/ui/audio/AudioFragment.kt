@@ -13,7 +13,6 @@ import com.aidongxiang.app.base.BaseKtFragment
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.ui.video.SearchActivity
-import com.aidongxiang.app.ui.video.VideoSearchActivity
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.business.model.Category
 import com.aidongxiang.business.request.AdListRquestQuery
@@ -49,7 +48,7 @@ class AudioFragment : BaseKtFragment() {
             tablayout.tabMode = TabLayout.MODE_FIXED
         }
         ibtn_nav_menu.setOnClickListener { switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 1) }
-        ibtn_title_search.setOnClickListener { switchToActivity(SearchActivity::class.java, Constants.ARG_TYPE to SearchActivity.TYPE_AUDIO) }
+//        ibtn_title_search.setOnClickListener { switchToActivity(SearchActivity::class.java, Constants.ARG_TYPE to SearchActivity.TYPE_AUDIO) }
         requestAdList()
         requestCategoryList()
     }
@@ -63,7 +62,7 @@ class AudioFragment : BaseKtFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_search) {
-            switchToActivity(VideoSearchActivity::class.java)
+            switchToActivity(SearchActivity::class.java, Constants.ARG_TYPE to SearchActivity.TYPE_AUDIO)
             return true
         }
         return super.onOptionsItemSelected(item)

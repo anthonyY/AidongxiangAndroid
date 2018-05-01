@@ -1,7 +1,6 @@
 package com.aidongxiang.app.adapter
 
 import android.content.Context
-import android.view.ViewGroup
 import android.widget.ImageView
 import com.aidongxiang.app.R
 import com.aidongxiang.app.utils.GlideImgManager
@@ -19,8 +18,8 @@ class PostImgAdapter(context: Context, datas: MutableList<String>) : CommonRecyc
     override fun convert(h: CommonRecyclerViewHolder?, item: String?, position: Int) {
         val ivImg = h?.getView<ImageView>(R.id.iv_item_img)
 
-        var width = ViewGroup.LayoutParams.WRAP_CONTENT
-        var height = 0
+        val width : Int
+        val height : Int
         val padding = ScreenUtils.dip2px(context, 8f)
         var paddingRight = 0
         var paddingTop = 0

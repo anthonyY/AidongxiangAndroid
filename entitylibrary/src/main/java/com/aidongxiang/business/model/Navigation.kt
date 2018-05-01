@@ -15,5 +15,6 @@ class Navigation : Entity(){
     var link : String ?= null
     var fromType : Int ?= null
     var fromId : Long ?= null
+    var resId = -1
 
 }

@@ -5,7 +5,6 @@ import android.os.Handler
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
-import com.aidongxiang.app.base.Constants.ARG_ACTION
 import com.aidongxiang.app.ui.Main2Activity
 import com.aidongxiang.business.response.SettingResponseQuery
 import com.aiitec.openapi.model.RequestQuery
@@ -23,11 +22,11 @@ class WelcomeActivity : BaseKtActivity() {
             if(isFirstLauncher){
                 switchToActivity(GuideActivity::class.java)
             } else {
-                if(Constants.user != null){
+//                if(Constants.user != null){
                     switchToActivity(Main2Activity::class.java)
-                } else {
-                    switchToActivity(LoginActivity::class.java, ARG_ACTION to 1)
-                }
+//                } else {
+//                    switchToActivity(LoginActivity::class.java, ARG_ACTION to 1)
+//                }
             }
             finish()
         },2000)

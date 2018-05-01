@@ -54,7 +54,10 @@ class VideoSearchActivity : BaseListKtActivity() {
 
         type = bundle.getInt(ARG_TYPE)
         searchKey = bundle.getString(ARG_SEARCH_KEY)
-        searchKey?.let {  searchView.setText(it) }
+        searchKey?.let {
+            searchView.setText(it)
+            searchView.setSelection(it.length)
+        }
 
         setListener()
 
@@ -125,7 +128,7 @@ class VideoSearchActivity : BaseListKtActivity() {
         where.audioType = type
         where.searchKey = searchKey
         query.table.where = where
-        query.action = AIIAction.valueOf(type)
+        query.action = AIIAction.ONE
         App.aiiRequest.send(query, object : AIIResponse<VideoListResponseQuery>(this, progressDialog){
             override fun onSuccess(response: VideoListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)

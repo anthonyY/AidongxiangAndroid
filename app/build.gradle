@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'walle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -18,12 +19,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+
 
     signingConfigs {
         debug {
@@ -41,8 +37,20 @@ android {
 
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
         release {
             minifyEnabled false
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -75,11 +83,19 @@ dependencies {
     implementation "com.android.support:gridlayout-v7:$support_version"
     implementation "com.android.support:support-vector-drawable:$support_version"
     implementation 'org.greenrobot:eventbus:3.0.0'
-    implementation 'com.android.support:multidex:1.0.2'
+    implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.github.bumptech.glide:glide:3.7.0'
-    implementation 'com.umeng.analytics:analytics:latest.integration'
-    implementation 'com.jcodecraeer:xrecyclerview:1.2.7'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    implementation 'com.umeng.sdk:common:latest.integration'
+    implementation 'com.umeng.sdk:analytics:latest.integration'
+    //PushSDK必须依赖utdid库，所以需要加入对应依赖
+//    implementation 'com.umeng.sdk:utdid:1.1.5.3'
+//PushSDK
+    implementation 'com.umeng.sdk:push:4.1.0'
+
+    implementation 'com.jcodecraeer:xrecyclerview:1.5.9'
+
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -106,4 +122,16 @@ dependencies {
 //    implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'io.github.rockerhieu:emojicon:1.4.2'
+
+    implementation 'com.meituan.android.walle:library:1.1.6'
+
+}
+
+walle {
+    // 指定渠道包的输出路径
+    apkOutputFolder = new File("${project.buildDir}/outputs/channels");
+    // 定制渠道包的APK的文件名称
+    apkFileNameFormat = '${appName}-${packageName}-${channel}-${buildType}-v${versionName}-${versionCode}-${buildTime}.apk';
+    // 渠道配置文件
+    channelFile = new File("${project.getProjectDir()}/channel")
 }

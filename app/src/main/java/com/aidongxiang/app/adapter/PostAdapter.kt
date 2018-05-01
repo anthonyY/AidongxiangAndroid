@@ -111,12 +111,12 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
             recyclerView?.visibility = View.VISIBLE
             recyclerView?.layoutManager = GridLayoutManager(context, spanCount)
             val adapter = PostImgAdapter(context, datas)
-            adapter.setOnRecyclerViewItemClickListener { _, position ->
+            adapter.setOnRecyclerViewItemClickListener { _, i ->
                 val intent = Intent(context, BigImageActivity::class.java)
 
                 val bundle = Bundle()
                 bundle.putStringArrayList(BigImageActivity.ARG_IMAGES, datas)
-                bundle.putInt(BigImageActivity.ARG_POSITION, position)
+                bundle.putInt(BigImageActivity.ARG_POSITION, i)
                 intent.putExtras(bundle)
                 context.startActivity(intent)
             }

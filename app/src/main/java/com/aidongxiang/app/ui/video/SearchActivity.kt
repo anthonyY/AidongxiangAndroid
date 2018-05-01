@@ -6,11 +6,10 @@ import android.widget.TextView
 import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.Tag2Adapter
 import com.aidongxiang.app.annotation.ContentView
-import com.aidongxiang.app.base.BaseListKtActivity
+import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants.ARG_SEARCH_KEY
 import com.aidongxiang.app.base.Constants.ARG_TYPE
 import com.aidongxiang.business.model.SearchText
-import com.aidongxiang.business.model.Video
 import com.aiitec.openapi.db.AIIDBManager
 import kotlinx.android.synthetic.main.activity_search.*
 import kotlinx.android.synthetic.main.layout_title_bar_search.*
@@ -22,7 +21,7 @@ import java.util.*
  * createTime 2018-01-20
  */
 @ContentView(R.layout.activity_search)
-class SearchActivity : BaseListKtActivity() {
+class SearchActivity : BaseKtActivity() {
 
     companion object {
         var TYPE_NEWS = 1
@@ -31,23 +30,23 @@ class SearchActivity : BaseListKtActivity() {
         var TYPE_MICROBLO = 4
         var TYPE_USER = 5
     }
-    var datas = ArrayList<Video>()
-    lateinit var aiidbManager : AIIDBManager
-    lateinit var latelyAdapter : Tag2Adapter<SearchText>
-    lateinit var hotAdapter : Tag2Adapter<SearchText>
+//    var datas = ArrayList<Video>()
+    private lateinit var aiidbManager : AIIDBManager
+    private lateinit var latelyAdapter : Tag2Adapter<SearchText>
+    private lateinit var hotAdapter : Tag2Adapter<SearchText>
 //    lateinit var videoAdapter : HomeVideoAdapter
-    var latelyDatas = ArrayList<SearchText>()
-    var hotDatas = ArrayList<SearchText>()
+    private var latelyDatas = ArrayList<SearchText>()
+    private var hotDatas = ArrayList<SearchText>()
     var type = 1
 
 
-    override fun getDatas(): List<*>? = datas
-
-    override fun requestData() {
-    }
+//    override fun getDatas(): List<*>? = datas
+//
+//    override fun requestData() {
+//    }
 
     override fun init(savedInstanceState: Bundle?) {
-        super.init(savedInstanceState)
+//        super.init(savedInstanceState)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         aiidbManager = AIIDBManager(this)
 
@@ -72,7 +71,7 @@ class SearchActivity : BaseListKtActivity() {
     }
 
     private fun setListener() {
-        searchView.setOnEditorActionListener(TextView.OnEditorActionListener { tv, actionId, event ->
+        searchView.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val text = searchView.text.toString()
                 when(type){
@@ -81,6 +80,15 @@ class SearchActivity : BaseListKtActivity() {
                     }
                     TYPE_AUDIO->{
                         switchToActivity(VideoSearchActivity::class.java, ARG_TYPE to 2, ARG_SEARCH_KEY to text)
+                    }
+                    TYPE_NEWS->{
+
+                    }
+                    TYPE_MICROBLO->{
+
+                    }
+                    TYPE_USER->{
+
                     }
                 }
                 aiidbManager.save(SearchText(text, Date()))
@@ -104,7 +112,7 @@ class SearchActivity : BaseListKtActivity() {
 //        videoAdapter.setOnRecyclerViewItemClickListener { v, position ->
 //            switchToActivity(VideoDetailsActivity::class.java)
 //        }
-        flow_hot.setOnTagClickListener { parent, view, position ->
+        flow_hot.setOnTagClickListener { _, _, position ->
             val text = hotAdapter.getItem(position).text!!
 //            startSearch(text)
             when(type){
@@ -116,7 +124,7 @@ class SearchActivity : BaseListKtActivity() {
                 }
             }
         }
-        flow_lately.setOnTagClickListener { parent, view, position ->
+        flow_lately.setOnTagClickListener { _, _, position ->
             val text = latelyAdapter.getItem(position).text!!
             when(type){
                 TYPE_VIDEO->{

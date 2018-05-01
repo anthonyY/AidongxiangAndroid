@@ -20,6 +20,7 @@ import com.aidongxiang.app.base.Constants.ARG_TITLE
 import com.aidongxiang.app.base.Constants.ARG_URL
 import com.aidongxiang.app.ui.Main2Activity
 import com.aidongxiang.app.ui.audio.AudioDetailsActivity
+import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.ui.video.VideoDetailsActivity
 import com.aidongxiang.app.utils.StatusBarUtil
@@ -83,7 +84,7 @@ class HomeFragment : BaseKtFragment() {
         //视频
         homeVideoAdapter = HomeVideoAdapter(activity!!, videoDatas)
         homeVideoAdapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(VideoDetailsActivity::class.java, ARG_ID to videoDatas[position])
+            switchToActivity(VideoDetailsActivity::class.java, ARG_ID to videoDatas[position].id)
         }
         setLayoutManagerInScroolView(recycler_home_video, videoLayoutManager)
         recycler_home_video.adapter = homeVideoAdapter
@@ -94,7 +95,7 @@ class HomeFragment : BaseKtFragment() {
         setLayoutManagerInScroolView(recycler_home_audio, audioManager)
         homeAudioAdapter = HomeAudioAdapter(activity!!, audioDatas)
         homeAudioAdapter.setOnRecyclerViewItemClickListener { v, position ->
-             switchToActivity(AudioDetailsActivity::class.java, ARG_ID to audioDatas[position])
+             switchToActivity(AudioDetailsActivity::class.java, ARG_ID to audioDatas[position].id)
         }
         recycler_home_audio.adapter = homeAudioAdapter
 
@@ -105,8 +106,9 @@ class HomeFragment : BaseKtFragment() {
         setLayoutManagerInScroolView(recycler_home_news, newsLayoutManager)
         recycler_home_news.adapter = homeNewsAdapter
         homeNewsAdapter.setOnRecyclerViewItemClickListener { _, position ->
+            val title = newsDatas[position].title
             val id = newsDatas[position].id
-            switchToActivity(ArticleDetailsActivity::class.java, ARG_TITLE to "新闻详情", ARG_ID to id)
+            switchToActivity(ArticleDetailsActivity::class.java, ARG_TITLE to title, ARG_ID to id)
         }
 
         //分类 （扩展内容）
@@ -160,7 +162,13 @@ class HomeFragment : BaseKtFragment() {
         //点更多热门资讯  跳转到资讯页
         iv_home_more_news.setOnClickListener {  switchToActivity(NewsActivity::class.java) }
         //点击我的下载按钮
-        ibtn_nav_menu.setOnClickListener{ switchToActivity(MyDownloadActivity::class.java) }
+        ibtn_nav_menu.setOnClickListener{
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return@setOnClickListener
+            }
+            switchToActivity(MyDownloadActivity::class.java)
+        }
 
 //        setDatas()
         refresh()
@@ -313,6 +321,7 @@ class HomeFragment : BaseKtFragment() {
             navigation.fromType = 5
             navigation.link = Constants.poster
             navigation.name = "海报"
+            navigation.resId = R.drawable.ic_broadcast
             noticeDialog.setContent(Constants.poster)
             categoryDatas.add(navigation)
         }

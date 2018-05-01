@@ -298,6 +298,10 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_download) {
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return true
+            }
             switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 1)
             return true
         }
@@ -388,6 +392,12 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         this.audio = audio
         audioPath = audio.audioPath
 
+        if(MusicService.isPlaying && !MusicService.url.equals(audioPath)){
+            //正在播放别的音频，那么就停止掉
+            val intent = Intent(this@AudioDetailsActivity, MusicService::class.java)
+            intent.putExtra(MusicService.ARG_TYPE, MusicService.TYPE_STOP)
+            startService(intent)
+        }
         downloadCofirmDialog.setContent("确定下载${audio.name}？")
         webview_audio.settings.javaScriptEnabled = true
         val audiosSynopsis = Utils.getAbsSource(audio.description, Api.BASE_URL + "/")

@@ -2,6 +2,7 @@ package com.aidongxiang.app.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import com.aidongxiang.app.R
@@ -26,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_main2.*
 @ContentView(R.layout.activity_main2)
 class Main2Activity : BaseKtActivity() {
 
+    var lastItemId = -1
     var currentFragment : Fragment ?= null
     private val homeFragment = HomeFragment()
     private val mineFragment = MineFragment()
@@ -38,6 +40,7 @@ class Main2Activity : BaseKtActivity() {
         BottomNavigationViewHelper.disableShiftMode(navigation)
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
+        lastItemId = R.id.navigation_square
         switchFragment(homeFragment)
 
         LocationUtils.startLocation()
@@ -47,26 +50,34 @@ class Main2Activity : BaseKtActivity() {
         when (item.itemId) {
             R.id.navigation_home -> {
                 switchFragment(homeFragment)
+                lastItemId = R.id.navigation_home
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_video -> {
                 switchFragment(videoFragment)
+                lastItemId = R.id.navigation_video
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_square -> {
                 switchFragment(squareFragment)
+                lastItemId = R.id.navigation_square
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_audio -> {
                 switchFragment(audioFragment)
+                lastItemId = R.id.navigation_audio
                 return@OnNavigationItemSelectedListener true
             }
             R.id.navigation_mine -> {
                 if(Constants.user == null){
+                    //需要延时一点来处理，否则不起作用
+                    Handler().postDelayed({  navigation.selectedItemId = lastItemId }, 100)
+
                     switchToActivity(LoginActivity::class.java)
                     return@OnNavigationItemSelectedListener true
                 }
                 switchFragment(mineFragment)
+                lastItemId = R.id.navigation_mine
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -96,11 +107,17 @@ class Main2Activity : BaseKtActivity() {
 
     fun swicthFragment(index : Int){
         when(index){
-            0-> switchFragment(homeFragment)
-            1-> switchFragment(videoFragment)
-            2-> switchFragment(squareFragment)
-            3-> switchFragment(audioFragment)
-            4-> switchFragment(mineFragment)
+//            0-> switchFragment(homeFragment)
+//            1-> switchFragment(videoFragment)
+//            2-> switchFragment(squareFragment)
+//            3-> switchFragment(audioFragment)
+//            4-> switchFragment(mineFragment)
+
+            0-> navigation.selectedItemId = R.id.navigation_home
+            1-> navigation.selectedItemId = R.id.navigation_video
+            2-> navigation.selectedItemId = R.id.navigation_square
+            3-> navigation.selectedItemId = R.id.navigation_audio
+            4-> navigation.selectedItemId = R.id.navigation_mine
         }
     }
 }

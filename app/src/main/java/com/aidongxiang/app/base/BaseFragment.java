@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.aidongxiang.app.R;
 import com.aidongxiang.app.utils.ContentViewUtils;
 import com.aidongxiang.app.widgets.CustomProgressDialog;
+import com.umeng.analytics.MobclickAgent;
 
 
 /**
@@ -127,12 +128,12 @@ public abstract class BaseFragment extends Fragment {
 
     public void onResume() {
         super.onResume();
-//          MobclickAgent.onPageStart(getClass().getSimpleName()); //统计页面
+          MobclickAgent.onPageStart(getClass().getSimpleName()); //统计页面
     }
 
     public void onPause() {
         super.onPause();
-//           MobclickAgent.onPageEnd(getClass().getSimpleName());
+           MobclickAgent.onPageEnd(getClass().getSimpleName());
     }
 
     @Override

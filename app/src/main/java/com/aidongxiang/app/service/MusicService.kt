@@ -50,6 +50,8 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
         val TYPE_STOP = 4
         val TYPE_RELEASE = 5
         val TYPE_SEEK = 6
+        var isPlaying = false
+        var url : String ?= null
 
     }
     val TAG = "MusicService"
@@ -87,6 +89,7 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
                 val newPlayPath = intent.getStringExtra(ARG_URL)
                 if(!TextUtils.isEmpty(newPlayPath)) {
                     if(newPlayPath != playPath){
+                        player.stop()
                         playPath = newPlayPath
                         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         player.setDataSource(playPath)
@@ -105,32 +108,17 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
                             player.start()
                         }
                     }
-                    val intent = Intent(this, MusicPlayReceiver::class.java)
-                    intent.putExtra(ARG_TYPE, TYPE_PLAY)
-                    intent.putExtra(ARG_TITLE, title)
-                    sendBroadcast(intent)
-                    getCurrentValue()
+                    startMusic(title)
                 }
             }
             TYPE_PAUSE->{
-                player.pause()
-                val intent = Intent(this, MusicPlayReceiver::class.java)
-                intent.putExtra(ARG_TYPE, TYPE_PAUSE)
-                sendBroadcast(intent)
+                onMusicPause()
             }
             TYPE_START->{
-                player.start()
-                val intent = Intent(this, MusicPlayReceiver::class.java)
-                intent.putExtra(ARG_TYPE, TYPE_PLAY)
-                intent.putExtra(ARG_TITLE, title)
-                sendBroadcast(intent)
-                getCurrentValue()
+                startMusic(title)
             }
             TYPE_STOP->{
-                val intent = Intent(this, MusicPlayReceiver::class.java)
-                intent.putExtra(ARG_TYPE, TYPE_STOP)
-                sendBroadcast(intent)
-                player.stop()
+                stopMusic()
             }
             TYPE_SEEK->{
                 val value = intent.getIntExtra(ARG_SEEK_POSITION, 0)
@@ -146,6 +134,26 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
 
     }
 
+    private fun stopMusic() {
+
+        val intent = Intent(this, MusicPlayReceiver::class.java)
+        intent.putExtra(ARG_TYPE, TYPE_STOP)
+        sendBroadcast(intent)
+        player.stop()
+        isPlaying = false
+    }
+
+    private fun startMusic(title : String?) {
+
+        player.start()
+        val intent = Intent(this, MusicPlayReceiver::class.java)
+        intent.putExtra(ARG_TYPE, TYPE_PLAY)
+        intent.putExtra(ARG_TITLE, title)
+        sendBroadcast(intent)
+        getCurrentValue()
+        isPlaying = true
+    }
+
 
     override fun onDestroy() {
         LogUtil.i(TAG, "onDestroy")
@@ -158,7 +166,22 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
     private inner class MyOnAudioFocusChangeListener : OnAudioFocusChangeListener {
         override fun onAudioFocusChange(focusChange: Int) {
             LogUtil.i(TAG, "focusChange=" + focusChange)
+
+            if(focusChange == AudioManager.AUDIOFOCUS_LOSS || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+                onMusicPause()
+            }
         }
+    }
+
+    /**
+     * 暂停音乐
+     */
+    private fun onMusicPause() {
+        player.pause()
+        val intent = Intent(this, MusicPlayReceiver::class.java)
+        intent.putExtra(ARG_TYPE, TYPE_PAUSE)
+        sendBroadcast(intent)
+        isPlaying = false
     }
 
 

@@ -10,7 +10,10 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.ui.login.LoginActivity
+import com.aidongxiang.app.widgets.CommonDialog
+import com.aidongxiang.app.widgets.ItemDialog
 import com.aidongxiang.business.model.Comment
+import com.aidongxiang.business.request.DeleteActionRequestQuery
 import com.aidongxiang.business.response.CommentListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
@@ -19,7 +22,6 @@ import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import kotlinx.android.synthetic.main.fragment_video_comment.*
-import java.util.*
 
 /**
  * 微博评论列表
@@ -35,9 +37,16 @@ class PostCommentListFragment : BaseListKtFragment(){
     override fun getDatas(): List<*>? = datas
 
     var postId : Long = -1
+    lateinit var itemDialog : ItemDialog
+    lateinit var deleteDialog : CommonDialog
 
     override fun init(view: View) {
         super.init(view)
+
+        itemDialog = ItemDialog(activity)
+        deleteDialog = CommonDialog(activity)
+        deleteDialog.setTitle("确认删除")
+        deleteDialog.setContent("确定要删除这条评论吗？")
 
         postId = arguments.getLong(ARG_ID)
         adapter = CommentAdapter(activity, datas)
@@ -45,18 +54,55 @@ class PostCommentListFragment : BaseListKtFragment(){
         recyclerView?.adapter = adapter
         recyclerView?.setPullRefreshEnabled(false)
 
-        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener { _, position ->
+        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener { v, position ->
             if(position < 1){
                 return@OnViewInItemClickListener
             }
-            if(Constants.user == null){
-                switchToActivity(LoginActivity::class.java)
-                return@OnViewInItemClickListener
-            }
-            val isPraise = datas[position-1].isPraise
             val id = datas[position-1].id
-            requestPraise(isPraise, id, position-1)
-        })
+            when(v.id){
+                R.id.llItemPraise->{
+                    if(Constants.user == null){
+                        switchToActivity(LoginActivity::class.java)
+                        return@OnViewInItemClickListener
+                    }
+                    val isPraise = datas[position-1].isPraise
+
+                    requestPraise(isPraise, id, position-1)
+                }
+                R.id.ivItemCommentMore->{
+                    if(Constants.user == null){
+                        switchToActivity(LoginActivity::class.java)
+                        return@OnViewInItemClickListener
+                    }
+                    if(datas[position-1].user?.id == Constants.user?.id){
+                        val itemDatas = ArrayList<String>()
+                        itemDatas.add("删除")
+                        itemDialog.setItems(itemDatas)
+                        itemDialog.setOnItemClickListener{ _, _ ->
+                            deleteDialog.show()
+                            deleteDialog.setOnConfirmClickListener{
+                                deleteDialog.dismiss()
+                                requestDeleteComment(id, position-1)
+                            }
+                        }
+                        itemDialog.show()
+                    } else {
+                        val itemDatas = ArrayList<String>()
+                        itemDatas.add("举报")
+                        itemDialog.setItems(itemDatas)
+                        itemDialog.setOnItemClickListener{ _, _ ->
+                            switchToActivity(ReportActivity::class.java, ARG_ID to id, Constants.ARG_ACTION to 2)
+                        }
+                        itemDialog.show()
+                    }
+
+                }
+            }
+
+
+
+
+        }, R.id.llItemPraise, R.id.ivItemCommentMore)
 
         faBtnComment.visibility = View.GONE
 //        setDatas()
@@ -73,10 +119,30 @@ class PostCommentListFragment : BaseListKtFragment(){
         App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, false){
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
+                var praiseNum = datas[position].praiseNum
                 if(open == 1){
                     datas[position].isPraise = 2
+                    praiseNum++
                 } else {
                     datas[position].isPraise = 1
+                    praiseNum--
+                }
+                datas[position].praiseNum = praiseNum
+                adapter.notifyItemChanged(position+1)
+            }
+        })
+    }
+
+    private fun requestDeleteComment(id : Long, position : Int) {
+
+        val query = DeleteActionRequestQuery()
+        query.action = AIIAction.ONE
+        query.ids = arrayListOf(id)
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, false){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                if(position >= 0 && position < datas.size){
+                    datas.removeAt(position)
                 }
                 adapter.update()
             }

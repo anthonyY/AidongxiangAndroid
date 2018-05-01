@@ -9,13 +9,20 @@ import android.support.multidex.MultiDex
 import android.support.v4.app.FragmentActivity
 import com.aidongxiang.app.BuildConfig
 import com.aidongxiang.app.R
+import com.aiitec.openapi.constant.CommonKey
 import com.aiitec.openapi.db.AIIDBManager
 import com.aiitec.openapi.json.JSON
 import com.aiitec.openapi.json.enums.CombinationType
 import com.aiitec.openapi.net.AIIRequest
+import com.aiitec.openapi.utils.AiiUtil
 import com.aiitec.openapi.utils.LogUtil
+import com.aiitec.openapi.utils.PacketUtil
 import com.mabeijianxi.smallvideorecord2.DeviceUtils
 import com.mabeijianxi.smallvideorecord2.JianXiCamera
+import com.meituan.android.walle.WalleChannelReader
+import com.umeng.commonsdk.UMConfigure
+import com.umeng.message.IUmengRegisterCallback
+import com.umeng.message.PushAgent
 import com.umeng.socialize.PlatformConfig
 import com.umeng.socialize.UMShareAPI
 import java.io.File
@@ -61,21 +68,40 @@ class App : Application (){
     }
 
     private fun initUmeng() {
-        val weixin_id = resources.getString(R.string.weixinId)
-        val weixin_secret_key = resources.getString(R.string.weixinSecret)
-        val qq_id = resources.getString(R.string.qqId)
-        val qq_secret_key = resources.getString(R.string.qqSecretKey)
-        val sina_id = resources.getString(R.string.sinaId)
-        val sina_key = resources.getString(R.string.sinaSecretKey)
-        val sina_redirect_url = ""
-//                resources.getString(R.string.sina_redirect_url)
-        PlatformConfig.setWeixin(weixin_id, weixin_secret_key)
-        PlatformConfig.setQQZone(qq_id, qq_secret_key)
-        PlatformConfig.setSinaWeibo(sina_id, sina_key, sina_redirect_url)
+        val weixinId = resources.getString(R.string.weixinId)
+        val weixinSecretKey = resources.getString(R.string.weixinSecret)
+        val qqId = resources.getString(R.string.qqId)
+        val qqSecretKey = resources.getString(R.string.qqSecretKey)
+        val sinaId = resources.getString(R.string.sinaId)
+        val sinaKey = resources.getString(R.string.sinaSecretKey)
+        val sinaRedirectUrl = ""
+//                resources.getString(R.string.sinaRedirectUrl)
+        PlatformConfig.setWeixin(weixinId, weixinSecretKey)
+        PlatformConfig.setQQZone(qqId, qqSecretKey)
+        PlatformConfig.setSinaWeibo(sinaId, sinaKey, sinaRedirectUrl)
 
-
+        val umengKay = resources.getString(R.string.umeng_key)
+        val pushSecret = resources.getString(R.string.umeng_push_secret)
+        val channel = WalleChannelReader.getChannel(this.applicationContext, "aidongxiang")
+        val deviceType = 1
+        UMConfigure.init(this, umengKay, channel, deviceType, pushSecret)
 
         UMShareAPI.get(this)
+
+        val mPushAgent = PushAgent.getInstance(this)
+        //注册推送服务，每次调用register方法都会回调该接口
+        mPushAgent.register(object: IUmengRegisterCallback {
+            override fun onSuccess(deviceToken: String?) {
+                LogUtil.i("友盟注册成功 $deviceToken")
+                AiiUtil.putString(applicationContext, CommonKey.KEY_DEVICETOKEN, deviceToken)
+                PacketUtil.session_id = null
+            }
+
+            override fun onFailure(msg: String?, msg2: String?) {
+                LogUtil.i("友盟注册失败 $msg   $msg2")
+            }
+
+        })
     }
 
     override fun attachBaseContext(base : Context) {
@@ -107,7 +133,7 @@ class App : Application (){
     fun exit() {
         try {
             for (activity in activities) {
-                activity?.finish()
+                activity.finish()
             }
         } catch (e: Exception) {
         } finally {

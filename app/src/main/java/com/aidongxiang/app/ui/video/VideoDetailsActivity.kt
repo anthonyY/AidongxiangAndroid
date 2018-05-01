@@ -1,5 +1,6 @@
 package com.aidongxiang.app.ui.video
 
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.media.MediaMetadataRetriever
@@ -17,7 +18,10 @@ import com.aidongxiang.app.adapter.SimpleFragmentPagerAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
+import com.aidongxiang.app.service.MusicService
+import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.Utils
@@ -214,6 +218,11 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
     }
 
     private fun startVideo() {
+        if(MusicService.isPlaying){
+            val intent = Intent(this, MusicService::class.java)
+            intent.putExtra(MusicService.ARG_TYPE, MusicService.TYPE_STOP)
+            startService(intent)
+        }
         videoview.setBackgroundColor(0)
 
         LogUtil.e("startVideo:"+playPath)
@@ -288,6 +297,10 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_download) {
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return true
+            }
             switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 0)
             return true
         }

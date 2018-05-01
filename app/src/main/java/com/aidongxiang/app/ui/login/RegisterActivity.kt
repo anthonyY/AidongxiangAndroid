@@ -10,8 +10,11 @@ import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.base.Constants.ARG_ACTION
 import com.aidongxiang.app.base.Constants.ARG_MOBILE
 import com.aidongxiang.app.base.Constants.ARG_SMSCODE_ID
+import com.aidongxiang.app.base.Constants.ARG_TITLE
+import com.aidongxiang.app.ui.home.ArticleDetailsActivity
 import com.aidongxiang.app.utils.SmscodeCountDown
 import com.aidongxiang.business.model.Where
 import com.aidongxiang.business.response.SMSResponseQuery
@@ -82,6 +85,13 @@ class RegisterActivity : BaseKtActivity(), TextWatcher {
             }
             smscodeCountDown?.start()
             requestSMSCode(1)
+        }
+
+        tvAgreement.setOnClickListener {
+            switchToActivity(ArticleDetailsActivity::class.java, ARG_ACTION to 2, ARG_TITLE to "爱侗乡使用条款")
+        }
+        tvPrivacyPolicy.setOnClickListener {
+            switchToActivity(ArticleDetailsActivity::class.java, ARG_ACTION to 3, ARG_TITLE to "隐私保护政策")
         }
     }
 

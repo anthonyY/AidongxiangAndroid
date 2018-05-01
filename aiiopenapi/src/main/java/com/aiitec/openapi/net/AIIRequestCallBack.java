@@ -139,8 +139,7 @@ public class AIIRequestCallBack<T> implements Callback {
 			// }
 			// LogUtil.i("gzip length:"+count);
 			GZIPInputStream gzin = new GZIPInputStream(inStream);
-			BufferedReader in = new BufferedReader(new InputStreamReader(gzin,
-					"utf-8"));
+			BufferedReader in = new BufferedReader(new InputStreamReader(gzin, "utf-8"));
 			String line;
 			StringBuffer sb = new StringBuffer();
 			while ((line = in.readLine()) != null) {
@@ -157,6 +156,13 @@ public class AIIRequestCallBack<T> implements Callback {
 		}
 
 		LogUtil.d(responseContent+"  \nisGzip:"+isGzip);
+		if (!responseContent.trim().startsWith("{")) {
+			int firstBraces = responseContent.indexOf("{");
+			if (firstBraces > 0) {//裁剪删除掉第一个大括号前面的东西
+				responseContent = responseContent.substring(firstBraces, responseContent.length());
+			}
+		}
+
 		int code = arg1.code();
 		if (code == 200) {
 			Message msg = new Message();

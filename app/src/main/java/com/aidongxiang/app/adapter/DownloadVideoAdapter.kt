@@ -45,9 +45,9 @@ class DownloadVideoAdapter(context: Context, datas:MutableList<Download>) : Comm
             ivAudio?.setImageResource(R.drawable.common_icon_music)
         }
 
-        GlideImgManager.load(context, item?.imagePath, ivImg)
-        tvTitle?.text = item?.title
-        tvDuration?.text = item?.playLength
+        GlideImgManager.load(context, item.imagePath, ivImg)
+        tvTitle?.text = item.title
+        tvDuration?.text = item.playLength
 
         val lineItem = h?.getView<View>(R.id.lineItem)
         if(position == itemCount-1){
@@ -55,7 +55,7 @@ class DownloadVideoAdapter(context: Context, datas:MutableList<Download>) : Comm
         } else {
             lineItem?.visibility = View.VISIBLE
         }
-        progressBar?.progress = item!!.percentage
+        progressBar?.progress = item.percentage
         if(item.isDownloadFinish){
             tvSpeed?.visibility = View.GONE
             tvDuration?.visibility = View.VISIBLE

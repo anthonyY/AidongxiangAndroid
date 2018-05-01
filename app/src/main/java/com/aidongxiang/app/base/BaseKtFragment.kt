@@ -17,6 +17,7 @@ import com.aidongxiang.app.R
 import com.aidongxiang.app.utils.ContentViewUtils
 import com.aidongxiang.app.widgets.CustomProgressDialog
 import com.aiitec.openapi.net.AIIRequest
+import com.umeng.analytics.MobclickAgent
 import java.io.Serializable
 
 /**
@@ -178,12 +179,12 @@ abstract class BaseKtFragment : Fragment() {
     }
     override fun onResume() {
         super.onResume()
-//        MobclickAgent.onPageStart(javaClass.getSimpleName()) //统计页面
+        MobclickAgent.onPageStart(this::class.java.simpleName) //统计页面
     }
 
     override fun onPause() {
         super.onPause()
-//        MobclickAgent.onPageEnd(javaClass.getSimpleName())
+        MobclickAgent.onPageEnd(this::class.java.simpleName)
     }
 
     override fun onDestroy() {

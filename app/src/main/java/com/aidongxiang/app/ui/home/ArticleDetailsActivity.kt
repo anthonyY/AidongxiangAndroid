@@ -75,7 +75,10 @@ class ArticleDetailsActivity : BaseKtActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_share, menu)
+        if(action != 2 && action != 3){
+            menuInflater.inflate(R.menu.menu_share, menu)
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 

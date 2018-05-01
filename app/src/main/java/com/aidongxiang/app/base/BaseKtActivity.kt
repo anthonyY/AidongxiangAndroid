@@ -24,6 +24,8 @@ import com.aiitec.openapi.constant.AIIConstant
 import com.aiitec.openapi.model.RequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.PacketUtil
+import com.umeng.analytics.MobclickAgent
+import com.umeng.message.PushAgent
 import java.io.Serializable
 
 
@@ -75,7 +77,7 @@ abstract class BaseKtActivity : AppCompatActivity() {
         tv_title = findViewById<TextView?>(R.id.tv_title)
         toolbar = findViewById<Toolbar?>(R.id.toolbar)
         setToolBar(toolbar)
-
+        PushAgent.getInstance(this).onAppStart()
         init(savedInstanceState)
 
 
@@ -247,12 +249,12 @@ abstract class BaseKtActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-//        MobclickAgent.onResume(this) // 友盟统计时长
+        MobclickAgent.onResume(this) // 友盟统计时长
     }
 
     override fun onPause() {
         super.onPause()
-//        MobclickAgent.onPause(this)
+        MobclickAgent.onPause(this)
     }
 
 

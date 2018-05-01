@@ -21,7 +21,7 @@ class HomeCategoryAdapter(context: Context, datas : MutableList<Navigation>) : C
 //        var width = ViewGroup.LayoutParams.WRAP_CONTENT
         val padding = ScreenUtils.dip2px(context, 8f)
         var paddingRight = 0
-        var paddingTop = 0
+        val paddingTop : Int
         if(itemCount == 1){
             ivImage?.scaleType  = ImageView.ScaleType.FIT_START
         } else {
@@ -40,7 +40,12 @@ class HomeCategoryAdapter(context: Context, datas : MutableList<Navigation>) : C
 //        ivImage?.layoutParams?.width = width
 //        ivImage?.layoutParams?.height = width
 
-        GlideImgManager.load(context, item.icon, ivImage)
+        if(item.resId > 0){
+            ivImage.setImageResource(item.resId)
+        } else {
+            GlideImgManager.load(context, item.icon, ivImage, GlideImgManager.GlideType.TYPE_CIRCLE)
+        }
+
     }
 
     override fun getLayoutViewId(viewType: Int): Int = R.layout.item_home_category

@@ -101,7 +101,7 @@ class ForgetPasswordActivity : BaseKtActivity(), TextWatcher {
         val query = SubmitRequestQuery()
         query.namespace = "SMSCode"
         query.action = AIIAction.valueOf(action)
-        query.type = 2
+        query.type = 3
         query.mobile = etMobile.text.toString()
         if(action == 2){
             if(etSmscode.text.toString().isEmpty()){
@@ -111,6 +111,7 @@ class ForgetPasswordActivity : BaseKtActivity(), TextWatcher {
             val where = Where()
             val code = etSmscode.text.toString().toInt()
             where.code = code
+            query.where = where
         }
         App.aiiRequest.send(query, object : AIIResponse<SMSResponseQuery>(this, progressDialog){
 

@@ -11,6 +11,7 @@ import com.aidongxiang.app.adapter.PostAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.Constants.ARG_ACTION
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.base.Constants.ARG_MICROBLOG
 import com.aidongxiang.app.base.Constants.ARG_TYPE
@@ -205,7 +206,7 @@ class PostListFragment : BaseListKtFragment() {
                                 shieldDialog.show()
                             }
                             1 -> {
-                                switchToActivity(ReportActivity::class.java, ARG_ID to it.id)
+                                switchToActivity(ReportActivity::class.java, ARG_ID to it.id, ARG_ACTION to 1)
                             }
                             2 -> {
                                 requestFocusSubmit(it.user!!.id, it.isFocus, clickPosition)
