@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.SeekBar
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
@@ -24,6 +25,7 @@ import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.utils.Utils
 import com.aidongxiang.app.widgets.CommonDialog
+import com.aidongxiang.app.widgets.PayDialog
 import com.aidongxiang.business.model.Ad
 import com.aidongxiang.business.model.Audio
 import com.aidongxiang.business.response.AudioDetailsResponseQuery
@@ -37,6 +39,7 @@ import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.net.download.DownloadManager
 import com.aiitec.openapi.utils.AiiUtil
 import com.aiitec.openapi.utils.LogUtil
+import com.aiitec.widgets.ShareDialog
 import kotlinx.android.synthetic.main.activity_audio_details.*
 import java.io.File
 import java.util.*
@@ -51,13 +54,18 @@ import java.util.*
 class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
 
 
+    var TYPE_WECHART_PAY = 1
+    var TYPE_ALIPAY = 2
     var id : Long = -1
     var audioPath : String ?= null
     private var mediaPlayer : MediaPlayer ?= null
     var isPlaying = false
     var isFirstPlay = true
     var audio: Audio ?= null
+    lateinit var payDialog : PayDialog
     lateinit var downloadCofirmDialog : CommonDialog
+    lateinit var shareDialog : ShareDialog
+
     override fun init(savedInstanceState: Bundle?) {
         id = bundle.getLong(ARG_ID)
 
@@ -87,6 +95,17 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
             audio?.let { download(it) }
         }
 
+        payDialog = PayDialog(this)
+        payDialog.setOnPayListener{ payType->
+            audio?.price?.let {
+                when(payType){
+                    TYPE_WECHART_PAY->{}
+                    TYPE_ALIPAY->{ }
+                }
+            }
+        }
+
+        shareDialog = ShareDialog(this)
     }
 
     private fun setListener(){
@@ -135,9 +154,25 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         }
 
         iv_audio_download.setOnClickListener {
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return@setOnClickListener
+            }
             audio?.let { downloadCofirmDialog.show()}
         }
+
+        btn_audio_buy.setOnClickListener {
+            audio?.price?.let {
+                payDialog.show(it)
+            }
+        }
+        iv_audio_share.setOnClickListener {
+            shareDialog.show()
+        }
     }
+
+
+
     override fun onDestroy() {
         super.onDestroy()
 
@@ -313,7 +348,7 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
 
     override fun onError(mediaPlayer: MediaPlayer, what: Int, extra: Int) {
         LogUtil.e("播放错误  what:$what  extra:$extra ")
-        toast("播放错误！")
+//        toast("播放错误！")
     }
 
     override fun onBufferingUpdate(mediaPlayer: MediaPlayer, bufferingProgress: Int) {
@@ -325,6 +360,7 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
 
     override fun onPrepared(mediaPlayer: MediaPlayer) {
         this.mediaPlayer = mediaPlayer
+        LogUtil.e("准备好了")
         if(audio == null){
             return
         }
@@ -357,11 +393,11 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
             download.path = vedio.audioPath
             download.imagePath = vedio.imagePath
             download.title = vedio.name
-            download.type = 2
+            download.type = 1
             downloadManager.download(download)
             toast("开始下载...")
         } else {
-            toast("视频已经存在")
+            toast("音频已经存在")
         }
     }
 
@@ -392,11 +428,31 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         this.audio = audio
         audioPath = audio.audioPath
 
-        if(MusicService.isPlaying && !MusicService.url.equals(audioPath)){
-            //正在播放别的音频，那么就停止掉
-            val intent = Intent(this@AudioDetailsActivity, MusicService::class.java)
-            intent.putExtra(MusicService.ARG_TYPE, MusicService.TYPE_STOP)
-            startService(intent)
+        val download = App.aiidbManager.findObjectFromId(Download::class.java, audio.id)
+        var fileExists = false
+        if (download != null && !TextUtils.isEmpty(download.localPath)) {
+            val file = File(download.localPath)
+            fileExists = file.exists()
+            //一下载并存在
+            if(fileExists){
+                audioPath = download.localPath
+                LogUtil.e("已下载路径"+audioPath)
+            }
+        }
+
+
+        if(MusicService.isPlaying ){
+            if(!MusicService.playPath.equals(audioPath)){
+                LogUtil.e("路径不一致"+MusicService.playPath+" --------- "+audioPath)
+                //正在播放别的音频，那么就停止掉
+                val intent = Intent(this@AudioDetailsActivity, MusicService::class.java)
+                intent.putExtra(MusicService.ARG_TYPE, MusicService.TYPE_STOP)
+                startService(intent)
+            } else {
+                isPlaying = true
+                isFirstPlay = false
+                ivAudioDetailsPlay.setImageResource(R.drawable.video_btn_stop2)
+            }
         }
         downloadCofirmDialog.setContent("确定下载${audio.name}？")
         webview_audio.settings.javaScriptEnabled = true
@@ -416,12 +472,17 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         }
         tv_audio_praise_num.text = audio.praiseNum.toString()
         tv_audio_play_num.text = audio.playNum.toString()
-        if(audio.price > 0){
+        if(audio.payType ==2 && audio.price > 0){
             tv_audio_price.text = "¥"+AiiUtil.formatString(audio.price)
+            btn_audio_buy.visibility = View.VISIBLE
         } else {
             tv_audio_price.text = ""
+            btn_audio_buy.visibility = View.GONE
         }
 
         tv_audio_title.text = audio.name
+        val imagePath = audio.imagePath
+        val content = audio.name
+        shareDialog.setShareData("爱侗乡有好听的音乐哦，快来听听吧！", content, imagePath, "https://www.aidongxiang.com")
     }
 }

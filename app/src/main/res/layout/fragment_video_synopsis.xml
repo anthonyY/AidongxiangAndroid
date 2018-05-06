@@ -78,7 +78,7 @@
                         android:id="@+id/tv_video_praise_num"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="120"
+                        android:text=""
                         android:textColor="@color/gray7"
                         android:textSize="16sp" />
                 </LinearLayout>

@@ -9,6 +9,7 @@ import android.support.multidex.MultiDex
 import android.support.v4.app.FragmentActivity
 import com.aidongxiang.app.BuildConfig
 import com.aidongxiang.app.R
+import com.aidongxiang.app.utils.CrashHandler
 import com.aiitec.openapi.constant.CommonKey
 import com.aiitec.openapi.db.AIIDBManager
 import com.aiitec.openapi.json.JSON
@@ -64,6 +65,21 @@ class App : Application (){
         initUmeng()
         initSmallVideo(this)
 
+        val sdcardPath = AiiUtil.getSDCardPath()
+        val smallVideoDir = sdcardPath + "file/" + packageName + "/smallvideo"
+        Constants.SMALL_VIDEOS_DIR = smallVideoDir
+        val file = File(Constants.SMALL_VIDEOS_DIR)
+        if(!file.exists()){
+            if(!file.parentFile.exists()){
+                if(!file.parentFile.parentFile.exists()){
+                    file.parentFile.parentFile.mkdir()
+                }
+                file.parentFile.mkdir()
+            }
+            file.mkdir()
+        }
+
+        CrashHandler.getInstance().init(this)
 
     }
 

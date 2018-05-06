@@ -14,9 +14,11 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.event.RefreshMicrobolgEvent
+import com.aidongxiang.app.ui.square.ImageSelectActivity.Companion.EXTRA_RESULT
 import com.aidongxiang.app.ui.video.VideoPlayerActivity2
 import com.aidongxiang.app.ui.video.VideoPlayerActivity2.Companion.ARG_PATH
 import com.aidongxiang.app.utils.GlideImgManager
+import com.aidongxiang.app.utils.ImageUtils
 import com.aidongxiang.app.utils.SoftKeyboardStateHelper
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.widgets.ItemDialog
@@ -28,12 +30,16 @@ import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.model.UploadImageRequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.LogUtil
+import com.mabeijianxi.smallvideorecord2.LocalMediaCompress
 import com.mabeijianxi.smallvideorecord2.MediaRecorderBase
+import com.mabeijianxi.smallvideorecord2.model.AutoVBRMode
+import com.mabeijianxi.smallvideorecord2.model.LocalMediaConfig
 import com.mabeijianxi.smallvideorecord2.model.MediaRecorderConfig
 import kotlinx.android.synthetic.main.activity_publish_post.*
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -170,7 +176,7 @@ class PublishPostActivity : BaseKtActivity() {
 //                })
             } else if (images.size > 1) {
                 //有图片，先上传图片
-                requestUploadFile(1)
+                requestUploadFile(3)
             } else {
                 //没有图片，没有视频，只有文字
                 requestMicroblogSubmit()
@@ -189,7 +195,9 @@ class PublishPostActivity : BaseKtActivity() {
                     toast("不能同时发布图片和视频")
                     return@setOnRecyclerViewItemClickListener
                 }
-                switchToActivityForResult(ImageSelectActivity::class.java, REQUEST_IMAGE)
+                val images2 = ArrayList<String>()
+                images.filterTo(images2) { it != "add" }
+                switchToActivityForResult(ImageSelectActivity::class.java, REQUEST_IMAGE, EXTRA_RESULT to images2)
             }
         }
         rl_publish_video.setOnClickListener {
@@ -200,7 +208,9 @@ class PublishPostActivity : BaseKtActivity() {
                 toast("不能同时发布图片和视频")
                 return@setOnClickListener
             }
-            switchToActivityForResult(ImageSelectActivity::class.java, REQUEST_IMAGE)
+            val images2 = ArrayList<String>()
+            images.filterTo(images2) { it != "add" }
+            switchToActivityForResult(ImageSelectActivity::class.java, REQUEST_IMAGE, EXTRA_RESULT to images2)
         }
         iv_publish_video.setOnClickListener {
             if (images.size > 1) {
@@ -287,8 +297,13 @@ class PublishPostActivity : BaseKtActivity() {
             val path = data.getStringExtra(VideoSelectActivity.ARG_PATH)
             val thumbPath = data.getStringExtra(VideoSelectActivity.ARG_THUMB_PATH)
             if (path != null) {
-                videoUri = path
-                LogUtil.e("选择视频 videoUri:"+videoUri)
+                if(path.contains(Constants.VIDEOS_DIR!!)){
+                    //如果是这个文件目录下的，就是本app拍出来的，是已经压缩过的，无需再压缩
+                    videoUri = path
+                } else {
+                    compressVideo(path)
+                }
+                LogUtil.e("选择视频 videoUri:"+path)
                 GlideImgManager.loadFile(this, thumbPath, iv_video_thumb)
                 rl_publish_video.visibility = View.VISIBLE
                 recycler_image.visibility = View.GONE
@@ -334,6 +349,16 @@ class PublishPostActivity : BaseKtActivity() {
 
 
     private fun requestMicroblogSubmit() {
+        if(isCompressing){
+            progressDialogShow()
+            //如果正在压缩中，就等会儿在提交
+            progressDialog?.setOnDismissListener {
+                //如果点了返回，则不能提交
+                isNeedSubmit = false
+            }
+            isNeedSubmit = true
+            return
+        }
         val query = MicroblogSubmitRequestQuery()
         val microblog = Microblog()
         microblog.content = et_publish_content.text.toString()
@@ -351,7 +376,7 @@ class PublishPostActivity : BaseKtActivity() {
             microblog.parentId = parentId
         }
         query.microblog = microblog
-        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this) {
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this, progressDialog) {
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
 
@@ -372,10 +397,15 @@ class PublishPostActivity : BaseKtActivity() {
             map.put(file.name, file)
         } else {
             images.filter { !TextUtils.isEmpty(it) && it != "add" }
+                    .map { ImageUtils.getCompressFile(this, it) }
                     .map { File(it) }
                     .forEach { map.put(it.name, it) }
+//
+//            images.filter { !TextUtils.isEmpty(it) && it != "add" }
+//                    .map { File(it) }
+//                    .forEach { map.put(it.name, it) }
         }
-        App.aiiRequest.sendFiles(query, map, object : AIIResponse<FileListResponseQuery>(this) {
+        App.aiiRequest.sendFiles(query, map, object : AIIResponse<FileListResponseQuery>(this, progressDialog) {
 
             override fun onSuccess(response: FileListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
@@ -392,6 +422,48 @@ class PublishPostActivity : BaseKtActivity() {
             }
         }, action)
     }
+
+
+    var isCompressing = false
+    var isNeedSubmit = false
+    /**
+     * 压缩视频
+     */
+    fun compressVideo(path: String) {
+        LogUtil.e(path)
+        val buidler = LocalMediaConfig.Buidler()
+        val config = buidler
+                .setVideoPath(path)
+                .captureThumbnailsTime(3)
+                .doH264Compress(AutoVBRMode())
+                .setFramerate(15)
+                .setScale(1.0f)
+                .build()
+//        progressDialogShow()
+
+        isCompressing = true
+        App.app.cachedThreadPool.execute {
+            val onlyCompressOverBean = LocalMediaCompress(config).startCompress()
+            //压缩完成，亲测 原来拍摄12M压缩至5M左右
+            if (onlyCompressOverBean.isSucceed) {
+                //压缩完成后，删除原始视频，因为太占空间了
+                val originalFile = File(path)
+                originalFile.delete()
+                videoUri = onlyCompressOverBean.videoPath
+            } else {
+                videoUri = path
+            }
+//            runOnUiThread { progressDialogDismiss() }
+            LogUtil.e("是否压缩成功" + onlyCompressOverBean.isSucceed + "   压缩前" + path + "  \n压缩后" + videoUri)
+            isCompressing = false
+//            压缩完了判断是否点击了提交按钮，如果点击了就直接提交
+            if(isNeedSubmit){
+                requestMicroblogSubmit()
+            }
+        }
+
+    }
+
 }
 
 

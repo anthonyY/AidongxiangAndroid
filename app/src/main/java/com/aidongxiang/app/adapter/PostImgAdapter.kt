@@ -47,6 +47,7 @@ class PostImgAdapter(context: Context, datas: MutableList<String>) : CommonRecyc
         h?.itemView?.setPadding(0, paddingTop, paddingRight, 0)
         ivImg?.layoutParams?.width = width
         ivImg?.layoutParams?.height = height
+//        GlideImgManager.load(context, item).placeholder(GlideImgManager.getRandomDefaultImage()).override(width, width).into(ivImg)
         GlideImgManager.load(context, item, ivImg)
     }
 

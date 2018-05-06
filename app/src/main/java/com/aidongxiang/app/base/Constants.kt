@@ -12,6 +12,7 @@ import com.aidongxiang.business.model.User
  */
 object Constants {
     var VIDEOS_DIR: String? = null
+    var SMALL_VIDEOS_DIR: String? = null
     var CACHEDIR = Environment.getExternalStorageDirectory().toString() + "/file/com.aidongxiang.app/uploadfiles/"
 
     val ARG_ID = "id"

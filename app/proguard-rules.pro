@@ -114,7 +114,7 @@
 -keep class com.linkedin.** { *; }
 -keep class com.android.dingtalk.share.ddsharemodule.** { *; }
 -keepattributes Signature
-#------------------------ 友盟更新 END ---------------------------
+#------------------------ 友盟分享 END ---------------------------
 
 #---------------------- 友盟统计 START -------------------------
 -keep class com.umeng.** {*;}
@@ -126,7 +126,7 @@
     public static ** valueOf(java.lang.String);
 }
 -keep public class com.aidongxiang.app.R$*{
-public static final int *;
+    public static final int *;
 }
 #---------------------- 友盟统计 END -------------------------
 
@@ -139,7 +139,9 @@ public static final int *;
 -dontwarn com.xiaomi.**
 -dontwarn com.huawei.**
 -dontwarn com.meizu.**
+
 -keepattributes *Annotation*
+
 -keep class com.taobao.** {*;}
 -keep class org.android.** {*;}
 -keep class anet.channel.** {*;}
@@ -148,20 +150,22 @@ public static final int *;
 -keep class com.huawei.** {*;}
 -keep class com.meizu.** {*;}
 -keep class org.apache.thrift.** {*;}
+
 -keep class com.alibaba.sdk.android.**{*;}
 -keep class com.ut.**{*;}
 -keep class com.ta.**{*;}
+
 -keep public class **.R$*{
    public static final int *;
 }
 #--------------- 友盟推送 END  --------------------
 
 
-#---------------- 高德定位 ---------------------
+#---------------- 高德定位 BEGIN ---------------------
 #定位
 -keep class com.amap.api.location.**{*;}
 -keep class com.amap.api.fence.**{*;}
 -keep class com.autonavi.aps.amapapi.model.**{*;}
 #    搜索
--keep   class com.amap.api.services.**{*;}
-#-------------- 高德定位 --------------------------
+-keep class com.amap.api.services.**{*;}
+#-------------- 高德定位 END --------------------------

@@ -27,15 +27,18 @@ import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.Utils
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.app.widgets.CustomVideoView
+import com.aidongxiang.app.widgets.PayDialog
 import com.aidongxiang.business.model.Audio
 import com.aidongxiang.business.response.AudioDetailsResponseQuery
 import com.aiitec.openapi.enums.CacheMode
+import com.aiitec.openapi.model.Download
 import com.aiitec.openapi.model.RequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.LogUtil
 import com.aiitec.openapi.utils.ScreenUtils
 import kotlinx.android.synthetic.main.activity_video_details.*
 import kotlinx.android.synthetic.main.layout_title_bar.*
+import java.io.File
 
 /**
  * 视频详情
@@ -64,15 +67,18 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
     //    var playPath : String ?= "http://192.168.31.7:8080/movie/yuntu_2.mp4"
     lateinit var commonDialog: CommonDialog
     var mVideoViewLayoutParams: ViewGroup.LayoutParams? = null
-//    var mVideoViewLayoutParams2: ViewGroup.LayoutParams? = null
+    //    var mVideoViewLayoutParams2: ViewGroup.LayoutParams? = null
     var currentPosition = 0
     var oldPosition = 0
     var duration = 0
-    var video: Audio ?= null
-    lateinit var videoSynopsisFragment : VideoSynopsisFragment
+    var video: Audio? = null
+    lateinit var videoSynopsisFragment: VideoSynopsisFragment
     var videoWidth = 0
     var videoHeight = 0
     var videoScale = 1f
+    lateinit var payDialog: PayDialog
+    var TYPE_WECHART_PAY = 1
+    var TYPE_ALIPAY = 2
 
     override fun init(savedInstanceState: Bundle?) {
 
@@ -92,6 +98,19 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             isConfirmNotWifiPlay = true
             startVideo()
         }
+
+        payDialog = PayDialog(this)
+        payDialog.setOnPayListener { payType ->
+            video?.price?.let {
+                when (payType) {
+                    TYPE_WECHART_PAY -> {
+                    }
+                    TYPE_ALIPAY -> {
+                    }
+                }
+            }
+        }
+
         mVideoViewLayoutParams = rl_video.layoutParams
         setListener()
 
@@ -218,14 +237,14 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
     }
 
     private fun startVideo() {
-        if(MusicService.isPlaying){
+        if (MusicService.isPlaying) {
             val intent = Intent(this, MusicService::class.java)
             intent.putExtra(MusicService.ARG_TYPE, MusicService.TYPE_STOP)
             startService(intent)
         }
         videoview.setBackgroundColor(0)
 
-        LogUtil.e("startVideo:"+playPath)
+        LogUtil.e("startVideo:" + playPath)
         if (!TextUtils.isEmpty(playPath)) {
             if (isFirst) {
                 videoview.setVideoPath(playPath)
@@ -242,7 +261,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
                 videoHeight = Integer.parseInt(videoHeightStr) // 视频高度
                 videoWidth = Integer.parseInt(videoWidthStr) // 视频宽度
                 resetVideoWidth()
-            } catch (e : Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
 
@@ -297,7 +316,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_download) {
-            if(Constants.user == null){
+            if (Constants.user == null) {
                 switchToActivity(LoginActivity::class.java)
                 return true
             }
@@ -312,10 +331,10 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
     var isFullScreen = false
     private fun switchScreenRotation() {
 
-        if(videoWidth < videoHeight){
+        if (videoWidth < videoHeight) {
             //如果宽<高，全屏只需改变大小就行了，屏幕方向不改变
             var mVideoHeight = 0
-            if (!isFullScreen){
+            if (!isFullScreen) {
                 mVideoViewLayoutParams = rl_video.layoutParams
                 val layoutParams = LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
                 rl_video.layoutParams = layoutParams
@@ -328,7 +347,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
                 rl_video.layoutParams = mVideoViewLayoutParams
                 isFullScreen = false
                 titlebar.visibility = View.VISIBLE
-                mVideoHeight =  rl_video.layoutParams.height
+                mVideoHeight = rl_video.layoutParams.height
             }
 
             var mVideoWidth = (mVideoHeight * videoScale).toInt()
@@ -341,9 +360,9 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
             // 设置surfaceview画布大小
             videoview.holder.setFixedSize(mVideoWidth, mVideoHeight)
-        // 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
-            videoview.setMeasure(mVideoWidth,mVideoHeight)
-        // 请求调整
+            // 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
+            videoview.setMeasure(mVideoWidth, mVideoHeight)
+            // 请求调整
             videoview.requestLayout()
 
             return
@@ -503,7 +522,17 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
     private fun setAudioData(audio: Audio) {
         this.video = audio
         playPath = audio.audioPath
-
+        val download = App.aiidbManager.findObjectFromId(Download::class.java, audio.id)
+        var fileExists = false
+        if (download != null && !TextUtils.isEmpty(download.localPath)) {
+            val file = File(download.localPath)
+            fileExists = file.exists()
+            //一下载并存在
+            if (fileExists) {
+                playPath = download.localPath
+                LogUtil.e("已下载路径" + playPath)
+            }
+        }
         GlideImgManager.load(this, audio.imagePath, iv_video_wait)
         setCommentNum(audio.commentNum)
         videoSynopsisFragment.update(audio)
@@ -512,35 +541,25 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
     /**
      * 这个会经常更新， 并且是由子Fragment 更新
      */
-    fun setCommentNum(num : Int){
+    fun setCommentNum(num: Int) {
         tv_video_comment_num.text = num.toString()
     }
 
 
-
-    private fun resetVideoWidth(){
+    private fun resetVideoWidth() {
         var mVideoWidth = videoWidth
 // 获取视频资源的高度
         var mVideoHeight = videoHeight
 // 获取屏幕的宽度
-//            val display = IneedApplication.newInstanse().getResources().getDisplayMetrics();
 // 在资源尺寸可以播放观看时处理
         if (mVideoHeight > 0 && mVideoWidth > 0) {
 // 拉伸比例
-            videoScale =  mVideoWidth.toFloat()/ mVideoHeight
+            videoScale = mVideoWidth.toFloat() / mVideoHeight
 // 视频资源拉伸至屏幕宽度，横屏竖屏需结合传感器等特殊处理
 // 拉伸VideoView高度
-            if(videoScale != 0f){
-                if(mVideoWidth > mVideoHeight){
-//                    if(isFullScreen){
-//                        mVideoViewLayoutParams2 = rl_video2.layoutParams
-//                        val layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
-//                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-//                        rl_video2.layoutParams = layoutParams
-//                    } else {
-//                        rl_video2.layoutParams = mVideoViewLayoutParams2
-//                    }
-                    if(isFullScreen){
+            if (videoScale != 0f) {
+                if (mVideoWidth > mVideoHeight) {
+                    if (isFullScreen) {
                         mVideoHeight = ScreenUtils.getScreenWidth(this)
                         mVideoWidth = (mVideoHeight * videoScale).toInt()
                         val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
@@ -556,8 +575,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
                     mVideoWidth = videoview.measuredWidth//ScreenUtils.getScreenWidth(this)
                     mVideoHeight = ((mVideoWidth / videoScale).toInt())
                 } else {
-                    LogUtil.e("mVideoWidth <= mVideoHeight<<<<<<<<<<<<<isFullScreen:$isFullScreen" )
-                    if(isFullScreen){
+                    if (isFullScreen) {
                         mVideoHeight = ScreenUtils.getScreenHeight(this)
                         mVideoWidth = (mVideoHeight * videoScale).toInt()
                         val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
@@ -577,7 +595,7 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             // 设置surfaceview画布大小
             videoview.holder.setFixedSize(mVideoWidth, mVideoHeight)
 // 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
-            videoview.setMeasure(mVideoWidth,mVideoHeight)
+            videoview.setMeasure(mVideoWidth, mVideoHeight)
 // 请求调整
             videoview.requestLayout()
         }

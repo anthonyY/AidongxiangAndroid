@@ -1,9 +1,6 @@
 package com.aidongxiang.app.ui.mine
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -12,6 +9,7 @@ import com.aidongxiang.app.adapter.DownloadVideoAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.App.Companion.aiidbManager
+import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.ui.video.VideoDetailsActivity
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.model.Download
@@ -31,7 +29,6 @@ class DownloadVideoListFragment : BaseListKtFragment(){
     val datas = ArrayList<Download>()
     lateinit var adapter : DownloadVideoAdapter
     lateinit var downloadManager : DownloadManager
-    lateinit var downloadReceiver : DownloadReceiver
     override fun getDatas(): List<*>? = datas
     val random = Random()
     var isEdit = false
@@ -60,7 +57,10 @@ class DownloadVideoListFragment : BaseListKtFragment(){
         }
 
         adapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(VideoDetailsActivity::class.java)
+            if(position > 0){
+                val id = datas[position-1].id
+                switchToActivity(VideoDetailsActivity::class.java, ARG_ID to id)
+            }
         }
         tv_select_all.setOnClickListener {
             for(data in datas){
@@ -75,18 +75,13 @@ class DownloadVideoListFragment : BaseListKtFragment(){
 
         downloadManager = DownloadManager.getInstance(activity)
 
-        downloadReceiver = DownloadReceiver()
-        val intentFilter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_UPDATE)
-        activity?.registerReceiver(downloadReceiver, intentFilter)
+
 
         loadData()
     }
 
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        activity?.unregisterReceiver(downloadReceiver)
-    }
+
 
     fun setIsEdit(isEdit : Boolean ){
         this.isEdit = isEdit
@@ -116,28 +111,23 @@ class DownloadVideoListFragment : BaseListKtFragment(){
     }
 
 
-    inner class DownloadReceiver : BroadcastReceiver() {
-        override fun onReceive(p0: Context?, intent: Intent?) {
+    fun update(intent: Intent) {
+        val type = intent.getIntExtra(DownloadManager.ARG_TYPE, DownloadManager.ARG_TYPE_UPDATE)
+        val current = intent.getLongExtra(DownloadManager.ARG_CURRENT, 0)
+        val total = intent.getLongExtra(DownloadManager.ARG_TOTAL, 0)
+        val id = intent.getLongExtra(DownloadManager.ARG_DOWNLOAD_ID, 0)
+        val percentage = intent.getIntExtra(DownloadManager.ARG_PERCENTAGE, 0)
+        val speed = intent.getStringExtra(DownloadManager.ARG_SPPED)
+        val isdownloadFinish = type == DownloadManager.ARG_TYPE_FINISH
 
-            intent?.let {
-                val type = it.getIntExtra(DownloadManager.ARG_TYPE, DownloadManager.ARG_TYPE_UPDATE)
-                val current = it.getLongExtra(DownloadManager.ARG_CURRENT, 0)
-                val total = it.getLongExtra(DownloadManager.ARG_TOTAL, 0)
-                val id = it.getLongExtra(DownloadManager.ARG_DOWNLOAD_ID, 0)
-                val percentage = it.getIntExtra(DownloadManager.ARG_PERCENTAGE, 0)
-                val speed = it.getStringExtra(DownloadManager.ARG_SPPED)
-                val isdownloadFinish = type == DownloadManager.ARG_TYPE_FINISH
-
-                datas.forEachIndexed { _, data ->
-                    if (data.id == id) {
-                        data.breakPoint = current
-                        data.isDownloadFinish = isdownloadFinish
-                        data.totalBytes = total
-                        data.percentage = percentage
-                        data.speed = speed
-                        adapter.update()
-                    }
-                }
+        datas.forEachIndexed { _, data ->
+            if (data.id == id) {
+                data.breakPoint = current
+                data.isDownloadFinish = isdownloadFinish
+                data.totalBytes = total
+                data.percentage = percentage
+                data.speed = speed
+                adapter.update()
             }
         }
     }

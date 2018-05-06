@@ -16,8 +16,10 @@ import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.base.Constants.ARG_MICROBLOG
 import com.aidongxiang.app.base.Constants.ARG_TYPE
 import com.aidongxiang.app.event.RefreshMicrobolgEvent
+import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.PersonCenterActivity
 import com.aidongxiang.app.ui.video.VideoPlayerActivity2
+import com.aidongxiang.app.ui.video.VideoPlayerActivity3
 import com.aidongxiang.app.widgets.CommentDialog
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.app.widgets.ItemDialog
@@ -139,7 +141,7 @@ class PostListFragment : BaseListKtFragment() {
                     }
                     R.id.rlItemVideoPlay -> {
                         datas[positon - 1].videoPath?.let {
-                            switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it)
+                            switchToActivity(VideoPlayerActivity3::class.java, VideoPlayerActivity2.ARG_PATH to it)
                         }
                     }
                     R.id.rlItemChildVideoPlay -> {
@@ -195,9 +197,6 @@ class PostListFragment : BaseListKtFragment() {
                     //屏蔽列表, 这里取消屏蔽
                     requestScreenSubmit(it.id, 2)
                 } else {
-                    if (Constants.user != null){
-                        LogUtil.e("myId : "+Constants.user?.id +"    microbolg_user_id:"+it.user?.id+"    "+(it.user?.id == Constants.user?.id))
-                    }
                     if (Constants.user != null && it.user?.id == Constants.user?.id) {
                         deleteDialog.show()
                     } else {
@@ -257,6 +256,10 @@ class PostListFragment : BaseListKtFragment() {
      * 屏蔽
      */
     private fun requestScreenSubmit(id: Long, action: Int) {
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = SubmitRequestQuery()
         query.namespace = "ScreenSwitch"
 //        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
@@ -275,6 +278,10 @@ class PostListFragment : BaseListKtFragment() {
      * 删除
      */
     private fun requestDeleteAction(id: Long) {
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = DeleteActionRequestQuery()
         query.namespace = "DeleteAction"
 //        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
@@ -293,6 +300,10 @@ class PostListFragment : BaseListKtFragment() {
      * 关注 / 取消关注
      */
     private fun requestFocusSubmit(id: Long, open: Int, position: Int) {
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = FocusSwitchRequestQuery()
         query.namespace = "FocusSwitch"
         query.userId = id
@@ -322,7 +333,7 @@ class PostListFragment : BaseListKtFragment() {
     private fun addHeaderView() {
 
         val header = TextView(activity)
-        header.text = "已屏蔽的用户"
+        header.text = "已屏蔽的微博"
         header.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
         val padding = resources.getDimension(R.dimen.margin_screen_left).toInt()
         header.setPadding(padding, padding, padding, padding)
@@ -383,7 +394,10 @@ class PostListFragment : BaseListKtFragment() {
 
 
     private fun requestCommentSubmit(postId: Long, content: String) {
-
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = SubmitRequestQuery("CommentSubmit")
         query.action = AIIAction.THREE
         query.id = postId
@@ -409,6 +423,10 @@ class PostListFragment : BaseListKtFragment() {
      */
     private fun requestPraise(postId : Long, open : Int, position : Int) {
 
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = SubmitRequestQuery("PraiseSwitch")
         query.action = AIIAction.THREE
         query.id = postId

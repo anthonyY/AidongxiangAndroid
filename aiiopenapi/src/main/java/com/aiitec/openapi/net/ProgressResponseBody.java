@@ -1,11 +1,13 @@
 package com.aiitec.openapi.net;
 
-import java.io.File;
-import java.io.IOException;
-
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.NonNull;
+
+import java.io.File;
+import java.io.IOException;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
@@ -19,14 +21,14 @@ public class ProgressResponseBody extends ResponseBody {
 
     public interface ProgressListener {
         void onPreExecute(long contentLength);
-        void update(long totalBytes);
+        void update(long totalBytes, long currnet, int progress);
         void onSuccess(File file);
         void onStart();
         void onFailure();
     }
 
-	protected static final int PRE_EXECUTE = 0;
-	protected static final int UPDATE = 1;
+    private static final int PRE_EXECUTE = 0;
+    private static final int UPDATE = 1;
 
     private final ResponseBody responseBody;
     private final ProgressListener progressListener;
@@ -36,7 +38,7 @@ public class ProgressResponseBody extends ResponseBody {
         this.responseBody = responseBody;
         this.progressListener = progressListener;
         handler.sendEmptyMessage(PRE_EXECUTE);
-        
+
     }
 
     // @Override
@@ -59,16 +61,20 @@ public class ProgressResponseBody extends ResponseBody {
 
     private Source source(Source source) {
         return new ForwardingSource(source) {
-            long totalBytes = 0L;
+            long current = 0L;
 
             // @Override
-            public long read(Buffer sink, long byteCount) throws IOException {
+            public long read(@NonNull Buffer sink, long byteCount) throws IOException {
                 long bytesRead = super.read(sink, byteCount);
-                totalBytes += bytesRead != -1 ? bytesRead : 0;
+                current += bytesRead != -1 ? bytesRead : 0;
                 if (null != progressListener) {
                     if (bytesRead != -1) {
+                        long total = contentLength();
                     	Message message = handler.obtainMessage(UPDATE);
-                    	message.obj = totalBytes;
+                        Bundle bundle = new Bundle();
+                        bundle.putLong("total", total);
+                        bundle.putLong("current", current);
+                        message.setData(bundle);
                     	handler.sendMessage(message);
                     }
                 }
@@ -76,17 +82,26 @@ public class ProgressResponseBody extends ResponseBody {
             }
         };
     }
-    Handler handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
-		
+    private Handler handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
+
 		@Override
 		public boolean handleMessage(Message msg) {
 			switch(msg.what){
 			case UPDATE:
-				long totalBytes = (long) msg.obj;
-				if (progressListener != null) {
-					progressListener.update(totalBytes);
-				}
-				
+			    Bundle bundle = msg.getData();
+			    if(bundle != null){
+                    long total = bundle.getLong("total", 0);
+                    long current = bundle.getLong("current", 0);
+                    int progress = 0;
+                    if(total > 0){
+                        progress = (int) (current*100/total);
+                    }
+                    if (progressListener != null) {
+                        progressListener.update(total, current, progress);
+                    }
+                }
+
+
 				break;
 			case PRE_EXECUTE:
 				if (progressListener != null) {
@@ -97,4 +112,6 @@ public class ProgressResponseBody extends ResponseBody {
 			return false;
 		}
 	});
+
+
 }

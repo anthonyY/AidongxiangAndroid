@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="weixinId">2323445345</string>
-    <string name="weixinSecret">ss4rg62re3re466k7</string>
+    <string name="weixinId">wx1fe6eadb99e899a4</string>
+    <string name="weixinSecret">5b7de7da4d064a6b4bc0e3cb61c50647</string>
     <string name="qqId">1106329102</string>
     <string name="qqSecretKey">Uaywo7vRdhNVR4p4</string>
     <string name="sinaId">1039717231</string>

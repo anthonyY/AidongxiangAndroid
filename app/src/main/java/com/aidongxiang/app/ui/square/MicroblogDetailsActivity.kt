@@ -117,6 +117,10 @@ class MicroblogDetailsActivity : BaseKtActivity() {
                                 shieldDialog.show()
                             }
                             1 -> {
+                                if(Constants.user == null){
+                                    switchToActivity(LoginActivity::class.java)
+                                    return@setOnItemClickListener
+                                }
                                 switchToActivity(ReportActivity::class.java, Constants.ARG_ID to it.id, ARG_ACTION to 1)
                             }
                             2 -> {
@@ -238,7 +242,10 @@ class MicroblogDetailsActivity : BaseKtActivity() {
     }
 
     private fun requestPraise(open : Int) {
-
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = SubmitRequestQuery("PraiseSwitch")
         query.action = AIIAction.THREE
         query.id = postId
@@ -268,7 +275,10 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         })
     }
     private fun requestCommentSubmit(content : String) {
-
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = SubmitRequestQuery("CommentSubmit")
         query.action = AIIAction.THREE
         query.id = postId
@@ -440,6 +450,10 @@ class MicroblogDetailsActivity : BaseKtActivity() {
      * 屏蔽
      */
     private fun requestScreenSubmit(id: Long, action: Int) {
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = SubmitRequestQuery()
         query.namespace = "ScreenSwitch"
 //        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
@@ -465,6 +479,10 @@ class MicroblogDetailsActivity : BaseKtActivity() {
      * 删除
      */
     private fun requestDeleteAction(id: Long) {
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = DeleteActionRequestQuery()
         query.namespace = "DeleteAction"
 //        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
@@ -486,6 +504,10 @@ class MicroblogDetailsActivity : BaseKtActivity() {
      * 关注 / 取消关注
      */
     private fun requestFocusSubmit(id: Long, open: Int) {
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
         val query = FocusSwitchRequestQuery()
         query.namespace = "FocusSwitch"
         query.userId = id

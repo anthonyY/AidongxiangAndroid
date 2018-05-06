@@ -11,11 +11,13 @@ import com.aiitec.openapi.constant.AIIConstant
 import com.aiitec.openapi.model.RequestQuery
 import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.net.AIIResponse
+import com.aiitec.openapi.utils.CacheUtils
 import kotlinx.android.synthetic.main.activity_setting.*
 
 @ContentView(R.layout.activity_setting)
 class SettingActivity : BaseKtActivity() {
 
+    lateinit var cacheUtils : CacheUtils
     override fun init(savedInstanceState: Bundle?) {
 
         title  = "设置"
@@ -27,6 +29,17 @@ class SettingActivity : BaseKtActivity() {
 
         btnLogout.setOnClickListener {
             requestLogout()
+        }
+        llClearCache.setOnClickListener {
+            cacheUtils.clearCache()
+        }
+
+        cacheUtils = CacheUtils(this)
+        cacheUtils.getCacheSize{_, formatSize ->
+            tvCacheSize.text = formatSize
+        }
+        cacheUtils.setOnClearCacheListener {
+            tvCacheSize.text = "0.0k"
         }
     }
 

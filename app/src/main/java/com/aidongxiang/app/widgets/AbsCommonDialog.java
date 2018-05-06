@@ -57,14 +57,14 @@ public abstract class AbsCommonDialog extends Dialog {
     protected void init(int layoutId) {
         view = LayoutInflater.from(context).inflate(layoutId, null);
         setContentView(view);
-        findView(view);
+
         Window window = getWindow();
         WindowManager.LayoutParams params = window.getAttributes();
         params.gravity = Gravity.CENTER_VERTICAL;
         window.setAttributes(setLayoutParams(params));
         setAnimationStyle(animStyle());
 
-
+        findView(view);
     }
 
     public void setAnimationStyle(int animStyle) {

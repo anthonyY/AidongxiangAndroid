@@ -1,9 +1,5 @@
 package com.aidongxiang.app.utils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Random;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -31,9 +27,15 @@ import com.aiitec.openapi.net.AIIRequest;
 import com.aiitec.openapi.net.AIIResponse;
 import com.aiitec.openapi.net.ProgressResponseBody;
 import com.aiitec.openapi.utils.AiiUtil;
+import com.aiitec.openapi.utils.DateUtil;
 import com.aiitec.openapi.utils.LogUtil;
 import com.aiitec.openapi.utils.PacketUtil;
 import com.aiitec.openapi.utils.ToastUtil;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 
 
 public class VersionCheck {
@@ -56,6 +58,7 @@ public class VersionCheck {
 	// 版本检查返回数组的第二个才是安卓，第一个是ios
 	private static final int androidIndex = 0x01;
 	private Dialog forceddialog;
+	private boolean showAgain;
 
 	public VersionCheck(Context context) {
 		this.context = context;
@@ -65,9 +68,10 @@ public class VersionCheck {
 
 	}
 
-	public void startCheck(final String url) {
+	public void startCheck(final String url, boolean showAgain) {
+		this.showAgain = showAgain;
 		AIIRequest aiiRequest = new AIIRequest(context);
-		aiiRequest.sendOthers(url, null, new AIIResponse<VersionCheckResponse>(context){
+		aiiRequest.sendOthers(url, null, new AIIResponse<VersionCheckResponse>(context, showAgain){
 			@Override
 			public void onSuccess(VersionCheckResponse response, int index) {
 				super.onSuccess(response, index);
@@ -100,13 +104,14 @@ public class VersionCheck {
 		String localVersion = PacketUtil.getVersionName(context);
 
 		String onlineVersion = results.get(androidIndex).getVersion();
-		assert onlineVersion != null;
+
 		if (onlineVersion.compareToIgnoreCase(localVersion) > 0) { // 有更新
 			String downloadUrl = results.get(androidIndex).getTrackViewUrl();
 			String desc = results.get(androidIndex).getDescription();
 			if (results.get(androidIndex).getForcedUpdate() == 1) {// 强制更新
 				showForcedDialog(onlineVersion, desc, downloadUrl);
 			} else {
+
 				Message msg = downloadHandler.obtainMessage();
 				Bundle bundle = new Bundle();
 				bundle.putString("onlineVersion", onlineVersion);
@@ -114,11 +119,24 @@ public class VersionCheck {
 				bundle.putString("trackViewUrl", downloadUrl);
 				msg.setData(bundle);
 				msg.what = 1;
-				downloadHandler.sendMessage(msg);
+				if(showAgain){
+					downloadHandler.sendMessage(msg);
+				} else {
+					String today = DateUtil.date2Str(new Date(), "yyyy-MM-dd");
+					boolean checkVersionToday = AiiUtil.getBoolean(context, "checkVersionToday"+today, false);
+					if(!checkVersionToday){
+						downloadHandler.sendMessage(msg);
+						AiiUtil.putBoolean(context, "checkVersionToday"+today, true);
+					}
+				}
+
 			}
 		} else {
 			if(onNewVersionListener != null){
 				onNewVersionListener.onNew();
+			}
+			if(showAgain){
+				ToastUtil.show(context, "已是最新版本");
 			}
 		}
 	}
@@ -280,8 +298,8 @@ public class VersionCheck {
 			}
 
 			@Override
-			public void update(long currentBytes) {
-				createDownloadNotification(currentBytes, totalBytes);
+			public void update(long totalBytes, long currnet, int progress) {
+				createDownloadNotification(totalBytes, currnet, progress);
 			}
 
 			@Override
@@ -325,7 +343,7 @@ public class VersionCheck {
 	 *            总大小
 	 */
 	@SuppressLint("NewApi")
-	private void createDownloadNotification(long current, long total) {
+	private void createDownloadNotification(long total, long current, int progress) {
 
 		if (nm == null)
 			nm = (NotificationManager) context
@@ -333,11 +351,7 @@ public class VersionCheck {
 
 		RemoteViews contentView = new RemoteViews(context.getPackageName(),
 				R.layout.notification_version);
-		int count = 0;
-		if(total != 0){
-			count = (int) (current * 100 / total);
-		}
-		contentView.setTextViewText(R.id.n_title, "当前进度：" + count + "% ");
+		contentView.setTextViewText(R.id.n_title, "当前进度：" + progress + "% ");
 		contentView.setProgressBar(R.id.n_progress, 100, 0, false);
 
 
@@ -368,7 +382,7 @@ public class VersionCheck {
 
 			notify = builder.build();
 		}
-		notify.contentView.setProgressBar(R.id.n_progress, 100, count, false);
+		notify.contentView.setProgressBar(R.id.n_progress, 100, progress, false);
 		nm.notify(downloadId, notify);// 显示通知
 
 		if (current >= total) {

@@ -51,7 +51,7 @@
                 android:textSize="14sp"
                 android:lines="2"
                 android:layout_marginBottom="16dp"
-                android:text="飒飒大师的飒飒大师的飒飒大师的飒飒大师的 "/>
+                android:text=" "/>
 
             <LinearLayout
                 android:id="@+id/ll_iten_downloading"
@@ -98,7 +98,7 @@
                         android:gravity="center_vertical"
                         android:drawableLeft="@drawable/common_icon_time"
                         android:drawablePadding="8dp"
-                        android:text="3225"/>
+                        android:text=""/>
                     <android.support.v4.widget.Space
                         android:layout_width="0dp"
                         android:layout_height="1dp"
@@ -113,53 +113,9 @@
                     android:gravity="center_vertical"
                     android:layout_marginLeft="16dp"
                     android:drawablePadding="8dp"
-                    android:text="16.2M"/>
+                    android:text=""/>
                 </LinearLayout>
-
-
             </LinearLayout>
-            <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:gravity="center_vertical">-->
-                <!--<TextView-->
-                    <!--android:id="@+id/tv_item_play_num"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:textColor="@color/gray7"-->
-                    <!--android:textSize="12sp"-->
-                    <!--android:singleLine="true"-->
-                    <!--android:gravity="center_vertical"-->
-                    <!--android:drawableLeft="@drawable/common_icon_play_gray"-->
-                    <!--android:drawablePadding="8dp"-->
-                    <!--android:text="3225"/>-->
-                <!--<TextView-->
-                    <!--android:id="@+id/tv_item_duration"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:textColor="@color/gray7"-->
-                    <!--android:textSize="12sp"-->
-                    <!--android:singleLine="true"-->
-                    <!--android:gravity="center_vertical"-->
-                    <!--android:layout_marginLeft="16dp"-->
-                    <!--android:drawableLeft="@drawable/common_icon_time"-->
-                    <!--android:drawablePadding="8dp"-->
-                    <!--android:text="3225"/>-->
-                <!--<android.support.v4.widget.Space-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="1dp"-->
-                    <!--android:layout_weight="1"/>-->
-                <!--<TextView-->
-                    <!--android:id="@+id/tv_item_time"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:textColor="@color/gray7"-->
-                    <!--android:textSize="12sp"-->
-                    <!--android:singleLine="true"-->
-                    <!--android:gravity="center_vertical"-->
-                    <!--android:text="2017-12-14"/>-->
-            <!--</LinearLayout>-->
         </LinearLayout>
     </LinearLayout>
     <View style="@style/line"

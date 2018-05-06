@@ -51,14 +51,13 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
         val TYPE_RELEASE = 5
         val TYPE_SEEK = 6
         var isPlaying = false
-        var url : String ?= null
+        var playPath : String ?= null
 
     }
     val TAG = "MusicService"
     private var player = MediaPlayer()
 
     lateinit var audioManager: AudioManager
-    var playPath : String ?= null
     private var mListener: MyOnAudioFocusChangeListener? = null
 
 
@@ -90,6 +89,7 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
                 if(!TextUtils.isEmpty(newPlayPath)) {
                     if(newPlayPath != playPath){
                         player.stop()
+                        player = MediaPlayer()
                         playPath = newPlayPath
                         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         player.setDataSource(playPath)
@@ -98,17 +98,17 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
                         player.setOnCompletionListener(this)
                         player.setOnBufferingUpdateListener(this)
                         if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                            LogUtil.i(TAG, "requestAudioFocus successfully.")
+                            LogUtil.w(TAG, "requestAudioFocus successfully.")
                             player.prepareAsync()
                         } else {
-                            LogUtil.e(TAG, "requestAudioFocus failed.")
+                            LogUtil.w(TAG, "requestAudioFocus failed.")
                         }
                     } else {
                         if(!player.isPlaying){
-                            player.start()
+                            startMusic(title)
                         }
                     }
-                    startMusic(title)
+
                 }
             }
             TYPE_PAUSE->{

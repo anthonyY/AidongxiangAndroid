@@ -10,6 +10,7 @@ import com.aidongxiang.app.R
 import com.aidongxiang.app.utils.GlideImgManager
 import com.aiitec.openapi.model.Download
 import com.aiitec.openapi.net.download.DownloadManager
+import com.aiitec.openapi.utils.CacheUtils
 
 /**
  *
@@ -29,6 +30,7 @@ class DownloadVideoAdapter(context: Context, datas:MutableList<Download>) : Comm
         val ivItemSelect = h?.getView<ImageView?>(R.id.ivItemSelect)
         val progressBar = h?.getView<ProgressBar?>(R.id.pb_item_download_progress)
         val tvSpeed = h?.getView<TextView?>(R.id.tv_item_speed)
+        val tvSize = h?.getView<TextView?>(R.id.tv_item_size)
         if(isEdit){
             ivItemSelect?.visibility = View.VISIBLE
             if(item!!.isSelect){
@@ -48,6 +50,7 @@ class DownloadVideoAdapter(context: Context, datas:MutableList<Download>) : Comm
         GlideImgManager.load(context, item.imagePath, ivImg)
         tvTitle?.text = item.title
         tvDuration?.text = item.playLength
+        tvSize?.text = CacheUtils.getFormatSize(item.totalBytes.toDouble())
 
         val lineItem = h?.getView<View>(R.id.lineItem)
         if(position == itemCount-1){

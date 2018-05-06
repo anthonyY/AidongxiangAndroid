@@ -5,10 +5,12 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.TypedValue
 import android.widget.TextView
 import com.aidongxiang.app.R
+import com.aidongxiang.app.adapter.CommonRecyclerViewAdapter
 import com.aidongxiang.app.adapter.FansAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseListKtActivity
+import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_TYPE
 import com.aidongxiang.business.model.Fans
 import com.aidongxiang.business.response.FansListResponseQuery
@@ -56,6 +58,12 @@ class FansListActivity : BaseListKtActivity(){
         header.setPadding(padding, padding, padding , padding)
         adapter.addHeaderView(header)
 
+        adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener { v, position ->
+            if(v?.id == R.id.iv_item_avatar){
+                val id = datas[position-1].id
+                switchToActivity(PersonCenterActivity::class.java, Constants.ARG_ID to id)
+            }
+        }, R.id.iv_item_avatar)
         requestUserList()
     }
 

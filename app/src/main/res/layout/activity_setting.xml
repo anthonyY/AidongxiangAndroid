@@ -79,6 +79,7 @@
         android:layout_marginTop="12dp"
         android:background="@color/white">
         <LinearLayout
+            android:id="@+id/llClearCache"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="12dp"
@@ -100,10 +101,10 @@
                 android:layout_height="1dp"
                 android:layout_weight="1"/>
             <TextView
+                android:id="@+id/tvCacheSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:text="115.63M"
                 android:layout_marginRight="8dp"
                 android:textColor="@color/black5"
                 />

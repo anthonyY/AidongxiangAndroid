@@ -23,6 +23,7 @@ import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.net.download.DownloadManager
 import com.aiitec.openapi.utils.AiiUtil
 import com.aiitec.openapi.utils.ToastUtil
+import com.aiitec.widgets.ShareDialog
 import kotlinx.android.synthetic.main.fragment_video_synopsis.*
 import java.io.File
 
@@ -38,6 +39,7 @@ class VideoSynopsisFragment : BaseFragment(){
     var video: Audio  ?= null
     var id : Long  = -1
     lateinit var downloadCofirmDialog : CommonDialog
+    lateinit var shareDialog : ShareDialog
 
     override fun initView(view: View?) {
 
@@ -48,10 +50,16 @@ class VideoSynopsisFragment : BaseFragment(){
             downloadCofirmDialog.dismiss()
             video?.let { download(it) }
         }
-        iv_video_share?.setOnClickListener {
+        shareDialog = ShareDialog(activity)
 
+        iv_video_share?.setOnClickListener {
+            shareDialog.show()
         }
         iv_video_download?.setOnClickListener {
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return@setOnClickListener
+            }
             video?.let { downloadCofirmDialog.show() }
         }
         video?.let { setVideoData(it) }
@@ -108,13 +116,18 @@ class VideoSynopsisFragment : BaseFragment(){
         }
         tv_video_praise_num.text = audio.praiseNum.toString()
         tv_video_play_num.text = audio.playNum.toString()
-        if(audio.price > 0){
+        //收费视频
+        if(audio.payType ==2 && audio.price > 0){
             tv_video_price.text = "¥"+ AiiUtil.formatString(audio.price)
         } else {
             tv_video_price.text = ""
         }
 
         tv_video_title.text = audio.name
+
+        val imagePath = audio.imagePath
+        val content = audio.name
+        shareDialog.setShareData("爱侗乡有精彩好看的视频哦，快来看看吧！", content, imagePath, "https://www.aidongxiang.com")
     }
 
 

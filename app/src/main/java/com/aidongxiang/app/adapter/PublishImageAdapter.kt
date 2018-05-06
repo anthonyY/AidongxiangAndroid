@@ -34,11 +34,11 @@ class PublishImageAdapter(context: Context, datas : MutableList<String>) : Commo
         h.itemView?.layoutParams?.width = width
         h.itemView?.layoutParams?.height = width
 
-        if(position == itemCount-1){
+        if(itemCount != 9 && position == itemCount-1){
             ivImage.setImageResource(R.drawable.common_btn_add)
             ivDelete.visibility = View.GONE
         } else {
-            GlideImgManager.loadFile(context, item).centerCrop().into(ivImage)
+            GlideImgManager.loadFile(context, item).override(width, width).centerCrop().into(ivImage)
             ivDelete.visibility = View.VISIBLE
         }
 

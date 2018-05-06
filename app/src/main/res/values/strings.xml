@@ -27,7 +27,7 @@
     <string name="sms_code">短信验证码</string>
     <string name="mobile">手机号码</string>
     <string name="login_password">登录密码</string>
-    <string name="mobile_can_not_use">手机不能使用</string>
+    <string name="mobile_can_not_use">手机不能使用?</string>
     <string name="next">下一步</string>
     <string name="forget_password">忘记密码</string>
     <string name="new_user_register">新用户注册</string>

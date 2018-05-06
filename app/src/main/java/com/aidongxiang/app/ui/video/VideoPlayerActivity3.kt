@@ -28,19 +28,12 @@ import kotlinx.android.synthetic.main.activity_video_player2.*
 import java.util.*
 
 /**
- *
- * @author Anthony
- * createTime 2018/1/28.
- * @version 1.0
- */
-
-/**
  * 通用单独播放界面
  *
  * @author Anthony
  */
 @ContentView(R.layout.activity_video_player2)
-class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
+class VideoPlayerActivity3 : BaseKtActivity(), MediaPlayer.OnErrorListener,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnInfoListener {
 
 
@@ -62,7 +55,7 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
     /**屏幕方向，默认竖屏**/
     var rotation = Surface.ROTATION_90
 
-    var mVideoViewLayoutParams : RelativeLayout.LayoutParams?= null
+//    var mVideoViewLayoutParams : RelativeLayout.LayoutParams?= null
     var oldPosition = 0
     var videoHeight = 0
     var videoWidth = 0
@@ -92,19 +85,19 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
                 mPath = Api.IMAGE_URL + mPath
             }
         }
-        LogUtil.e("mPath:"+mPath)
+        LogUtil.e("mPath:" + mPath)
         mGesture = GestureDetector(this, MyGester())
         videoview.setZOrderOnTop(true)
         videoview.setZOrderMediaOverlay(true)
 
         setListener()
 
-        mVideoViewLayoutParams = rl_video.layoutParams as RelativeLayout.LayoutParams?
+//        mVideoViewLayoutParams = rl_video.layoutParams as RelativeLayout.LayoutParams?
         videoview.setVideoPath(mPath)
         videoview.start()
         Utils.setVideoThumbnailForImageView(mPath) { thumb ->
             if (!supportFragmentManager.isDestroyed) {
-                GlideImgManager.loadFile(this@VideoPlayerActivity2, thumb, ivVideoThumb)
+                GlideImgManager.loadFile(this@VideoPlayerActivity3, thumb, ivVideoThumb)
             }
         }
 
@@ -120,7 +113,7 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
 
     fun setListener(){
         videoview.setOnPreparedListener(this)
-        videoview.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener{
+        videoview.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
             override fun onPause() {
                 swithcPlaystatus(false)
             }
@@ -270,11 +263,11 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
         ivVideoThumb.visibility = View.GONE
         tv_video_duration.text = formatTime(duration)
         setCurrentValue()
-        mp.setOnBufferingUpdateListener { p0, percent ->
+        mp.setOnBufferingUpdateListener { _, percent ->
             if (percent == 100) {
-                loading.visibility = View.GONE;
+                loading.visibility = View.GONE
             } else {
-                loading.visibility = View.VISIBLE;
+                loading.visibility = View.VISIBLE
             }
             seekbar_video.secondaryProgress = percent
         }
@@ -388,81 +381,25 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
 
     var isFullScreen = false
     private fun switchScreenRotation() {
+
         if(videoWidth < videoHeight){
-            //如果宽<高，全屏只需改变大小就行了，屏幕方向不改变
-            var mVideoHeight = 0
-            if (!isFullScreen){
-                mVideoViewLayoutParams = rl_video.layoutParams as RelativeLayout.LayoutParams?
-                val layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
-                layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-                rl_video.layoutParams = layoutParams
-                val paremtView =videoview.parent as View
-                paremtView.layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT
-                paremtView.layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT
-                isFullScreen = true
-                viewMarginTop.layoutParams.height = StatusBarUtil.getStatusBarHeight(this)
-                iv_full_screen.setImageResource(R.drawable.nonfullscreen)
-                iv_full_screen.visibility = View.GONE
-                mVideoHeight = ScreenUtils.getScreenHeight(this)
-            } else {
-                iv_full_screen.setImageResource(R.drawable.fullscreen)
-                rl_video.layoutParams = mVideoViewLayoutParams
-                isFullScreen = false
-                viewMarginTop.layoutParams.height = StatusBarUtil.getStatusBarHeight(this)
-                mVideoHeight =  rl_video.measuredHeight
-            }
-
-            var mVideoWidth = (mVideoHeight * videoScale).toInt()
-            val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
-            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-            rl_video.layoutParams = layoutParams
-
-            mVideoWidth = ((mVideoHeight * videoScale).toInt())
-
-            // 设置surfaceview画布大小
-            videoview.holder.setFixedSize(mVideoWidth, mVideoHeight)
-            // 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
-            videoview.setMeasure(mVideoWidth,mVideoHeight)
-            // 请求调整
-            videoview.requestLayout()
-
-            return
-        }
-        if (!isFullScreen && (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)) {
-            //竖屏的
-            if(videoWidth < videoHeight){
-                Utils.switchFullScreen(window, false)
-                iv_full_screen.setImageResource(R.drawable.fullscreen)
-                rl_video.layoutParams = mVideoViewLayoutParams
-
-                val width = ScreenUtils.getScreenWidth(this)
-                val layoutParams = RelativeLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
-                layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-                rl_video.layoutParams = layoutParams
-                isFullScreen = false
-                viewMarginTop.layoutParams.height = StatusBarUtil.getStatusBarHeight(this)
-                rotation = Surface.ROTATION_90
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                LogUtil.e("取消全屏")
-            } else {
-                mVideoViewLayoutParams = rl_video.layoutParams as RelativeLayout.LayoutParams?
+            //宽小于高的的只能竖屏看，没有全屏和取消全屏
+            iv_full_screen.visibility = View.GONE
                 val layoutParams = RelativeLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
                 layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
                 rl_video.layoutParams = layoutParams
                 isFullScreen = true
                 viewMarginTop.layoutParams.height = 0
-                rotation = Surface.ROTATION_0
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
                 iv_full_screen.setImageResource(R.drawable.nonfullscreen)
                 Utils.switchFullScreen(window, true)
                 val layoutParams2 = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
                 (videoview.parent as View).layoutParams = layoutParams2
-                LogUtil.e("全屏")
-            }
-
+                rotation = Surface.ROTATION_90
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+//            }
         } else {
-            if(videoWidth < videoHeight){
-                mVideoViewLayoutParams = rl_video.layoutParams as RelativeLayout.LayoutParams?
+            if (!isFullScreen && (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)) {
                 val layoutParams = RelativeLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
                 layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
                 rl_video.layoutParams = layoutParams
@@ -477,15 +414,19 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
             } else {
                 Utils.switchFullScreen(window, false)
                 iv_full_screen.setImageResource(R.drawable.fullscreen)
-                rl_video.layoutParams = mVideoViewLayoutParams
+                val width = ScreenUtils.getScreenWidth(this)
+                val height = (width/videoScale).toInt()
+                val layoutParams = RelativeLayout.LayoutParams(width, height)
+                layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                rl_video.layoutParams = layoutParams
                 isFullScreen = false
                 viewMarginTop.layoutParams.height = StatusBarUtil.getStatusBarHeight(this)
                 rotation = Surface.ROTATION_90
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                LogUtil.e("取消全屏")
             }
 
         }
+
     }
 
     private fun resetVideoWidthOnThread(path: String) {
@@ -499,7 +440,7 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
                 val videoHeightStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
                 val videoWidthStr = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
                 val rotation  = retr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION) // 视频旋转方向
-                if(rotation.equals("90")|| rotation.equals("270")){
+                if(rotation == "90" || rotation == "270"){
                     videoWidth = Integer.parseInt(videoHeightStr) // 视频高度
                     videoHeight = Integer.parseInt(videoWidthStr) // 视频宽度
                 } else {
@@ -516,29 +457,50 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
                 runOnUiThread {
 
                     if(videoWidth < videoHeight){
-//                        //如果宽<高，全屏只需改变大小就行了，屏幕方向不改变
-//                        var mVideoHeight = 0
-//                        mVideoHeight =  (videoview.parent as View).measuredHeight
-//                        iv_full_screen.setImageResource(R.drawable.nonfullscreen)
-//
-//                        val mVideoWidth = (mVideoHeight * videoScale).toInt()
-//
-//                        val layoutParams = RelativeLayout.LayoutParams(mVideoWidth, mVideoHeight)
-//                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-//                        (videoview.parent as View).layoutParams = layoutParams
-//
-//                        // 设置surfaceview画布大小
-//                        videoview.holder.setFixedSize(mVideoWidth, mVideoHeight)
-//                        // 重绘VideoView大小，这个方法是在重写VideoView时对外抛出方法
-//                        videoview.setMeasure(mVideoWidth,mVideoHeight)
-//                        // 请求调整
-//                        videoview.requestLayout()
-
                         switchScreenRotation()
+                    } else {
+                        val width = ScreenUtils.getScreenWidth(this)
+                        val height = (width/videoScale).toInt()
+                        val layoutParams = RelativeLayout.LayoutParams(width, height)
+                        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
+                        rl_video.layoutParams = layoutParams
                     }
                 }
             }
         }
+    }
+
+
+    /**
+     * 下载，为什么要下载？其实就是做缓存，做到边播放边缓存，否则每次看同一条短视频是很浪费流量的
+     */
+    private fun download(path : String){
+        //TODO
+//        val fileName = AiiUtil.md5(path)+".mp4"
+//        val localPath = Constants.SMALL_VIDEOS_DIR+fileName
+//        val file = File(localPath)
+//        if(file.exists()){
+//
+//        } else {
+//            App.aiiRequest.download(path, file, object: ProgressResponseBody.ProgressListener{
+//                override fun onPreExecute(contentLength: Long) {
+//                }
+//
+//                override fun update(totalBytes: Long, currnet: Long, progress: Int) {
+//                }
+//
+//                override fun onSuccess(file: File?) {
+//                }
+//
+//                override fun onStart() {
+//                }
+//
+//                override fun onFailure() {
+//                }
+//            })
+//        }
+
+
 
     }
 
