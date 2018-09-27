@@ -18,6 +18,6 @@ class UserRegisterRequestQuery : RequestQuery(){
     var password : String ?= null
     var openId : String ?= null
     var unionId : String ?= null
-    var partner : String ?= null
+    var partner = -1
 
 }

@@ -1,5 +1,7 @@
 package com.aidongxiang.app.base;
 
+import com.aidongxiang.app.BuildConfig;
+
 /**
  * @author Anthony
  * @version 1.0
@@ -8,7 +10,8 @@ package com.aidongxiang.app.base;
 
 public class Api {
 //    public static final String BASE_URL = "http://139.199.14.52";
-    public static final String BASE_URL = "http://test.aidongxiang.com";
+    public static final String BASE_URL = BuildConfig.isOnline ? "http://www.aidongxiang.com" : "http://test.aidongxiang.com";
+
 //    public static final String BASE_URL = "http://www.aidongxiang.com";
     /**API 请求地址*/
     public static final String API = BASE_URL+"/api/index";

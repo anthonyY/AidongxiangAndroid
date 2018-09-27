@@ -267,7 +267,7 @@ class PublishPostActivity : BaseKtActivity() {
 
 
                 .smallVideoWidth(720 )
-                .smallVideoHeight(720)
+                .smallVideoHeight(400)
                 .recordTimeMax(10 * 1000)
                 .maxFrameRate(20)
                 .captureThumbnailsTime(3)
@@ -447,8 +447,8 @@ class PublishPostActivity : BaseKtActivity() {
             //压缩完成，亲测 原来拍摄12M压缩至5M左右
             if (onlyCompressOverBean.isSucceed) {
                 //压缩完成后，删除原始视频，因为太占空间了
-                val originalFile = File(path)
-                originalFile.delete()
+//                val originalFile = File(path)
+//                originalFile.delete()
                 videoUri = onlyCompressOverBean.videoPath
             } else {
                 videoUri = path

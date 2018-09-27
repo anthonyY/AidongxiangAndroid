@@ -19,6 +19,33 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+
+
+-renamesourcefileattribute SourceFile
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-verbose
+-dontoptimize
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+-ignorewarnings
+
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+-keep public class com.android.vending.licensing.ILicensingService
+
+
+#----------------------------自己的底层相关----------------
+-keep public class * extends com.aiitec.openapi.model.Entity {* ;}
+#-keep public class * extends com.aiitec.moreschool.interfaces.BaseJavascriptInterface {* ;}
+
+
 -keepclassmembers class android.support.design.internal.BottomNavigationMenuView {
     boolean mShiftingMode;
 }
@@ -169,3 +196,18 @@
 #    搜索
 -keep class com.amap.api.services.**{*;}
 #-------------- 高德定位 END --------------------------
+
+
+# ---------  EVENTBUS BIGIN------------
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+
+# Only required if you use AsyncExecutor
+-keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
+    <init>(java.lang.Throwable);
+}
+
+#  ------------ EVENTBUS END ---------

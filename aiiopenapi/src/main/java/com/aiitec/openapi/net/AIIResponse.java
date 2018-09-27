@@ -32,6 +32,10 @@ public class AIIResponse<T> implements AIIResponseListener<T> {
         this.context = context;
     }
 
+    public Context getContext() {
+        return context;
+    }
+
     public void setDialog(Dialog dialog) {
         this.dialog = dialog;
     }

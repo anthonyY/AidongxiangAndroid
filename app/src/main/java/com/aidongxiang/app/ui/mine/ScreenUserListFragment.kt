@@ -77,7 +77,7 @@ class ScreenUserListFragment : BaseListKtFragment(){
         val listQuery = ListRequestQuery("UserList")
         listQuery.action = AIIAction.FOUR
         listQuery.table.page = page
-        App.aiiRequest.send(listQuery, object : AIIResponse<FansListResponseQuery>(activity){
+        App.aiiRequest.send(listQuery, object : AIIResponse<FansListResponseQuery>(activity, progressDialog){
             override fun onSuccess(response: FansListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 getUserList(response!!)

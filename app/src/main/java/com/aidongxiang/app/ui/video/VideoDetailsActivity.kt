@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.view.ViewPager
@@ -163,28 +164,13 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             }
         }
 
+        rl_video.setOnClickListener {
+            onTouchVideoView()
+        }
         videoview.setOnTouchListener { _, motionEvent ->
             if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-                //当没有显示立即购买按钮时才显示播放控件
-
-                ll_video_control.visibility = View.VISIBLE
-                toucTime = System.currentTimeMillis()
-                Handler().postDelayed({
-                    if (supportFragmentManager.isDestroyed) {
-                        return@postDelayed
-                    }
-                    val delayed = System.currentTimeMillis()
-                    if (delayed - toucTime >= 3000) {
-                        if (videoview.isPlaying) {
-                            ll_video_control.visibility = View.GONE
-
-                        }
-                    }
-
-                }, 3000)
+                onTouchVideoView()
             }
-
-
             return@setOnTouchListener true
         }
         videoview.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
@@ -236,6 +222,24 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
 
     }
 
+    private fun onTouchVideoView(){
+        //当没有显示立即购买按钮时才显示播放控件
+        ll_video_control.visibility = View.VISIBLE
+        toucTime = System.currentTimeMillis()
+        Handler().postDelayed({
+            if (supportFragmentManager.isDestroyed) {
+                return@postDelayed
+            }
+            val delayed = System.currentTimeMillis()
+            if (delayed - toucTime >= 3000) {
+                if (videoview.isPlaying) {
+                    ll_video_control.visibility = View.GONE
+
+                }
+            }
+        }, 3000)
+    }
+
     private fun startVideo() {
         if (MusicService.isPlaying) {
             val intent = Intent(this, MusicService::class.java)
@@ -243,11 +247,11 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             startService(intent)
         }
         videoview.setBackgroundColor(0)
-
+        setCurrentValue()
         LogUtil.e("startVideo:" + playPath)
         if (!TextUtils.isEmpty(playPath)) {
             if (isFirst) {
-                videoview.setVideoPath(playPath)
+                videoview.setVideoURI(Uri.parse(playPath))
                 isFirst = false
             }
             videoview.start()
@@ -306,6 +310,8 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
         if (isFullScreen) {
             switchScreenRotation()
         }
+        ll_video_control.visibility = View.VISIBLE
+        ivAudioDetailsPlay.setImageResource(R.drawable.video_btn_play2)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -598,6 +604,13 @@ class VideoDetailsActivity : BaseKtActivity(), MediaPlayer.OnPreparedListener, M
             videoview.setMeasure(mVideoWidth, mVideoHeight)
 // 请求调整
             videoview.requestLayout()
+        }
+    }
+
+    fun addCommentNum(){
+        video?.let {
+            val commentNum = it.commentNum++
+            tv_video_comment_num.text = commentNum.toString()
         }
     }
 

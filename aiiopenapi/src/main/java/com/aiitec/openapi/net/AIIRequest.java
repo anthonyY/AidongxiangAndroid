@@ -295,7 +295,7 @@ public class AIIRequest {
         okhttp3.Request okRequest = new okhttp3.Request.Builder()
                 .url(url).post(requestBody).build();
         final Call call = client.newCall(okRequest);
-            AIIRequestCallBack<T> aiiRequestCallBack = new AIIRequestCallBack<T>(context, index, sparseKey);
+            AIIRequestCallBack<T> aiiRequestCallBack = new AIIRequestCallBack<T>(index, sparseKey);
             aiiRequestCallBack.setNoSessionListener(new MNoSessionListener());
             aiiRequestCallBack.setAiiResponse(aiiResponse);
             call.enqueue(aiiRequestCallBack);
@@ -563,7 +563,7 @@ public class AIIRequest {
     }
 
     private <T> void startRequest(final AIIResponse<T> aiiResponse, final Call call, final CacheMode cacheMode, final int sparseKey, final String cacheKey, CombinationType combinationType, final int index){
-        AIIRequestCallBack<T> aiiRequestCallBack = new AIIRequestCallBack<T>(context, index, sparseKey);
+        AIIRequestCallBack<T> aiiRequestCallBack = new AIIRequestCallBack<T>(index, sparseKey);
         aiiRequestCallBack.setNoSessionListener(new MNoSessionListener());
         aiiRequestCallBack.setAiiResponse(aiiResponse);
         aiiRequestCallBack.setCacheKey(cacheKey);

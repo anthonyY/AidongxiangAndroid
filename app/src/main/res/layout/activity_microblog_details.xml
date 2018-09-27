@@ -148,6 +148,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
+                    android:visibility="gone"
                     android:paddingLeft="@dimen/margin_screen_left"
                     android:paddingRight="@dimen/margin_screen_right" />
                 <RelativeLayout
@@ -235,115 +236,140 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white">
 
-                <RelativeLayout
+                <LinearLayout
                     android:id="@+id/rlCommentTab"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
+                    android:minWidth="60dp"
                     android:background="@drawable/item_selector"
                     android:clickable="true"
                     android:paddingLeft="8dp"
-                    android:paddingRight="8dp">
+                    android:paddingRight="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tv_comment_label"
+                    <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="评论"
-                        android:textColor="@color/gray7"
-                        android:textSize="16sp" />
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        >
 
-                    <TextView
-                        android:id="@+id/tv_comment_num"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_toRightOf="@+id/tv_comment_label"
-                        android:text="0"
-                        android:textColor="@color/gray7"
-                        android:textSize="16sp" />
+                        <TextView
+                            android:id="@+id/tv_comment_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="评论"
+                            android:textColor="@color/gray7"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/tv_comment_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/gray7"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
 
                     <View
-                        android:layout_width="60dp"
+                        android:layout_width="match_parent"
                         android:layout_height="3dp"
                         android:layout_alignParentBottom="true"
                         android:background="@drawable/transparent_purple_selector" />
-                </RelativeLayout>
+                </LinearLayout>
 
-                <RelativeLayout
+                <LinearLayout
                     android:id="@+id/rlForwardTab"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
+                    android:minWidth="60dp"
                     android:background="@drawable/item_selector"
                     android:clickable="true"
                     android:paddingLeft="8dp"
-                    android:paddingRight="8dp">
+                    android:paddingRight="8dp"
+                    android:orientation="vertical"
+                    android:gravity="center">
 
-                    <TextView
-                        android:id="@+id/tv_forward_label"
+                    <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="转发"
-                        android:textColor="@color/gray7"
-                        android:textSize="16sp" />
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tv_forward_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="转发"
+                            android:textColor="@color/gray7"
+                            android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/tv_forward_num"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_toRightOf="@+id/tv_forward_label"
-                        android:text="0"
-                        android:textColor="@color/gray7"
-                        android:textSize="16sp" />
+                        <TextView
+                            android:id="@+id/tv_forward_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/gray7"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
 
                     <View
-                        android:layout_width="60dp"
+                        android:layout_width="match_parent"
                         android:layout_height="3dp"
-                        android:layout_alignParentBottom="true"
                         android:background="@drawable/transparent_purple_selector" />
-                </RelativeLayout>
+                </LinearLayout>
 
                 <android.support.v4.widget.Space
                     android:layout_width="0dp"
                     android:layout_height="1dp"
                     android:layout_weight="1" />
 
-                <RelativeLayout
+                <LinearLayout
                     android:id="@+id/rlAppraiseTab"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
+                    android:minWidth="60dp"
                     android:background="@drawable/item_selector"
                     android:clickable="true"
+                    android:gravity="center"
                     android:paddingLeft="8dp"
-                    android:paddingRight="8dp">
+                    android:paddingRight="8dp"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tv_appraise_label"
+                    <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="赞"
-                        android:textColor="@color/gray7"
-                        android:textSize="16sp" />
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tv_appraise_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:text="赞"
+                            android:textColor="@color/gray7"
+                            android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/tv_appraise_num"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_toRightOf="@+id/tv_appraise_label"
-                        android:text="0"
-                        android:textColor="@color/gray7"
-                        android:textSize="16sp" />
+                        <TextView
+                            android:id="@+id/tv_appraise_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@+id/tv_appraise_label"
+                            android:text="0"
+                            android:textColor="@color/gray7"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
 
                     <View
-                        android:layout_width="60dp"
+                        android:layout_width="match_parent"
                         android:layout_height="3dp"
                         android:layout_alignParentBottom="true"
                         android:background="@drawable/transparent_purple_selector" />
-                </RelativeLayout>
+                </LinearLayout>
             </LinearLayout>
 
             <View

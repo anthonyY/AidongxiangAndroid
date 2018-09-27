@@ -49,20 +49,6 @@ import java.util.*
  */
 @ContentView(R.layout.fragment_home)
 class HomeFragment : BaseKtFragment() {
-    companion object {
-        val imgs = arrayListOf<String>("http://h.hiphotos.baidu.com/image/pic/item/5243fbf2b211931397f7ff7a6c380cd790238d47.jpg",
-                "http://a.hiphotos.baidu.com/image/pic/item/21a4462309f79052983046f405f3d7ca7acbd5c8.jpg",
-                "http://f.hiphotos.baidu.com/image/pic/item/3bf33a87e950352afba6083e5943fbf2b3118bc4.jpg",
-//                "http://g.hiphotos.baidu.com/image/pic/item/10dfa9ec8a1363278cb2c3f9988fa0ec09fac799.jpg",
-//                "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1510419591961&di=7d04ba01d67bd9129d1058bb1f587e69&imgtype=0&src=http%3A%2F%2Fimage.xinmin.cn%2F2013%2F03%2F19%2F20130319120213084246.jpg",
-//                "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1511014691&di=b141773d45525b0f9525b475dceb20a8&imgtype=jpg&er=1&src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2F4%2F54096b6a027bc.jpg",
-//                "http://c.hiphotos.baidu.com/image/pic/item/d833c895d143ad4b1bbf6bf688025aafa40f0676.jpg",
-                "http://cdn.duitang.com/uploads/item/201404/16/20140416184252_Hvjxi.jpeg",
-                "http://img5.duitang.com/uploads/item/201512/15/20151215132152_t2jhd.thumb.700_0.jpeg",
-                "http://f1.topitme.com/1/ed/14/1129731340b7414ed1o.jpg",
-                "http://e.hiphotos.baidu.com/image/h%3D300/sign=91aecc5808087bf462ec51e9c2d3575e/37d3d539b6003af3b6bc2f733f2ac65c1038b69b.jpg"
-        )
-    }
     lateinit var homeVideoAdapter: HomeVideoAdapter
     lateinit var homeAudioAdapter: HomeAudioAdapter
     lateinit var homeNewsAdapter: HomeNewsAdapter

@@ -18,13 +18,18 @@
             android:orientation="vertical">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <com.aidongxiang.app.widgets.AdvertisementLayout
+                android:layout_height="200dp"
+                >
+               <!-- <com.aidongxiang.app.widgets.AdvertisementLayout
                     android:id="@+id/adAudioDetails"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:background="#ddd"
-                    app:ratio="0.56"/>
+                    app:ratio="0.56"/>-->
+                <WebView
+                    android:id="@+id/webview_audio_effect"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

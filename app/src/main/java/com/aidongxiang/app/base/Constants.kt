@@ -27,7 +27,13 @@ object Constants {
     val ARG_IS_THIRTY_PART_LOGIN = "isThirtyPartLogin"
     val ARG_ACTION = "action"
     val ARG_MICROBLOG = "action"
+    val ARG_OPEN_ID = "openId"
+    val ARG_UNION_ID = "unionId"
+    val ARG_PARTNER = "partner"
     var poster : String ?= null
+
+    val TYPE_THIRTY_PART_LOGIN = 1
+    val TYPE_CHANGE_MOBILE = 2
 
     var location : LocationEvent ?= null
     var user : User? = null

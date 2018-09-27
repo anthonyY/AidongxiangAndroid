@@ -9,18 +9,17 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.webkit.WebResourceRequest
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
-import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.base.Constants.ARG_TITLE
+import com.aidongxiang.app.base.Constants.ARG_URL
 import com.aiitec.openapi.utils.LogUtil
 import com.aiitec.widgets.ShareDialog
 import kotlinx.android.synthetic.main.activity_common_web_view.*
+
+
 
 @ContentView(R.layout.activity_common_web_view)
 class CommonWebViewActivity : BaseKtActivity() {
@@ -29,7 +28,7 @@ class CommonWebViewActivity : BaseKtActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun init(savedInstanceState: Bundle?) {
 
-        val url = bundle.getString(ARG_ID)
+        val url = bundle.getString(ARG_URL)
         val title = bundle.getString(ARG_TITLE)
         if (!TextUtils.isEmpty(title)) {
             setTitle(title)
@@ -53,6 +52,15 @@ class CommonWebViewActivity : BaseKtActivity() {
                 view.loadUrl(url)
                 return true
                 //                return super.shouldOverrideUrlLoading(view, request);
+            }
+        }
+        progressDialogShow()
+        webview.webChromeClient = object : WebChromeClient() {
+            override fun onProgressChanged(view: WebView, progress: Int) {
+                progressDialog?.setMessage("$progress%")
+                if (progress >= 100){
+                    progressDialogDismiss()
+                }
             }
         }
         val settings = webview.settings
@@ -84,4 +92,11 @@ class CommonWebViewActivity : BaseKtActivity() {
         shareDialog.onActivityResult(requestCode, resultCode, data)
     }
 
+    override fun onBackPressed() {
+        if(webview.canGoBack()){
+            webview.goBack()
+        } else {
+            super.onBackPressed()
+        }
+    }
 }

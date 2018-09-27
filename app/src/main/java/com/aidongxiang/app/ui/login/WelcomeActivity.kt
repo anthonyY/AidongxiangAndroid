@@ -8,8 +8,10 @@ import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.ui.Main2Activity
 import com.aidongxiang.business.response.SettingResponseQuery
 import com.aiitec.openapi.model.RequestQuery
+import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.AiiUtil
+import com.aiitec.openapi.utils.LogUtil
 
 class WelcomeActivity : BaseKtActivity() {
     override fun init(savedInstanceState: Bundle?) {
@@ -31,6 +33,10 @@ class WelcomeActivity : BaseKtActivity() {
             finish()
         },2000)
 
+        val fields = ResponseQuery::class.java.declaredFields
+        for(field in fields){
+            LogUtil.e(field.name)
+        }
 
         requestUserDetails(false)
         requestSetting()

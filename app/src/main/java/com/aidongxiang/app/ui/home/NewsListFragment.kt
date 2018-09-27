@@ -97,6 +97,7 @@ class NewsListFragment : BaseListKtFragment(){
         query.action = AIIAction.ONE
         val where = Where()
         where.categoryId = categoryId
+        query.table.where = where
         App.aiiRequest.send(query, object : AIIResponse<ArticleListResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ArticleListResponseQuery?, index: Int) {
                 super.onSuccess(response, index)

@@ -52,22 +52,23 @@ public class AIIRequestCallBack<T> implements Callback {
 	private AIIPacketCacheManager aiiPacketCacheManager;
 	private CombinationType combinationType = JSON.combinationType;
 	
-	public AIIRequestCallBack(Context context, int index, int sparseKey) {
-		this(context, null, index, sparseKey);
+	public AIIRequestCallBack(int index, int sparseKey) {
+		this(null, index, sparseKey);
 	}
 
-	public AIIRequestCallBack(Context context,
-			NoSessionListener noSessionListener, int index, int sparseKey) {
-		this.context = context;
+	public AIIRequestCallBack(NoSessionListener noSessionListener, int index, int sparseKey) {
 		this.index = index;
 		this.sparseKey = sparseKey;
 		this.noSessionListener = noSessionListener;
-		aiiPacketCacheManager = new AIIPacketCacheManager(context);
 
 	}
 
 	public void setAiiResponse(AIIResponse<T> aiiResponse) {
 		this.aiiResponse = aiiResponse;
+
+		this.context = aiiResponse.getContext();
+		aiiPacketCacheManager = new AIIPacketCacheManager(context);
+
 		if (aiiResponse != null) {
 			aiiResponse.onStart(index);
 		}

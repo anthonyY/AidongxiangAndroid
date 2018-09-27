@@ -33,6 +33,9 @@ public class AIIPacketCacheManager {
     private Context context;
 
     public AIIPacketCacheManager(Context context) {
+        if(context == null){
+            return;
+        }
         this.context = context;
         // aiidbManager = AIIDBManager.getInstance(context);
         if (context.getExternalCacheDir() != null) {

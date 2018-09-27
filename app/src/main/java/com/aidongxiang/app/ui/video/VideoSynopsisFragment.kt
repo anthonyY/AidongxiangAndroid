@@ -1,10 +1,12 @@
 package com.aidongxiang.app.ui.video
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.view.View
-import android.webkit.WebView
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.Api
@@ -43,6 +45,13 @@ class VideoSynopsisFragment : BaseFragment(){
 
     override fun initView(view: View?) {
 
+        initDialog()
+        setListener()
+        initWebview()
+    }
+
+    private fun initDialog() {
+
         downloadCofirmDialog = CommonDialog(activity)
         downloadCofirmDialog.setTitle("下载视频")
         downloadCofirmDialog.setContent("确定下载？")
@@ -51,6 +60,10 @@ class VideoSynopsisFragment : BaseFragment(){
             video?.let { download(it) }
         }
         shareDialog = ShareDialog(activity)
+    }
+
+    private fun setListener() {
+
 
         iv_video_share?.setOnClickListener {
             shareDialog.show()
@@ -86,6 +99,30 @@ class VideoSynopsisFragment : BaseFragment(){
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun initWebview() {
+
+        webview_video_synopsis.settings?.javaScriptEnabled = true
+        if (Build.VERSION.SDK_INT >= 21) {//兼容https和http的图片
+            webview_video_synopsis.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        }
+        webview_video_synopsis.webChromeClient = WebChromeClient()
+//        webview_video_synopsis.webViewClient = object : WebViewClient() {
+//            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+//                //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
+//                view.loadUrl(url)
+//                return true
+//            }
+//
+//            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+//                val url = request.url.toString()
+//                view.loadUrl(url)
+//                return true
+//            }
+//        }
+    }
+
     fun update(audio: Audio) {
         this.video = audio
         if(activity == null){
@@ -98,10 +135,10 @@ class VideoSynopsisFragment : BaseFragment(){
     private fun setVideoData(audio: Audio) {
         this.video = audio
         id = audio.id
-        val webview = view?.findViewById<WebView>(R.id.webview_video_synopsis)
-        webview?.settings?.javaScriptEnabled = true
+//        val webview = view?.findViewById<WebView>(R.id.webview_video_synopsis)
+
         val audiosSynopsis = Utils.getAbsSource(audio.description, Api.BASE_URL + "/")
-        webview?.loadData(audiosSynopsis,"text/html; charset=UTF-8", null)
+        webview_video_synopsis.loadData(audiosSynopsis,"text/html; charset=UTF-8", null)
         if(audio.isPraise == 2){
             iv_video_praise.setImageResource(R.drawable.common_btn_like_pre)
             tv_video_praise_num.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryLight))
@@ -127,6 +164,7 @@ class VideoSynopsisFragment : BaseFragment(){
 
         val imagePath = audio.imagePath
         val content = audio.name
+        downloadCofirmDialog.setContent("确定下载$content？")
         shareDialog.setShareData("爱侗乡有精彩好看的视频哦，快来看看吧！", content, imagePath, "https://www.aidongxiang.com")
     }
 

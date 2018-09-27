@@ -11,7 +11,10 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants.ARG_IS_THIRTY_PART_LOGIN
 import com.aidongxiang.app.base.Constants.ARG_MOBILE
+import com.aidongxiang.app.base.Constants.ARG_OPEN_ID
+import com.aidongxiang.app.base.Constants.ARG_PARTNER
 import com.aidongxiang.app.base.Constants.ARG_SMSCODE_ID
+import com.aidongxiang.app.base.Constants.ARG_UNION_ID
 import com.aidongxiang.app.ui.Main2Activity
 import com.aidongxiang.app.utils.UploadPhotoHelper
 import com.aidongxiang.app.utils.Utils
@@ -33,7 +36,7 @@ class PerfectDataActivity : BaseKtActivity(), TextWatcher {
     var mobile : String ?= null
     var openId : String ?= null
     var unionId : String ?= null
-    var partner : String ?= null
+    var partner = -1
     var imageId : Long = -1
     var smscodeId = -1
     lateinit var uploadPhotoHelper : UploadPhotoHelper
@@ -54,6 +57,9 @@ class PerfectDataActivity : BaseKtActivity(), TextWatcher {
     override fun init(savedInstanceState: Bundle?) {
         smscodeId = bundle.getInt(ARG_SMSCODE_ID, -1)
         mobile = bundle.getString(ARG_MOBILE)
+        openId = bundle.getString(ARG_OPEN_ID)
+        unionId = bundle.getString(ARG_UNION_ID)
+        partner = bundle.getInt(ARG_PARTNER, -1)
         isThirtyPartLogin = bundle.getBoolean(ARG_IS_THIRTY_PART_LOGIN)
         uploadPhotoHelper = UploadPhotoHelper(this, ivPerfaceAvatar)
         uploadPhotoHelper.setOnUploadFinishedListener { id, url ->
@@ -129,10 +135,9 @@ class PerfectDataActivity : BaseKtActivity(), TextWatcher {
             query.partner = partner
         } else {
             query.action = AIIAction.ONE
-            query.mobile = mobile
-            query.smscodeId = smscodeId
         }
-
+        query.mobile = mobile
+        query.smscodeId = smscodeId
         App.aiiRequest.send(query, object : AIIResponse<SMSResponseQuery>(this){
 
             override fun onSuccess(response: SMSResponseQuery?, index: Int) {
@@ -142,6 +147,7 @@ class PerfectDataActivity : BaseKtActivity(), TextWatcher {
                 toast("注册成功")
                 switchToActivity(Main2Activity::class.java)
                 requestUserDetails()
+                App.app.closeAllActivity()
 //                setResult(Activity.RESULT_OK)
 //                finish()
 

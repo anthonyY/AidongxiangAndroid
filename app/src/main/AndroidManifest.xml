@@ -68,8 +68,14 @@
             android:theme="@style/welcomeTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="openapp" android:host="com.aidongxiang.app"/>
+                <!--android:pathPrefix="/openwith"-->
             </intent-filter>
         </activity>
         <activity android:name=".ui.login.MobileAppealActivity" />
@@ -174,6 +180,10 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="@string/amap_key"/>
+
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.2" />
     </application>
 
 </manifest>

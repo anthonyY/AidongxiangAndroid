@@ -90,8 +90,7 @@ class App : Application (){
         val qqSecretKey = resources.getString(R.string.qqSecretKey)
         val sinaId = resources.getString(R.string.sinaId)
         val sinaKey = resources.getString(R.string.sinaSecretKey)
-        val sinaRedirectUrl = ""
-//                resources.getString(R.string.sinaRedirectUrl)
+        val sinaRedirectUrl = resources.getString(R.string.sinaRedirectUrl)
         PlatformConfig.setWeixin(weixinId, weixinSecretKey)
         PlatformConfig.setQQZone(qqId, qqSecretKey)
         PlatformConfig.setSinaWeibo(sinaId, sinaKey, sinaRedirectUrl)
@@ -166,7 +165,7 @@ class App : Application (){
     fun closeAllActivity() {
         try {
             for (activity in activities) {
-                activity?.finish()
+                activity.finish()
             }
         } catch (e: Exception) {
         }

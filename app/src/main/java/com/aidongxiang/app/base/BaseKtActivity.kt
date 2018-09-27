@@ -294,7 +294,7 @@ abstract class BaseKtActivity : AppCompatActivity() {
         requestUserDetails(true)
     }
     fun requestUserDetails(isShowDialog : Boolean){
-        App.aiiRequest.send(RequestQuery("UserDetails"), object : AIIResponse<UserDetailsResponseQuery>(this, progressDialog, isShowDialog) {
+        App.aiiRequest.send(RequestQuery("UserDetails"), object : AIIResponse<UserDetailsResponseQuery>(applicationContext, progressDialog, isShowDialog) {
             override fun onSuccess(response: UserDetailsResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 response?.user?.let {

@@ -19,6 +19,7 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.business.response.ArticleDetailsResponseQuery
+import com.aiitec.openapi.enums.CacheMode
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.RequestQuery
 import com.aiitec.openapi.net.AIIResponse
@@ -100,6 +101,7 @@ class ArticleDetailsActivity : BaseKtActivity() {
     private fun requestArticleDetails(){
 
         val query = RequestQuery("ArticleDetails")
+        query.cacheMode = CacheMode.PRIORITY_OFTEN
         query.id = id
         query.action = AIIAction.valueOf(action)
         App.aiiRequest.send(query, object : AIIResponse<ArticleDetailsResponseQuery>(this){
@@ -117,5 +119,13 @@ class ArticleDetailsActivity : BaseKtActivity() {
                 }
             }
         })
+    }
+
+    override fun onBackPressed() {
+        if(webview.canGoBack()){
+            webview.goBack()
+        } else {
+            super.onBackPressed()
+        }
     }
 }

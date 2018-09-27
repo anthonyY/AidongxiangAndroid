@@ -67,7 +67,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black5"
         android:textSize="12sp"
-        android:text="验证码已发送至13655544455手机"
+        android:text=""
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
         android:layout_marginLeft="@dimen/margin_screen_left"

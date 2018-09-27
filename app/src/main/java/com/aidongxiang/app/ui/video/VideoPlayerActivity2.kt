@@ -150,21 +150,13 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
         videoview.setOnTouchListener { _, motionEvent ->
             mGesture?.onTouchEvent(motionEvent)
             if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-                rl_video_control.visibility = View.VISIBLE
-                btn_back.visibility = View.VISIBLE
-                toucTime = System.currentTimeMillis()
-                Handler().postDelayed({
-                    val delayed = System.currentTimeMillis()
-                    if(delayed - toucTime >= 3000){
-                        rl_video_control.visibility = View.GONE
-                        btn_back.visibility = View.GONE
-                    }
-
-                }, 3000)
+               onTouchVideoView()
             }
             return@setOnTouchListener true
         }
-
+        rl_video.setOnClickListener {
+            onTouchVideoView()
+        }
 
 
         seekbar_video.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -181,6 +173,21 @@ class VideoPlayerActivity2 : BaseKtActivity(), MediaPlayer.OnErrorListener,
         }
 
 
+    }
+
+    private fun onTouchVideoView() {
+
+        rl_video_control.visibility = View.VISIBLE
+        btn_back.visibility = View.VISIBLE
+        toucTime = System.currentTimeMillis()
+        Handler().postDelayed({
+            val delayed = System.currentTimeMillis()
+            if(delayed - toucTime >= 3000){
+                rl_video_control.visibility = View.GONE
+                btn_back.visibility = View.GONE
+            }
+
+        }, 3000)
     }
 
     fun swithcPlaystatus(isPlaying : Boolean){

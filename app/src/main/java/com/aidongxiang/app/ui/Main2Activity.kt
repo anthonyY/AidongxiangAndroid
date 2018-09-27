@@ -7,7 +7,6 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
-import com.aidongxiang.app.base.Api
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.ui.audio.AudioFragment
@@ -18,7 +17,6 @@ import com.aidongxiang.app.ui.square.SquareFragment
 import com.aidongxiang.app.ui.video.VideoFragment
 import com.aidongxiang.app.utils.BottomNavigationViewHelper
 import com.aidongxiang.app.utils.LocationUtils
-import com.aidongxiang.app.utils.VersionCheck
 import kotlinx.android.synthetic.main.activity_main2.*
 
 /**
@@ -46,7 +44,7 @@ class Main2Activity : BaseKtActivity() {
         switchFragment(homeFragment)
 
         LocationUtils.startLocation()
-        VersionCheck(this).startCheck(Api.VERSION_URL, false)
+//        VersionCheck(this).startCheck(Api.VERSION_URL, false)
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -96,9 +94,9 @@ class Main2Activity : BaseKtActivity() {
             transaction.hide(currentFragment)
         }
         if (!fragment.isAdded) {
-            transaction.add(R.id.container, fragment).commit()
+            transaction.add(R.id.container, fragment).commitAllowingStateLoss()
         } else {
-            transaction.show(fragment).commit()
+            transaction.show(fragment).commitAllowingStateLoss()
         }
         currentFragment = fragment
     }

@@ -117,7 +117,7 @@ class VideoSelectActivity : BaseKtActivity()/*, LoaderManager.LoaderCallbacks<Cu
         recycler_video.addItemDecoration(GridSpacingItemDecoration(3, ScreenUtils.dip2px(applicationContext, 10f), true))
         adapter = VideoAdapter(this, datas)
         recycler_video.adapter = adapter
-        adapter?.setOnRecyclerViewItemClickListener { v, position ->
+        adapter.setOnRecyclerViewItemClickListener { v, position ->
 
             intent.putExtra(ARG_PATH, datas[position].path)
             intent.putExtra(ARG_THUMB_PATH, datas[position].thumbPath)

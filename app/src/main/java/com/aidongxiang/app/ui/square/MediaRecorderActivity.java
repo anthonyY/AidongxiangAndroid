@@ -278,8 +278,8 @@ public class MediaRecorderActivity extends BaseKtActivity implements
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINESE);
         String today = format.format(new Date());
-//        String key = String.valueOf(System.currentTimeMillis());
-        mMediaObject = mMediaRecorder.setOutputDirectory(today,
+        String key = String.valueOf(System.currentTimeMillis());
+        mMediaObject = mMediaRecorder.setOutputDirectory(key,
                 JianXiCamera.getVideoCachePath() + today);
         mMediaRecorder.setSurfaceHolder(mSurfaceView.getHolder());
         mMediaRecorder.prepare();
