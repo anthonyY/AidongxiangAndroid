@@ -42,7 +42,7 @@ abstract class BaseListKtFragment : BaseKtFragment() , XRecyclerView.LoadingList
     /**
      * 无数据
      */
-    protected fun onNoData() {
+    protected fun checkIsEmpty() {
         if (tv_empty_nodata != null && getDatas() != null && getDatas()!!.isEmpty()) {
             recyclerView?.emptyView = tv_empty_nodata
         }

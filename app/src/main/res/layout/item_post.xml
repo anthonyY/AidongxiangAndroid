@@ -94,29 +94,29 @@
         android:layout_height="200dp"
         android:visibility="gone"
         android:background="@android:color/black">
-        <RelativeLayout
-            android:id="@+id/videoviewParent"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <com.aidongxiang.app.widgets.CustomVideoView
-                android:id="@+id/videoview_item"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                />
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/videoviewParent"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
+            <!--<com.aidongxiang.app.widgets.CustomVideoView-->
+                <!--android:id="@+id/videoview_item"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--/>-->
             <ImageView
                 android:id="@+id/ivVideoThumb"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
-        </RelativeLayout>
+        <!--</RelativeLayout>-->
 
-        <ProgressBar
-            android:id="@+id/loading"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="gone"/>
+        <!--<ProgressBar-->
+            <!--android:id="@+id/loading"-->
+            <!--style="?android:attr/progressBarStyle"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:visibility="gone"/>-->
 
         <ImageView
             android:id="@+id/ivItemVideoPlay"

@@ -18,8 +18,7 @@ import com.aidongxiang.app.base.Constants.ARG_TYPE
 import com.aidongxiang.app.event.RefreshMicrobolgEvent
 import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.PersonCenterActivity
-import com.aidongxiang.app.ui.video.VideoPlayerActivity2
-import com.aidongxiang.app.ui.video.VideoPlayerActivity3
+import com.aidongxiang.app.ui.video.VideoPlayerActivity
 import com.aidongxiang.app.widgets.CommentDialog
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.app.widgets.ItemDialog
@@ -76,9 +75,11 @@ class PostListFragment : BaseListKtFragment() {
 
     override fun init(view: View) {
         super.init(view)
+        arguments?.let {
+            type = it.getInt(ARG_TYPE)
+            userId = it.getLong(ARG_ID)
+        }
 
-        type = arguments.getInt(ARG_TYPE)
-        userId = arguments.getLong(ARG_ID)
         adapter = PostAdapter(context!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         if (type == 5) {
@@ -141,12 +142,12 @@ class PostListFragment : BaseListKtFragment() {
                     }
                     R.id.rlItemVideoPlay -> {
                         datas[positon - 1].videoPath?.let {
-                            switchToActivity(VideoPlayerActivity3::class.java, VideoPlayerActivity2.ARG_PATH to it)
+                            switchToActivity(VideoPlayerActivity::class.java, VideoPlayerActivity.ARG_PATH to it)
                         }
                     }
                     R.id.rlItemChildVideoPlay -> {
                         datas[positon - 1].originMicroblog?.videoPath?.let {
-                            switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it)
+                            switchToActivity(VideoPlayerActivity::class.java, VideoPlayerActivity.ARG_PATH to it)
                         }
                     }
                 }
@@ -159,7 +160,7 @@ class PostListFragment : BaseListKtFragment() {
 //        }
 //        rlItemChildVideoPlay.setOnClickListener {
 //            microblog?.originMicroblog?.let {
-//                switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it.videoPath)
+//                switchToActivity(VideoPlayerActivity::class.java, VideoPlayerActivity.ARG_PATH to it.videoPath)
 //            }
 //        }
         requestMicroblogList()
@@ -179,7 +180,7 @@ class PostListFragment : BaseListKtFragment() {
 
     private fun initDialog() {
 
-        itemDialog = ItemDialog(activity)
+        itemDialog = ItemDialog(activity!!)
         val datas = ArrayList<String>()
         if(type == 5){
             //屏蔽列表
@@ -215,7 +216,7 @@ class PostListFragment : BaseListKtFragment() {
                 }
             }
         }
-        shieldDialog = ItemDialog(activity)
+        shieldDialog = ItemDialog(activity!!)
         val shieldDatas = ArrayList<String>()
         shieldDatas.add("屏蔽此条内容")
         shieldDatas.add("屏蔽此人全部内容")
@@ -231,7 +232,7 @@ class PostListFragment : BaseListKtFragment() {
 
         }
 
-        deleteDialog = CommonDialog(activity)
+        deleteDialog = CommonDialog(activity!!)
         deleteDialog.setTitle("删除微博")
         deleteDialog.setContent("确定删除这条微博？")
 //        val deleteDatas = ArrayList<String>()
@@ -242,7 +243,7 @@ class PostListFragment : BaseListKtFragment() {
             clickMicroblog?.let { requestDeleteAction(it.id) }
         }
 
-        commentDialog = CommentDialog(activity)
+        commentDialog = CommentDialog(activity!!)
         commentDialog.setOnCommentClickListener {
             val content = it
             clickMicroblog?.let {

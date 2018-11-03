@@ -109,7 +109,8 @@ class BigImageActivity : BaseKtActivity() {
 
 
 
-    internal inner class SamplePagerAdapter : PagerAdapter() {
+    inner class SamplePagerAdapter : PagerAdapter() {
+
 
         override fun getCount(): Int {
             return datas.size
@@ -167,11 +168,9 @@ class BigImageActivity : BaseKtActivity() {
             container.removeView(`object` as View)
         }
 
-        override fun isViewFromObject(view: View?, obj: Any?): Boolean {
-
+        override fun isViewFromObject(view: View, obj: Any): Boolean {
             return view === obj
         }
-
 
     }
 }

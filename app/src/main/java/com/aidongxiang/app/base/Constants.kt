@@ -19,6 +19,7 @@ object Constants {
     val ARG_NAME = "name"
     val ARG_URL = "url"
     val ARG_TITLE = "title"
+    val ARG_ABSTRACT = "abstract"
     val ARG_TYPE = "type"
     val ARG_SEARCH_KEY = "searchKey"
     val ARG_FIRST_LAUNCHER = "firstLauncher"

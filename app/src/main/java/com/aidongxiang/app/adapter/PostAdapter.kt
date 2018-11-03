@@ -24,7 +24,6 @@ import com.aidongxiang.app.ui.mine.PersonCenterActivity
 import com.aidongxiang.app.ui.square.BigImageActivity
 import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.Utils.setMicoblogVideoInfo
-import com.aidongxiang.app.widgets.CustomVideoView
 import com.aidongxiang.business.model.Microblog
 import java.util.*
 import java.util.regex.Pattern
@@ -57,15 +56,15 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
         val tvItemChildContent = h.getView<TextView>(R.id.tvItemChildContent)
         val recyclerItemChildImg = h.getView<RecyclerView>(R.id.recyclerItemChildImg)
         val includeItemForward = h.getView<View>(R.id.includeItemForward)
-        val videoview = h.getView<CustomVideoView>(R.id.videoview_item)
-        val videoviewChild = h.getView<CustomVideoView>(R.id.videoviewItemChild)
+//        val videoview = h.getView<CustomVideoView>(R.id.videoview_item)
+//        val videoviewChild = h.getView<CustomVideoView>(R.id.videoviewItemChild)
         val rlItemVideoPlay = h.getView<RelativeLayout>(R.id.rlItemVideoPlay)
         val ivItemVideoPlay = h.getView<ImageView>(R.id.ivItemVideoPlay)
 
         val rlItemChildVideoPlay = h.getView<RelativeLayout>(R.id.rlItemChildVideoPlay)
         val ivItemChildVideoPlay = h.getView<ImageView>(R.id.ivItemChildVideoPlay)
-        val loadingChild = h.getView<View>(R.id.loadingChild)
-        val loading = h.getView<View>(R.id.loading)
+//        val loadingChild = h.getView<View>(R.id.loadingChild)
+//        val loading = h.getView<View>(R.id.loading)
         val ivVideoThumb = h.getView<ImageView>(R.id.ivVideoThumb)
         val ivVideoThumbChild = h.getView<ImageView>(R.id.ivVideoThumbChild)
 
@@ -132,7 +131,7 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
             llItemAddress.visibility = View.GONE
         }
 
-        setMicoblogVideoInfo(context, videoview, item.videoPath, rlItemVideoPlay, ivVideoThumb, ivItemVideoPlay, loading)
+        setMicoblogVideoInfo(context, item.videoPath, rlItemVideoPlay, ivVideoThumb)
         if (item.originMicroblog != null) {
             includeItemForward.visibility = View.VISIBLE
             var forwardImages = ArrayList<String>()
@@ -174,52 +173,8 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
             }
             recyclerItemChildImg?.adapter = forwardAdapter
 
-            setMicoblogVideoInfo(context, videoviewChild, item.originMicroblog?.videoPath, rlItemChildVideoPlay, ivVideoThumbChild, ivItemChildVideoPlay, loadingChild)
-            /*if (!TextUtils.isEmpty(item.originMicroblog?.videoPath)) {
-                rlItemChildVideoPlay.visibility = View.VISIBLE
-                var path : String ?= null
-                if (item.originMicroblog?.videoPath!!.startsWith("http")) {
-                    path = item.originMicroblog?.videoPath
-                } else {
-                    path = Api.IMAGE_URL + item.originMicroblog?.videoPath
-                }
-                Utils.setVideoThumbnailForImageView(path) {
-                    GlideImgManager.loadFile(context, it, ivVideoThumbChild)
-                }
-                videoviewChild.setVideoPath(path)
-                resetVideoWidth(videoviewChild, path)
-            } else {
-                rlItemChildVideoPlay.visibility = View.GONE
-            }
-            ivItemChildVideoPlay.setOnClickListener {
-                videoviewChild.start()
-            }
-            videoviewChild.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
-                override fun onPlay() {
-                    ivItemChildVideoPlay.visibility = View.GONE
-                }
+            setMicoblogVideoInfo(context, item.originMicroblog?.videoPath, rlItemChildVideoPlay, ivVideoThumbChild)
 
-                override fun onPause() {
-                    ivItemChildVideoPlay.visibility = View.VISIBLE
-                }
-
-            })
-            videoviewChild.setOnCompletionListener {
-                ivItemChildVideoPlay.visibility = View.VISIBLE
-                ivVideoThumbChild.visibility = View.VISIBLE
-            }
-            videoviewChild.setOnPreparedListener {
-                ivVideoThumbChild.visibility = View.GONE
-            }
-            videoviewChild.setOnPreparedListener {
-                it.setOnBufferingUpdateListener { _, percent ->
-                    if(percent == 100){
-                        loadingChild.visibility = View.GONE
-                    } else {
-                        loadingChild.visibility = View.VISIBLE
-                    }
-                }
-            }*/
         } else {
             includeItemForward.visibility = View.GONE
         }

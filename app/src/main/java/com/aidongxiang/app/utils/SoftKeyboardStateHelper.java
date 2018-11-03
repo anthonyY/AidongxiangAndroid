@@ -1,10 +1,20 @@
 package com.aidongxiang.app.utils;
 
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
+import android.provider.Settings;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
+import com.aidongxiang.app.base.App;
+import com.aiitec.openapi.utils.LogUtil;
+import com.aiitec.openapi.utils.ScreenUtils;
+
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +37,7 @@ public class SoftKeyboardStateHelper implements OnGlobalLayoutListener {
     }
 
     public SoftKeyboardStateHelper(View activityRootView, boolean isSoftKeyboardOpened) {
-        height = activityRootView.getContext().getResources().getDisplayMetrics().heightPixels / 9;
+        height = activityRootView.getContext().getResources().getDisplayMetrics().heightPixels / 8;
         this.activityRootView = activityRootView;
         this.isSoftKeyboardOpened = isSoftKeyboardOpened;
         activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(this);
@@ -37,11 +47,19 @@ public class SoftKeyboardStateHelper implements OnGlobalLayoutListener {
     @Override
     public void onGlobalLayout() {
         final Rect r = new Rect();
-        // r will be populated with the coordinates of your view that area
-        // still visible.
         activityRootView.getWindowVisibleDisplayFrame(r);
-        final int heightDiff = activityRootView.getRootView().getHeight()
-                - (r.bottom - r.top);
+        int heightDiff = 0;
+        //是否开启全面屏
+        boolean isOpenFullscreen = Settings.Global.getInt(App.app.getContentResolver(), "force_fsg_nav_bar", 0) != 0;
+        if(isOpenFullscreen){
+            heightDiff = activityRootView.getRootView().getHeight() - (r.bottom - r.top);
+        } else {
+            heightDiff = ScreenUtils.getScreenHeight(App.app) - (r.bottom - r.top);
+        }
+//
+
+
+        LogUtil.w("isSoftKeyboardOpened:"+isSoftKeyboardOpened+"   heightDiff:"+heightDiff+"    height:"+height);
         if (!isSoftKeyboardOpened && heightDiff > height) {
             isSoftKeyboardOpened = true;
             notifyOnSoftKeyboardOpened(heightDiff);
@@ -112,4 +130,43 @@ public class SoftKeyboardStateHelper implements OnGlobalLayoutListener {
         void onSoftKeyboardClosed();
     }
 
+
+    /**
+     *  判断存在NavigationBar，是否有虚拟按钮
+     */
+    public static boolean checkDeviceHasNavigationBar(Context context) {
+        boolean hasNavigationBar = false;
+        Resources rs = context.getResources();
+        int id = rs.getIdentifier("config_showNavigationBar", "bool", "android");
+        if (id > 0) {
+            hasNavigationBar = rs.getBoolean(id);
+        }
+        try {
+            Class systemPropertiesClass = Class.forName("android.os.SystemProperties");
+            Method m = systemPropertiesClass.getMethod("get", String.class);
+            String navBarOverride = (String) m.invoke(systemPropertiesClass, "qemu.hw.mainkeys");
+            if ("1".equals(navBarOverride)) {
+                hasNavigationBar = false;
+            } else if ("0".equals(navBarOverride)) {
+                hasNavigationBar = true;
+            }
+        } catch (Exception e) {
+
+        }
+        return hasNavigationBar;
+
+    }
+    /**
+     * 获取虚拟按钮ActionBar的高度
+     *
+     * @param activity activity
+     * @return ActionBar高度
+     */
+    public static int getActionBarHeight(Activity activity) {
+        TypedValue tv = new TypedValue();
+        if (activity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            return TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
+        }
+        return 0;
+    }
 }

@@ -62,7 +62,7 @@ class VideoListFragment : BaseListKtFragment(){
 
     override fun init(view: View) {
         super.init(view)
-        adapter = HomeVideoAdapter(activity, datas)
+        adapter = HomeVideoAdapter(activity!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
         arguments?.let {
@@ -76,7 +76,7 @@ class VideoListFragment : BaseListKtFragment(){
 //        }
         adapter.setOnRecyclerViewItemClickListener { v, position ->
             val id = datas[position-1].id
-            switchToActivity(VideoDetailsActivity::class.java, ARG_ID to id)
+            switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
         }
         tv_select_all.setOnClickListener {
             for(data in datas){
@@ -190,8 +190,6 @@ class VideoListFragment : BaseListKtFragment(){
             datas.addAll(response.audios!!)
         }
         adapter.update()
-        if(datas.size == 0){
-            onNoData()
-        }
+        checkIsEmpty()
     }
 }

@@ -33,9 +33,9 @@ class PostForwardListFragment : BaseListKtFragment(){
 
     override fun init(view: View) {
         super.init(view)
+        arguments?.let { postId = it.getLong(ARG_ID) }
 
-        postId = arguments.getLong(ARG_ID)
-        adapter = ForwardAdapter(activity, datas)
+        adapter = ForwardAdapter(activity!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
         recyclerView?.setPullRefreshEnabled(false)

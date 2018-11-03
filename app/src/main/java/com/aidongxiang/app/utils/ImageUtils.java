@@ -7,12 +7,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import com.aidongxiang.app.base.Constants;
 import com.aiitec.openapi.utils.AiiUtil;
 
 import java.io.BufferedInputStream;
@@ -264,5 +267,76 @@ public class ImageUtils {
      */
     private static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    /* 读取照片exif信息中的旋转角度
+     * @param path 照片路径
+     * @return角度
+     */
+    public static int readPictureDegree(String path) {
+        int degree  = 0;
+        try {
+            ExifInterface exifInterface = new ExifInterface(path);
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    degree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    degree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return degree;
+    }
+//    那么我们只需要根据旋转角度将图片旋转过来就OK了
+    public static Bitmap toturn(Bitmap img, int range){
+        Matrix matrix = new Matrix();
+        matrix.postRotate(range); /*翻转90度*/
+        int width = img.getWidth();
+        int height =img.getHeight();
+        img = Bitmap.createBitmap(img, 0, 0, width, height, matrix, true);
+        return img;
+    }
+
+    /**
+     * 保存bitmap到本地
+     *
+     * @param context
+     * @param mBitmap
+     * @return
+     */
+    public static String saveBitmap(Context context, Bitmap mBitmap) {
+        String savePath;
+        File filePic;
+        if (Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED)) {
+            savePath = Constants.INSTANCE.getCACHEDIR();
+        } else {
+            savePath = context.getApplicationContext().getFilesDir()
+                    .getAbsolutePath()
+                    + "/rotate/";
+        }
+        try {
+            filePic = new File(savePath + System.currentTimeMillis() + ".jpg");
+            if (!filePic.exists()) {
+                filePic.getParentFile().mkdirs();
+                filePic.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(filePic);
+            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return filePic.getAbsolutePath();
     }
 }

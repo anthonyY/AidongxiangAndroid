@@ -23,7 +23,6 @@ import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.net.download.DownloadManager
-import com.aiitec.openapi.utils.AiiUtil
 import com.aiitec.openapi.utils.ToastUtil
 import com.aiitec.widgets.ShareDialog
 import kotlinx.android.synthetic.main.fragment_video_synopsis.*
@@ -52,14 +51,14 @@ class VideoSynopsisFragment : BaseFragment(){
 
     private fun initDialog() {
 
-        downloadCofirmDialog = CommonDialog(activity)
+        downloadCofirmDialog = CommonDialog(activity!!)
         downloadCofirmDialog.setTitle("下载视频")
         downloadCofirmDialog.setContent("确定下载？")
         downloadCofirmDialog.setOnConfirmClickListener {
             downloadCofirmDialog.dismiss()
             video?.let { download(it) }
         }
-        shareDialog = ShareDialog(activity)
+        shareDialog = ShareDialog(activity!!)
     }
 
     private fun setListener() {
@@ -141,10 +140,10 @@ class VideoSynopsisFragment : BaseFragment(){
         webview_video_synopsis.loadData(audiosSynopsis,"text/html; charset=UTF-8", null)
         if(audio.isPraise == 2){
             iv_video_praise.setImageResource(R.drawable.common_btn_like_pre)
-            tv_video_praise_num.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryLight))
+            tv_video_praise_num.setTextColor(ContextCompat.getColor(activity!!, R.color.colorPrimaryLight))
         } else {
             iv_video_praise.setImageResource(R.drawable.common_btn_like_nor)
-            tv_video_praise_num.setTextColor(ContextCompat.getColor(activity, R.color.gray7))
+            tv_video_praise_num.setTextColor(ContextCompat.getColor(activity!!, R.color.gray7))
         }
         if(audio.isFavorite == 2){
             iv_video_collection.setImageResource(R.drawable.common_btn_collect_pre)
@@ -155,7 +154,8 @@ class VideoSynopsisFragment : BaseFragment(){
         tv_video_play_num.text = audio.playNum.toString()
         //收费视频
         if(audio.payType ==2 && audio.price > 0){
-            tv_video_price.text = "¥"+ AiiUtil.formatString(audio.price)
+            tv_video_price.text = ""
+//            tv_video_price.text = "¥"+ AiiUtil.formatString(audio.price)
         } else {
             tv_video_price.text = ""
         }
@@ -165,7 +165,7 @@ class VideoSynopsisFragment : BaseFragment(){
         val imagePath = audio.imagePath
         val content = audio.name
         downloadCofirmDialog.setContent("确定下载$content？")
-        shareDialog.setShareData("爱侗乡有精彩好看的视频哦，快来看看吧！", content, imagePath, "https://www.aidongxiang.com")
+        shareDialog.setShareData("爱侗乡有精彩好看的视频哦，快来看看吧！", content, imagePath, "http://www.aidongxiang.com/download/download.html")
     }
 
 
@@ -212,13 +212,13 @@ class VideoSynopsisFragment : BaseFragment(){
                         val praiseNum = it.praiseNum-1
                         tv_video_praise_num.text = praiseNum.toString()
                         iv_video_praise.setImageResource(R.drawable.common_btn_like_nor)
-                        tv_video_praise_num.setTextColor(ContextCompat.getColor(activity, R.color.gray7))
+                        tv_video_praise_num.setTextColor(ContextCompat.getColor(activity!!, R.color.gray7))
                     } else {
                         it.isPraise = 2
                         val praiseNum = it.praiseNum+1
                         tv_video_praise_num.text = praiseNum.toString()
                         iv_video_praise.setImageResource(R.drawable.common_btn_like_pre)
-                        tv_video_praise_num.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimaryLight))
+                        tv_video_praise_num.setTextColor(ContextCompat.getColor(activity!!, R.color.colorPrimaryLight))
                     }
                 }
             }

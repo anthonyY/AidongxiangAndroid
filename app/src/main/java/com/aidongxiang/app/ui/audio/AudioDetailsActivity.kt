@@ -24,7 +24,6 @@ import com.aidongxiang.app.observer.IMusicPlayObserver
 import com.aidongxiang.app.observer.MusicPlaySubject
 import com.aidongxiang.app.service.MusicService
 import com.aidongxiang.app.ui.login.LoginActivity
-import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.utils.Utils
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.app.widgets.PayDialog
@@ -38,7 +37,6 @@ import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.net.download.DownloadManager
-import com.aiitec.openapi.utils.AiiUtil
 import com.aiitec.openapi.utils.LogUtil
 import com.aiitec.widgets.ShareDialog
 import kotlinx.android.synthetic.main.activity_audio_details.*
@@ -373,12 +371,13 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_download) {
+        if (item.itemId == R.id.action_share) {
             if(Constants.user == null){
                 switchToActivity(LoginActivity::class.java)
                 return true
             }
-            switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 1)
+//            switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 1)
+            shareDialog.show()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -485,6 +484,8 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         if(MusicService.isPlaying ){
             if(!MusicService.playPath.equals(audioPath)){
                 LogUtil.e("路径不一致"+MusicService.playPath+" --------- "+audioPath)
+                ivAudioDetailsPlay.setImageResource(R.drawable.video_btn_play2)
+                seekbar_audio.progress = 0
                 //正在播放别的音频，那么就停止掉
                 val intent = Intent(this@AudioDetailsActivity, MusicService::class.java)
                 intent.putExtra(MusicService.ARG_TYPE, MusicService.TYPE_STOP)
@@ -514,8 +515,9 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         tv_audio_praise_num.text = audio.praiseNum.toString()
         tv_audio_play_num.text = audio.playNum.toString()
         if(audio.payType ==2 && audio.price > 0){
-            tv_audio_price.text = "¥"+AiiUtil.formatString(audio.price)
-            btn_audio_buy.visibility = View.VISIBLE
+            tv_audio_price.text = ""
+//            tv_audio_price.text = "¥"+AiiUtil.formatString(audio.price)
+            btn_audio_buy.visibility = View.GONE
         } else {
             tv_audio_price.text = ""
             btn_audio_buy.visibility = View.GONE
@@ -524,6 +526,6 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         tv_audio_title.text = audio.name
         val imagePath = audio.imagePath
         val content = audio.name
-        shareDialog.setShareData("爱侗乡有好听的音乐哦，快来听听吧！", content, imagePath, "https://www.aidongxiang.com")
+        shareDialog.setShareData("爱侗乡有好听的音乐哦，快来听听吧！", content, imagePath, "http://www.aidongxiang.com/download/download.html")
     }
 }

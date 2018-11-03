@@ -41,7 +41,7 @@ class ScreenUserListFragment : BaseListKtFragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = FansAdapter(activity, datas)
+        adapter = FansAdapter(activity!!, datas)
         requestData()
     }
 
@@ -108,9 +108,7 @@ class ScreenUserListFragment : BaseListKtFragment(){
         response.users?.let { datas.addAll(it) }
 
         adapter.update()
-        if(datas.size == 0){
-            onNoData()
-        }
+        checkIsEmpty()
     }
 
 

@@ -33,15 +33,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
                     android:background="#5000"
                     android:gravity="center_vertical"
                     android:layout_alignParentBottom="true">
                     <ImageView
                         android:id="@+id/ivAudioDetailsPlay"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="8dp"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="16dp"
                         android:paddingRight="8dp"
                         android:src="@drawable/video_btn_play2"/>
                     <TextView
@@ -61,6 +60,8 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:layout_alignParentBottom="true"
                         android:max="100"
                         android:progress="0"
@@ -73,6 +74,7 @@
                         android:layout_height="wrap_content"
                         android:text="00:00"
                         android:textSize="14sp"
+                        android:layout_marginRight="12dp"
                         android:textColor="@color/white"/>
                 </LinearLayout>
             </RelativeLayout>
@@ -164,6 +166,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="4dp"
+                        android:visibility="gone"
                         android:src="@drawable/common_btn_share_gray"
                         />
                     <View android:layout_width="1dp"

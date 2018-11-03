@@ -28,4 +28,8 @@
         <item name="colorPrimaryDark">@android:color/white</item>
     </style>
 
+    <!-- 自定义通知栏标题颜色适配-->
+    <style
+        name="NotificationTitle"
+        parent="android:TextAppearance.Material.Notification.Title" />
 </resources>

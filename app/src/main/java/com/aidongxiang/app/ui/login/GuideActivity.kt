@@ -11,7 +11,7 @@ import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
-import com.aidongxiang.app.base.Constants.ARG_ACTION
+import com.aidongxiang.app.ui.Main2Activity
 import com.aiitec.openapi.utils.AiiUtil
 import kotlinx.android.synthetic.main.activity_guide.*
 
@@ -71,7 +71,7 @@ class GuideActivity : BaseKtActivity() {
             override fun onPageScrollStateChanged(state: Int) {}
         })
         btn_immediate_experience.setOnClickListener {
-            switchToActivity(LoginActivity::class.java, ARG_ACTION to 1)
+            switchToActivity(Main2Activity::class.java)
             finish()
         }
     }
@@ -92,7 +92,7 @@ class GuideActivity : BaseKtActivity() {
             if (position == mListViews.size - 1) {
                 guidePictureView.setOnClickListener {
                     guidePictureView.isEnabled = false
-                    switchToActivity(LoginActivity::class.java)
+                    switchToActivity(Main2Activity::class.java)
                     finish()
                 }
             }

@@ -190,8 +190,6 @@ class AudioListFragment : BaseListKtFragment(){
             datas.addAll(response.audios!!)
         }
         adapter.update()
-        if(datas.size == 0){
-            onNoData()
-        }
+        checkIsEmpty()
     }
 }

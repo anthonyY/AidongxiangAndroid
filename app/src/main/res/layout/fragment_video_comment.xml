@@ -36,6 +36,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <include layout="@layout/layout_empty"/>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/faBtnComment"
         android:layout_width="wrap_content"
@@ -45,5 +46,5 @@
         android:layout_marginRight="@dimen/margin_screen_right"
         android:layout_marginBottom="@dimen/margin_screen_right"
         app:rippleColor="@color/purple_selected"
-        android:src="@drawable/ic_edit"/>
+        android:src="@drawable/ic_edit_comment"/>
 </RelativeLayout>

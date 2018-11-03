@@ -22,7 +22,7 @@ import com.aidongxiang.app.ui.Main2Activity
 import com.aidongxiang.app.ui.audio.AudioDetailsActivity
 import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
-import com.aidongxiang.app.ui.video.VideoDetailsActivity
+import com.aidongxiang.app.ui.video.VideoDetails2Activity
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.widgets.NoticeDialog
 import com.aidongxiang.business.model.Article
@@ -70,7 +70,7 @@ class HomeFragment : BaseKtFragment() {
         //视频
         homeVideoAdapter = HomeVideoAdapter(activity!!, videoDatas)
         homeVideoAdapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(VideoDetailsActivity::class.java, ARG_ID to videoDatas[position].id)
+            switchToActivity(VideoDetails2Activity::class.java, ARG_ID to videoDatas[position].id)
         }
         setLayoutManagerInScroolView(recycler_home_video, videoLayoutManager)
         recycler_home_video.adapter = homeVideoAdapter
@@ -112,7 +112,7 @@ class HomeFragment : BaseKtFragment() {
                     switchToActivity(CommonWebViewActivity::class.java, ARG_URL to url, ARG_TITLE to navigation.name)
                 }
                 2->{
-                    switchToActivity(VideoDetailsActivity::class.java, ARG_ID to id)
+                    switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
                 }
                 3->{
                     switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
@@ -126,7 +126,7 @@ class HomeFragment : BaseKtFragment() {
             }
 
         }
-        noticeDialog = NoticeDialog(activity)
+        noticeDialog = NoticeDialog(activity!!)
 
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.CHINESE)
         val isShowNoticeToday = AiiUtil.getBoolean(activity, "isShowNotice" + today)
@@ -154,6 +154,11 @@ class HomeFragment : BaseKtFragment() {
                 return@setOnClickListener
             }
             switchToActivity(MyDownloadActivity::class.java)
+        }
+        ad_home.setOnItemClickListener {
+            if(!TextUtils.isEmpty(it.link)){
+                switchToActivity(CommonWebViewActivity::class.java, ARG_TITLE to it.name, ARG_URL to it.link)
+            }
         }
 
 //        setDatas()

@@ -55,6 +55,7 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
 
     }
     val TAG = "MusicService"
+    var title : String ?= null
     private var player = MediaPlayer()
 
     lateinit var audioManager: AudioManager
@@ -81,7 +82,11 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
         val result = audioManager.requestAudioFocus(mListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
         val type = intent.getIntExtra(ARG_TYPE, TYPE_PLAY)
         val title = intent.getStringExtra(ARG_TITLE)
-        LogUtil.i(TAG, "title:"+title)
+        if(!TextUtils.isEmpty(title)){
+            this@MusicService.title = title
+        }
+
+        LogUtil.i(TAG, "title:"+title +"   ARG_TYPE:$type")
         when(type){
             TYPE_PLAY->{
 
@@ -105,7 +110,7 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
                         }
                     } else {
                         if(!player.isPlaying){
-                            startMusic(title)
+                            startMusic()
                         }
                     }
 
@@ -115,7 +120,7 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
                 onMusicPause()
             }
             TYPE_START->{
-                startMusic(title)
+                startMusic()
             }
             TYPE_STOP->{
                 stopMusic()
@@ -143,7 +148,7 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
         isPlaying = false
     }
 
-    private fun startMusic(title : String?) {
+    private fun startMusic() {
 
         player.start()
         val intent = Intent(this, MusicPlayReceiver::class.java)
@@ -180,8 +185,12 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
         player.pause()
         val intent = Intent(this, MusicPlayReceiver::class.java)
         intent.putExtra(ARG_TYPE, TYPE_PAUSE)
+        intent.putExtra(ARG_TITLE, title)
         sendBroadcast(intent)
         isPlaying = false
+
+//        暂停时，音频详情没有收到通知，所以需要手动调一下getCurrentValue 让音频详情页更新一下状态
+        getCurrentValue()
     }
 
 

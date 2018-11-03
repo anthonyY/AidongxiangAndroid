@@ -19,9 +19,9 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
-        android:textColor="@color/black3"
+        style="@style/NotificationTitle"
         android:textSize="14sp"
-        android:text="张三的歌 - 齐秦"/>
+        android:text=""/>
     <ImageView
         android:id="@+id/ivPlay"
         android:layout_width="wrap_content"

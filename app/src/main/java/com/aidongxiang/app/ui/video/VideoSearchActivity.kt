@@ -81,7 +81,7 @@ class VideoSearchActivity : BaseListKtActivity() {
                 if(type == TYPE_AUDIO){
                     switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
                 } else {
-                    switchToActivity(VideoDetailsActivity::class.java, ARG_ID to id)
+                    switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
                 }
             }
         }

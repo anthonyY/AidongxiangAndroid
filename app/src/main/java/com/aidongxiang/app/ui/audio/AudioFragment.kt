@@ -1,6 +1,9 @@
 package com.aidongxiang.app.ui.audio
 
+import android.os.Handler
+import android.support.design.widget.CollapsingToolbarLayout
 import android.support.design.widget.TabLayout
+import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -11,6 +14,9 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtFragment
 import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.Constants.ARG_TITLE
+import com.aidongxiang.app.base.Constants.ARG_URL
+import com.aidongxiang.app.ui.home.CommonWebViewActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.ui.video.SearchActivity
 import com.aidongxiang.app.utils.StatusBarUtil
@@ -49,8 +55,20 @@ class AudioFragment : BaseKtFragment() {
         }
         ibtn_nav_menu.setOnClickListener { switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 1) }
 //        ibtn_title_search.setOnClickListener { switchToActivity(SearchActivity::class.java, Constants.ARG_TYPE to SearchActivity.TYPE_AUDIO) }
+        ad_video.setOnItemClickListener {
+            if(!TextUtils.isEmpty(it.link)){
+                switchToActivity(CommonWebViewActivity::class.java, ARG_TITLE to it.name, ARG_URL to it.link)
+            }
+        }
         requestAdList()
         requestCategoryList()
+
+        Handler().postDelayed({
+            val titleBarHeight = titlebar.measuredHeight
+            val params = CollapsingToolbarLayout.LayoutParams(CollapsingToolbarLayout.LayoutParams.MATCH_PARENT, CollapsingToolbarLayout.LayoutParams.WRAP_CONTENT)
+            params.topMargin = titleBarHeight
+            ad_video.layoutParams = params
+        }, 100)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {

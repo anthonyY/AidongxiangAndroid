@@ -36,24 +36,11 @@ class NewsListFragment : BaseListKtFragment(){
         requestArticleList()
     }
 
-//    private fun requestNewsList() {
-//        for(i in 0..10){
-//            val article = Article()
-//            article.timestamp = "2018-0$i-1${i + 2} 12:15:34"
-//            article.title = "农耕部落初见成效"
-//            article.abstract = "农耕部落初见成效农耕部落初见成效农耕部落初见成效"
-//            article.id = i
-//            article.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-//            datas.add(article)
-//        }
-//        if(activity != null){
-//            adapter.update()
-//        }
-//    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = HomeNewsAdapter(activity, datas, false)
+        adapter = HomeNewsAdapter(activity!!, datas, false)
 
         arguments?.let { categoryId = it.getInt(Constants.ARG_ID) }
         requestData()
@@ -67,7 +54,7 @@ class NewsListFragment : BaseListKtFragment(){
         adapter.setOnRecyclerViewItemClickListener { _, position ->
             if(position > 0){
                 val id = datas[position-1].id
-                switchToActivity(ArticleDetailsActivity::class.java, Constants.ARG_TITLE to "新闻详情", Constants.ARG_ID to id)
+                switchToActivity(ArticleDetailsActivity::class.java, Constants.ARG_TITLE to "资讯详情", Constants.ARG_ABSTRACT to datas[position-1].abstract, Constants.ARG_ID to id)
 
             }
 

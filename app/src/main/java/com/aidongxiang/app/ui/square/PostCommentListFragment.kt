@@ -43,13 +43,16 @@ class PostCommentListFragment : BaseListKtFragment(){
     override fun init(view: View) {
         super.init(view)
 
-        itemDialog = ItemDialog(activity)
-        deleteDialog = CommonDialog(activity)
+        itemDialog = ItemDialog(activity!!)
+        deleteDialog = CommonDialog(activity!!)
         deleteDialog.setTitle("确认删除")
         deleteDialog.setContent("确定要删除这条评论吗？")
 
-        postId = arguments.getLong(ARG_ID)
-        adapter = CommentAdapter(activity, datas)
+        arguments?.let {
+            postId = it.getLong(ARG_ID)
+        }
+
+        adapter = CommentAdapter(activity!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
         recyclerView?.setPullRefreshEnabled(false)
@@ -191,9 +194,7 @@ class PostCommentListFragment : BaseListKtFragment(){
         response.comments?.let { datas.addAll(it) }
 
         adapter.update()
-        if(datas.size == 0){
-            onNoData()
-        }
+        checkIsEmpty()
     }
 
 

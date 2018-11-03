@@ -34,8 +34,8 @@ class PostAppraiseListFragment : BaseListKtFragment(){
     override fun init(view: View) {
         super.init(view)
 
-        postId = arguments.getLong(ARG_ID)
-        adapter = PostAppraiseAdapter(activity, datas)
+        arguments?.let {  postId = it.getLong(ARG_ID)}
+        adapter = PostAppraiseAdapter(activity!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
         recyclerView?.setPullRefreshEnabled(false)
@@ -82,9 +82,7 @@ class PostAppraiseListFragment : BaseListKtFragment(){
         response.users?.let { datas.addAll(it) }
 
         adapter.update()
-        if(datas.size == 0){
-            onNoData()
-        }
+        checkIsEmpty()
     }
 
 

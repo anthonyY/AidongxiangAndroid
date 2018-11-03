@@ -10,7 +10,7 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.App.Companion.aiidbManager
 import com.aidongxiang.app.base.Constants.ARG_ID
-import com.aidongxiang.app.ui.video.VideoDetailsActivity
+import com.aidongxiang.app.ui.video.VideoDetails2Activity
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.model.Download
 import com.aiitec.openapi.net.download.DownloadManager
@@ -49,7 +49,7 @@ class DownloadVideoListFragment : BaseListKtFragment(){
 
     override fun init(view: View) {
         super.init(view)
-        adapter = DownloadVideoAdapter(activity, datas)
+        adapter = DownloadVideoAdapter(activity!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
         arguments?.let {
@@ -59,7 +59,7 @@ class DownloadVideoListFragment : BaseListKtFragment(){
         adapter.setOnRecyclerViewItemClickListener { v, position ->
             if(position > 0){
                 val id = datas[position-1].id
-                switchToActivity(VideoDetailsActivity::class.java, ARG_ID to id)
+                switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
             }
         }
         tv_select_all.setOnClickListener {
@@ -103,9 +103,8 @@ class DownloadVideoListFragment : BaseListKtFragment(){
                     datas.addAll(downloads)
                     adapter.update()
                 }
-                if (datas.size == 0) {
-                    onNoData()
-                }
+
+                checkIsEmpty()
             }
         })
     }

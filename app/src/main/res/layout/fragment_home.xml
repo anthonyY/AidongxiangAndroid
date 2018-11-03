@@ -24,7 +24,7 @@
                     android:id="@+id/ad_home"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:background="#ddd"/>
+                    />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recycler_home_category"

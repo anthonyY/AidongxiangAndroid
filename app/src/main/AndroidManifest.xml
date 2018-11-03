@@ -99,13 +99,16 @@
         <activity android:name=".ui.audio.AudioDetailsActivity" />
 
         <activity
-            android:name=".ui.video.VideoPlayerActivity2"
+            android:name=".ui.video.VideoPlayerActivity"
             android:configChanges="orientation|screenSize" />
-        <activity
-            android:name=".ui.video.VideoPlayerActivity3"
-            android:configChanges="orientation|screenSize" />
+        <!--<activity-->
+            <!--android:name=".ui.video.VideoPlayerActivity3"-->
+            <!--android:configChanges="orientation|screenSize" />-->
         <activity
             android:name=".ui.video.VideoDetailsActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".ui.video.VideoDetails2Activity"
             android:configChanges="orientation|screenSize" />
         <activity android:name=".ui.video.SearchActivity" />
         <activity android:name=".ui.video.VideoSearchActivity"/>

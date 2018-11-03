@@ -130,4 +130,9 @@
     <style name="transparentStatusTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="transparentStatusTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- 自定义通知栏标题颜色适配-->
+    <style
+        name="NotificationTitle"
+        parent="android:TextAppearance.StatusBar.EventContent.Title" />
 </resources>

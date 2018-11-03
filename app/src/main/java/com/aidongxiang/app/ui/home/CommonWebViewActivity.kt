@@ -2,6 +2,7 @@ package com.aidongxiang.app.ui.home
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
@@ -29,7 +30,7 @@ class CommonWebViewActivity : BaseKtActivity() {
     override fun init(savedInstanceState: Bundle?) {
 
         val url = bundle.getString(ARG_URL)
-        val title = bundle.getString(ARG_TITLE)
+        var title = bundle.getString(ARG_TITLE)
         if (!TextUtils.isEmpty(title)) {
             setTitle(title)
             toolbar?.visibility = View.VISIBLE
@@ -39,20 +40,34 @@ class CommonWebViewActivity : BaseKtActivity() {
 
         LogUtil.i("url: " + url)
         webview.loadUrl(url)
+
         webview.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
-                view.loadUrl(url)
+                if (url.startsWith("tel:") || url.startsWith("scheme:") || url.startsWith("scheme:")){
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    startActivity(intent)
+                } else if(url.startsWith("http:") || url.startsWith("https:")) {
+                    view.loadUrl(url)
+                }
                 return true
             }
 
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val url = request.url.toString()
-                view.loadUrl(url)
+                if (url.startsWith("tel:") || url.startsWith("scheme:") || url.startsWith("scheme:")){
+                    val intent = Intent(Intent.ACTION_VIEW, request.url)
+                    startActivity(intent)
+                } else if(url.startsWith("http:") || url.startsWith("https:")) {
+                    view.loadUrl(url)
+                }
                 return true
                 //                return super.shouldOverrideUrlLoading(view, request);
             }
+
+
+
         }
         progressDialogShow()
         webview.webChromeClient = object : WebChromeClient() {
@@ -70,7 +85,10 @@ class CommonWebViewActivity : BaseKtActivity() {
         }
 
         shareDialog = ShareDialog(this)
-        shareDialog.setShareData("爱侗乡新闻", "了飒飒大是", "", "http://aidongxiang.com")
+        if(TextUtils.isEmpty(title)){
+            title = "好东西，要分享，点击查看"
+        }
+        shareDialog.setShareData(title, "", null, url)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

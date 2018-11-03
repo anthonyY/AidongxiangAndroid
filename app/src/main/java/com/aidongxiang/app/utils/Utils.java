@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -151,8 +150,16 @@ public class Utils {
         String fileName = "";
         int index = filePath.lastIndexOf("/");
         int index2 = filePath.lastIndexOf(".");
+        if(index2 <= 0){
+            index2 = filePath.length();
+        }
         if (index != -1) {
+            if(index >= index2){
+                index2 = filePath.length();
+            }
             fileName = filePath.substring(index + 1, index2)+".jpg";
+        } else {
+            fileName = System.currentTimeMillis()+".jpg";
         }
         final String imagePath = Constants.INSTANCE.getVIDEOS_DIR() + fileName;
         LogUtil.e("Thumbnail:"+imagePath);
@@ -342,14 +349,11 @@ public class Utils {
     /**
      * 设置微博的视频信息
      *
-     * @param videoview       视频控件
      * @param videoPath       视频路径
      * @param rlItemVideoPlay 包裹视频相关的大布局
      * @param ivVideoThumb    视频缩略图控件
-     * @param ivItemVideoPlay 视频播放按钮
-     * @param loading         加载进度条
      */
-    public static void setMicoblogVideoInfo(final Context context, final CustomVideoView videoview, String videoPath, View rlItemVideoPlay, final ImageView ivVideoThumb, final ImageView ivItemVideoPlay, final View loading) {
+    public static void setMicoblogVideoInfo(final Context context, String videoPath, View rlItemVideoPlay, final ImageView ivVideoThumb) {
 
         if (!TextUtils.isEmpty(videoPath)) {
             if(rlItemVideoPlay != null){
@@ -371,59 +375,6 @@ public class Utils {
                     if( context != null){
                         GlideImgManager.loadFile(context, thumb, ivVideoThumb);
                     }
-                }
-            });
-
-            videoview.setVideoPath(path);
-            resetVideoWidth(context, videoview, path);
-
-//            ivItemVideoPlay.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    videoview.start();
-//                }
-//            });
-            videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    ivVideoThumb.setVisibility(View.GONE);
-                }
-            });
-
-            videoview.setOnPlayStateListener(new CustomVideoView.OnPlayStateListener() {
-                @Override
-                public void onPlay() {
-                    ivItemVideoPlay.setVisibility(View.GONE);
-                    ivVideoThumb.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onPause() {
-                    ivItemVideoPlay.setVisibility(View.VISIBLE);
-                    ivVideoThumb.setVisibility(View.VISIBLE);
-                }
-
-            });
-            videoview.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    ivItemVideoPlay.setVisibility(View.VISIBLE);
-                    ivVideoThumb.setVisibility(View.VISIBLE);
-                }
-            });
-            videoview.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-                        @Override
-                        public void onBufferingUpdate(MediaPlayer mediaPlayer, int percent) {
-                            if (percent == 100) {
-                                loading.setVisibility(View.GONE);
-                            } else {
-                                loading.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
                 }
             });
         } else {

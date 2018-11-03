@@ -6,8 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.text.TextUtils
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -70,27 +68,27 @@ class ArticleDetailsActivity : BaseKtActivity() {
         }
 
         shareDialog = ShareDialog(this)
-        shareDialog.setShareData("爱侗乡新闻", "了飒飒大是", "", "http://aidongxiang.com")
+        shareDialog.setShareData(title, "了飒飒大是", "", "http://aidongxiang.com")
 
         requestArticleDetails()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        if(action != 2 && action != 3){
-            menuInflater.inflate(R.menu.menu_share, menu)
-        }
-
-        return super.onCreateOptionsMenu(menu)
-    }
-
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_share) {
-            shareDialog.show()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        if(action != 2 && action != 3){
+//            menuInflater.inflate(R.menu.menu_share, menu)
+//        }
+//
+//        return super.onCreateOptionsMenu(menu)
+//    }
+//
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        if (item.itemId == R.id.action_share) {
+//            shareDialog.show()
+//            return true
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

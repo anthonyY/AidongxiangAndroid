@@ -32,20 +32,20 @@
         android:layout_height="200dp"
         android:visibility="gone"
         android:background="@android:color/black">
-        <RelativeLayout
-            android:id="@+id/videoviewChildParent"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <com.aidongxiang.app.widgets.CustomVideoView
-                android:id="@+id/videoviewItemChild"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-               />
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/videoviewChildParent"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent">-->
+            <!--<com.aidongxiang.app.widgets.CustomVideoView-->
+                <!--android:id="@+id/videoviewItemChild"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+               <!--/>-->
             <ImageView
                 android:id="@+id/ivVideoThumbChild"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-        </RelativeLayout>
+        <!--</RelativeLayout>-->
 
         <ImageView
             android:id="@+id/ivItemChildVideoPlay"
@@ -53,13 +53,13 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/common_btn_play"/>
-        <ProgressBar
-            android:id="@+id/loadingChild"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="gone"/>
+        <!--<ProgressBar-->
+            <!--android:id="@+id/loadingChild"-->
+            <!--style="?android:attr/progressBarStyle"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:visibility="gone"/>-->
     </RelativeLayout>
 
 </LinearLayout>

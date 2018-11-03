@@ -25,7 +25,7 @@ import com.aidongxiang.app.event.RefreshMicrobolgEvent
 import com.aidongxiang.app.interfaces.AppBarStateChangeListener
 import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.ui.mine.PersonCenterActivity
-import com.aidongxiang.app.ui.video.VideoPlayerActivity2
+import com.aidongxiang.app.ui.video.VideoPlayerActivity
 import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.app.utils.StatusBarUtil
 import com.aidongxiang.app.utils.Utils
@@ -231,12 +231,12 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         }
         rlItemVideoPlay.setOnClickListener {
             microblog?.videoPath?.let {
-                switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it)
+                switchToActivity(VideoPlayerActivity::class.java, VideoPlayerActivity.ARG_PATH to it)
             }
         }
         rlItemChildVideoPlay.setOnClickListener {
             microblog?.originMicroblog?.videoPath?.let {
-                switchToActivity(VideoPlayerActivity2::class.java, VideoPlayerActivity2.ARG_PATH to it)
+                switchToActivity(VideoPlayerActivity::class.java, VideoPlayerActivity.ARG_PATH to it)
             }
         }
     }
@@ -353,8 +353,8 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         }
         recycler_post_img.adapter = adapter
 
-        Utils.setMicoblogVideoInfo(this, videoview_item, item.videoPath, rlItemVideoPlay, ivVideoThumb, ivItemVideoPlay, loading)
-        Utils.setMicoblogVideoInfo(this, videoviewItemChild, microblog?.originMicroblog?.videoPath, rlItemChildVideoPlay, ivVideoThumbChild, ivItemChildVideoPlay, loadingChild)
+        Utils.setMicoblogVideoInfo(this, item.videoPath, rlItemVideoPlay, ivVideoThumb)
+        Utils.setMicoblogVideoInfo(this, microblog?.originMicroblog?.videoPath, rlItemChildVideoPlay, ivVideoThumbChild)
 
 
         if(item.originMicroblog != null){

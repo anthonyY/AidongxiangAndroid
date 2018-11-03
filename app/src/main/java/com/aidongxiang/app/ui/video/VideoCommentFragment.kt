@@ -46,21 +46,26 @@ class VideoCommentFragment : BaseListKtFragment(){
 
     override fun init(view: View) {
         super.init(view)
+        arguments?.let { videoId = it.getLong(ARG_ID) }
 
-        videoId = arguments.getLong(ARG_ID)
-        adapter = CommentAdapter(activity, datas)
+        adapter = CommentAdapter(activity!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
 
-        commentDialog = CommentDialog(activity)
+        commentDialog = CommentDialog(activity!!)
         commentDialog.setOnCommentClickListener { requestCommentSubmit(it) }
 
-        itemDialog = ItemDialog(activity)
-        deleteDialog = CommonDialog(activity)
+        itemDialog = ItemDialog(activity!!)
+        deleteDialog = CommonDialog(activity!!)
         deleteDialog.setTitle("确认删除")
         deleteDialog.setContent("确定要删除这条评论吗？")
 
-        faBtnComment.setOnClickListener { commentDialog.show() }
+        faBtnComment.setOnClickListener {
+            if(Constants.user == null){
+                switchToActivity(LoginActivity::class.java)
+                return@setOnClickListener
+            }
+            commentDialog.show() }
 
         requestCommentList()
 
@@ -163,7 +168,7 @@ class VideoCommentFragment : BaseListKtFragment(){
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 page = 1
-                (activity as VideoDetailsActivity).addCommentNum()
+                (activity as VideoDetails2Activity).addCommentNum()
                 requestCommentList()
                 toast("评论成功")
             }
@@ -178,9 +183,9 @@ class VideoCommentFragment : BaseListKtFragment(){
         response.comments?.let { datas.addAll(it) }
 
         adapter.update()
-        if(datas.size == 0){
-            onNoData()
-        }
+        checkIsEmpty()
+
+
     }
 
     private fun requestDeleteComment(id : Long, position : Int) {
