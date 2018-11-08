@@ -12,11 +12,16 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseListKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_TYPE
+import com.aidongxiang.app.event.RefreshMicrobolgEvent
+import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.business.model.Fans
+import com.aidongxiang.business.request.FocusSwitchRequestQuery
 import com.aidongxiang.business.response.FansListResponseQuery
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
+import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.net.AIIResponse
+import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 /**
@@ -62,11 +67,48 @@ class FansListActivity : BaseListKtActivity(){
             if(v?.id == R.id.iv_item_avatar){
                 val id = datas[position-1].id
                 switchToActivity(PersonCenterActivity::class.java, Constants.ARG_ID to id)
+            } else if(v?.id == R.id.tv_item_status){
+                val data = datas[position-1]
+                val isFocus = data.isFocus
+                if(isFocus != 2 && type == 2){
+                    requestFocusSubmit(data.id.toLong(), 1, position-1)
+                }
             }
-        }, R.id.iv_item_avatar)
+        }, R.id.iv_item_avatar, R.id.tv_item_status)
         requestUserList()
     }
 
+    /**
+     * 关注 / 取消关注
+     */
+    private fun requestFocusSubmit(id: Long, open: Int, position: Int) {
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
+        val query = FocusSwitchRequestQuery()
+        query.namespace = "FocusSwitch"
+        query.userId = id
+        query.open = open
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this, progressDialog) {
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+//                onRefresh()
+                if(position >= 0 && position < datas.size){
+                    if(open == 1){
+                        datas[position].isFocus = 2
+                        toast("关注成功")
+                    } else {
+                        toast("已取消关注")
+                        datas[position].isFocus = 1
+                    }
+                    adapter.notifyItemChanged(position+2)
+                }
+                EventBus.getDefault().post(RefreshMicrobolgEvent())
+
+            }
+        })
+    }
     private fun requestUserList(){
         val listQuery = ListRequestQuery("UserList")
         listQuery.action = AIIAction.valueOf(type)
@@ -100,6 +142,14 @@ class FansListActivity : BaseListKtActivity(){
             datas.clear()
         }
         response.users?.let { datas.addAll(it) }
+        //我的粉丝
+        if(type == 2){
+
+        } else {
+            //我关注的
+            datas.filter { it.isFocus !=2 }.forEach {  it.isFocus = 0 }
+        }
+
 
         adapter.update()
         if(datas.size == 0){

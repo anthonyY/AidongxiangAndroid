@@ -30,7 +30,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        progressDialog = CustomProgressDialog.createDialog(getActivity());
+        progressDialog = new CustomProgressDialog(getActivity());
         setHasOptionsMenu(true);
 
     }
@@ -66,7 +66,7 @@ public abstract class BaseFragment extends Fragment {
             context = App.Companion.getApp().getApplicationContext();
         }
         if (progressDialog == null) {
-            progressDialog = CustomProgressDialog.createDialog(context);
+            progressDialog = new CustomProgressDialog(context);
         }
 
     }

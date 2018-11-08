@@ -68,7 +68,7 @@ abstract class BaseKtActivity : AppCompatActivity() {
             StatusBarUtil.addStatusBarView(titleBar, android.R.color.transparent)
         }
 
-        progressDialog = CustomProgressDialog.createDialog(this)
+        progressDialog = CustomProgressDialog(this)
         progressDialog?.setCancelable(true)
         progressDialog?.setCanceledOnTouchOutside(true)
 

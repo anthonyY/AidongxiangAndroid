@@ -10,6 +10,7 @@ import com.aidongxiang.app.adapter.CommonRecyclerViewAdapter
 import com.aidongxiang.app.adapter.PostAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
+import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ACTION
 import com.aidongxiang.app.base.Constants.ARG_ID
@@ -33,7 +34,6 @@ import com.aiitec.openapi.model.ListRequestQuery
 import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
-import com.aiitec.openapi.utils.LogUtil
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -68,7 +68,6 @@ class PostListFragment : BaseListKtFragment() {
     lateinit var commentDialog: CommentDialog
     var userId : Long = -1
     override fun requestData() {
-        LogUtil.e("type:$type")
         requestMicroblogList()
     }
 
@@ -110,7 +109,7 @@ class PostListFragment : BaseListKtFragment() {
                             val itemDatas = ArrayList<String>()
                             itemDatas.add("屏蔽")
                             itemDatas.add("举报")
-                            if (clickMicroblog!!.isFocus == 2) {
+                            if (clickMicroblog?.isFocus == 2 || clickMicroblog?.isFocus == 4) {
                                 itemDatas.add("取消关注")
                             }/* else {
                                 itemDatas.add("关注")
@@ -209,7 +208,7 @@ class PostListFragment : BaseListKtFragment() {
                                 switchToActivity(ReportActivity::class.java, ARG_ID to it.id, ARG_ACTION to 1)
                             }
                             2 -> {
-                                requestFocusSubmit(it.user!!.id, it.isFocus, clickPosition)
+                                requestFocusSubmit(it.user!!.id, 2, clickPosition)
                             }
                         }
                     }
@@ -312,18 +311,33 @@ class PostListFragment : BaseListKtFragment() {
         App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
-//                onRefresh()
-                if(position >= 0 && position < datas.size){
-                    if(open == 1){
-                        datas[position].isFocus = 2
-                        toast("关注成功")
-                    } else {
-                        toast("已取消关注")
-                        datas[position].isFocus = 1
+                if(open == 1){
+                    toast("关注成功")
+                } else {
+                    toast("已取消关注")
+                    if(type == 1){
+                        //关注页面，应该把取消关注的人的数据清空
+                        datas.filter { it.user!!.id == id }.forEach { datas.remove(it) }
                     }
-                    adapter.notifyItemChanged(position + 1)
                 }
-
+                for(i in 0 until datas.size){
+                    if(open == 1){
+                        if(datas[i].isFocus < 2){
+                            datas[i].isFocus = 2
+                        } else {
+                            datas[i].isFocus = 4
+                        }
+                    } else {
+                        if(datas[i].isFocus ==4){
+                            datas[i].isFocus = 3
+                        } else {
+                            datas[i].isFocus = 1
+                        }
+                    }
+                }
+                adapter.update()
+                (parentFragment as SquareFragment).updateOtherFragment()
+                (activity as BaseKtActivity).requestUserDetails(false)
             }
         })
     }

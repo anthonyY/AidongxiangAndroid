@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="@dimen/margin_screen_left"
+    android:background="@drawable/item_selector">
+    <TextView
+        android:id="@+id/tv_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="的粉丝实打实地方"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingRight="@dimen/margin_screen_left"
+        android:textColor="@color/black3"
+        android:textSize="16sp"/>
+    <TextView
+        android:id="@+id/tv_item_snippet"
+        app:layout_constraintTop_toBottomOf="@+id/tv_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/gray7"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingRight="@dimen/margin_screen_left"
+        android:text="大放送大放送"
+        android:layout_marginTop="4dp"
+        android:textSize="14sp"/>
+    <View style="@style/line"
+        android:layout_marginTop="@dimen/margin_screen_left"
+        app:layout_constraintTop_toBottomOf="@+id/tv_item_snippet"/>
+</android.support.constraint.ConstraintLayout>

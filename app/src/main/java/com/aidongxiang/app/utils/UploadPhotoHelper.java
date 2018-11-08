@@ -24,6 +24,7 @@ import com.aiitec.openapi.net.AIIResponse;
 import com.aiitec.openapi.utils.AiiUtil;
 import com.aiitec.openapi.utils.LogUtil;
 import com.aiitec.openapi.utils.ToastUtil;
+import com.zhy.base.fileprovider.FileProvider7;
 
 import java.io.File;
 import java.io.IOException;
@@ -170,10 +171,11 @@ public class UploadPhotoHelper {
             if (resultCode == Activity.RESULT_OK) {
                 if (!TextUtils.isEmpty(filePath)) {
                     File temp = new File(filePath);
+                    Uri fileUri = FileProvider7.getUriForFile(context, temp);
                     if (cutEnable) {
-                        startPhotoZoom(Uri.fromFile(temp));
+                        startPhotoZoom(fileUri);
                     } else {
-                        setPicToView(Uri.fromFile(temp));
+                        setPicToView(fileUri);
                     }
                 }
             }
@@ -230,8 +232,8 @@ public class UploadPhotoHelper {
                 file.mkdir();
             }
             filePath = path + (new Date().getTime()) + ".jpg";
-            intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                    Uri.fromFile(new File(filePath)));
+            Uri fileUri = FileProvider7.getUriForFile(context, new File(filePath));
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
             context.startActivityForResult(intent, CAMERA);
         }
 

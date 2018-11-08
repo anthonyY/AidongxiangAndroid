@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_title_bar"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_screen_left"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingRight="8dp">
+        <EditText
+            android:id="@+id/et_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingBottom="6dp"
+            android:paddingTop="6dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:imeOptions="actionSearch"
+            android:textSize="14sp"
+            android:textColor="@color/black3"
+            android:singleLine="true"
+            android:drawableLeft="@drawable/common_icon_search"
+            android:background="@drawable/shape_search_bg"/>
+        <Button
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="56dp"
+            android:text="搜索"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/btn_transparent_selector"/>
+    </LinearLayout>
+    <View style="@style/line"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.jcodecraeer.xrecyclerview.XRecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        <include layout="@layout/layout_empty"/>
+    </RelativeLayout>
+</LinearLayout>

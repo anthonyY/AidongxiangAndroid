@@ -45,6 +45,9 @@ abstract class BaseListKtFragment : BaseKtFragment() , XRecyclerView.LoadingList
     protected fun checkIsEmpty() {
         if (tv_empty_nodata != null && getDatas() != null && getDatas()!!.isEmpty()) {
             recyclerView?.emptyView = tv_empty_nodata
+            tv_empty_nodata?.visibility = View.VISIBLE
+        } else {
+            tv_empty_nodata?.visibility = View.GONE
         }
         tv_empty_nodata?.setText(R.string.no_data)
     }
@@ -58,6 +61,9 @@ abstract class BaseListKtFragment : BaseKtFragment() , XRecyclerView.LoadingList
         if (getDatas()?.size === 0 && ll_no_net != null) {
             tv_empty_nodata?.visibility = View.GONE
             recyclerView?.emptyView = ll_no_net
+            ll_no_net?.visibility = View.VISIBLE
+        } else {
+            ll_no_net?.visibility = View.GONE
         }
     }
 

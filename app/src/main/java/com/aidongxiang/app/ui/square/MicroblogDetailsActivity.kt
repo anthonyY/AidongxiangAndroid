@@ -124,7 +124,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
                                 switchToActivity(ReportActivity::class.java, Constants.ARG_ID to it.id, ARG_ACTION to 1)
                             }
                             2 -> {
-                                requestFocusSubmit(it.user!!.id, it.isFocus)
+                                requestFocusSubmit(it.user!!.id, 2)
                             }
                         }
                     }
@@ -160,9 +160,8 @@ class MicroblogDetailsActivity : BaseKtActivity() {
     }
 
     private fun setListener() {
-
-        rlCommentTab.setOnClickListener { selectFragmentIndex(0) }
-        rlForwardTab.setOnClickListener { selectFragmentIndex(1) }
+        rlForwardTab.setOnClickListener { selectFragmentIndex(0) }
+        rlCommentTab.setOnClickListener { selectFragmentIndex(1) }
         rlAppraiseTab.setOnClickListener { selectFragmentIndex(2) }
         left_icon.setOnClickListener{ finish() }
         viewpager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -173,6 +172,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
             }
         })
         rlCommentTab.isSelected = true
+        selectFragmentIndex(1)
 //        val height = llTitleBar2.measuredHeight
         mAppBarLayout.addOnOffsetChangedListener(object : AppBarStateChangeListener() {
             override fun onStateChanged(appBarLayout: AppBarLayout, state: AppBarStateChangeListener.State) {
@@ -215,7 +215,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
                 val itemDatas = ArrayList<String>()
                 itemDatas.add("屏蔽")
                 itemDatas.add("举报")
-                if (microblog?.isFocus == 2) {
+                if (microblog?.isFocus == 2 || microblog?.isFocus == 4) {
                     itemDatas.add("取消关注")
                 }
                 itemDialog.setItems(itemDatas)
@@ -301,13 +301,13 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         viewpager.currentItem = index
         when(index){
             0->{
-                rlCommentTab.isSelected = true
-                rlForwardTab.isSelected = false
+                rlForwardTab.isSelected = true
+                rlCommentTab.isSelected = false
                 rlAppraiseTab.isSelected = false
             }
             1->{
-                rlCommentTab.isSelected = false
-                rlForwardTab.isSelected = true
+                rlForwardTab.isSelected = false
+                rlCommentTab.isSelected = true
                 rlAppraiseTab.isSelected = false
             }
             2->{
@@ -322,7 +322,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
 
         val item = microblog ?: return
 
-        if(item.isFocus == 2){
+        if(item.isFocus == 2 || item.isFocus == 4){
             tvItemAttention.visibility = View.GONE
         } else if(Constants.user?.id == item.user?.id){
             tvItemAttention.visibility = View.GONE
@@ -517,10 +517,20 @@ class MicroblogDetailsActivity : BaseKtActivity() {
                 super.onSuccess(response, index)
                 microblog?.let {
                     if(open == 1){
-                        it.isFocus = 2
+                        if(it.isFocus < 2){
+                            it.isFocus = 2
+                        } else {
+                            it.isFocus = 4
+                        }
+
                         tvItemAttention.visibility = View.GONE
                     } else {
-                        it.isFocus = 1
+                        if(it.isFocus == 4){
+                            it.isFocus = 3
+                        } else {
+                            it.isFocus = 1
+                        }
+
                         if(Constants.user?.id == it.user?.id){
                             tvItemAttention.visibility = View.GONE
                         } else {

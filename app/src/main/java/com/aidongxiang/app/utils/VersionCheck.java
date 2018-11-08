@@ -5,8 +5,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,7 +20,6 @@ import android.text.TextUtils;
 import android.widget.RemoteViews;
 
 import com.aidongxiang.app.R;
-import com.aidongxiang.app.ui.Main2Activity;
 import com.aidongxiang.business.model.Result;
 import com.aidongxiang.business.response.VersionCheckResponse;
 import com.aiitec.openapi.net.AIIRequest;
@@ -31,6 +30,7 @@ import com.aiitec.openapi.utils.DateUtil;
 import com.aiitec.openapi.utils.LogUtil;
 import com.aiitec.openapi.utils.PacketUtil;
 import com.aiitec.openapi.utils.ToastUtil;
+import com.zhy.base.fileprovider.FileProvider7;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,6 +43,8 @@ public class VersionCheck {
 	private Handler handler = new Handler();
 	private onNewVersionListener onNewVersionListener;
 	private long totalBytes = 0;
+	public static final String notification_id = "chxgo_notification_id";
+	public static final String notification_channel = "chxgo_notification_channel_version_update";
 
 	public void setOnNewVersionListener(VersionCheck.onNewVersionListener onNewVersionListener) {
 		this.onNewVersionListener = onNewVersionListener;
@@ -299,7 +301,7 @@ public class VersionCheck {
 
 			@Override
 			public void update(long totalBytes, long currnet, int progress) {
-				createDownloadNotification(totalBytes, currnet, progress);
+				createDownloadNotification(totalBytes, currnet);
 			}
 
 			@Override
@@ -313,8 +315,32 @@ public class VersionCheck {
 				intent.setAction(Intent.ACTION_VIEW);
 				// 获得下载好的文件类型
 				String type = "application/vnd.android.package-archive";
-				intent.setDataAndType(Uri.fromFile(file), type);
-				((Activity) context).startActivity(intent);
+				if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
+
+					intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//添加这一句表示对目标应用临时授权该Uri所代表的文件
+					FileProvider7.setIntentDataAndType(context, intent, type, file, true);
+
+//					Uri apkUri = FileProvider.getUriForFile(context, context.getPackageName()+".fileprovider", file);//在AndroidManifest中的android:authorities值
+//					intent.setDataAndType(apkUri, type);
+				} else {
+					intent.setDataAndType(Uri.fromFile(file), type);
+				}
+
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){
+					boolean installAllowed = context.getPackageManager().canRequestPackageInstalls();
+					boolean hasPermission = PermissionsUtils.checkSelfPermission(context, android.Manifest.permission.REQUEST_INSTALL_PACKAGES );
+					try {
+						context.startActivity(intent);
+					} catch (Exception e){
+						e.printStackTrace();
+					}
+				} else {
+					try {
+						context.startActivity(intent);
+					} catch (Exception e){
+						e.printStackTrace();
+					}
+				}
 				if (progressDialog.isShowing()) {
 					progressDialog.dismiss();
 				}
@@ -336,57 +362,65 @@ public class VersionCheck {
 
 	/**
 	 * 创建下载进度的通知
-	 * 
-	 * @param current
-	 *            当前下载进度
-	 * @param total
-	 *            总大小
+	 *
+	 * @param current 当前下载进度
+	 * @param total   总大小
 	 */
 	@SuppressLint("NewApi")
-	private void createDownloadNotification(long total, long current, int progress) {
+	private void createDownloadNotification(long current, long total) {
+		if (total == 0) {
+			return;
+		}
 
-		if (nm == null)
-			nm = (NotificationManager) context
-					.getSystemService(Context.NOTIFICATION_SERVICE);
+
+		if (nm == null) {
+			nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		}
 
 		RemoteViews contentView = new RemoteViews(context.getPackageName(),
 				R.layout.notification_version);
-		contentView.setTextViewText(R.id.n_title, "当前进度：" + progress + "% ");
-		contentView.setProgressBar(R.id.n_progress, 100, 0, false);
-
+		int count = (int) (current * 100 / total);
+		if(progressDialog != null){
+			progressDialog.setTitle(""+count+"%");
+		}
+		contentView.setTextViewText(R.id.n_title, "当前进度：" + count + "% ");
+        contentView.setProgressBar(R.id.n_progress, 100, count, false);
+//		contentView.setImageViewResource(R.id.iv_icon, R.mipmap.ic_launcher);
 
 		Notification notify;
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+		if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+			NotificationChannel channel = new NotificationChannel(notification_id, notification_channel, NotificationManager.IMPORTANCE_HIGH);
 
-			Intent notificationIntent1 = new Intent(context, Main2Activity.class);
-			notificationIntent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-			// addflag设置跳转类型
-			PendingIntent contentIntent1 = PendingIntent.getActivity(context,
-					0, notificationIntent1, 0);
-			notify = new Notification();
-			notify.when = System.currentTimeMillis();
-			notify.number = 1;
-			notify.contentView = contentView;
-			notify.flags |= Notification.FLAG_NO_CLEAR; // FLAG_AUTO_CANCEL表明当通知被用户点击时，通知将被清除。
-			notify.sound = null;
-			notify.vibrate = null;
-			notify.contentIntent = contentIntent1;
+			// 设置通知出现时不震动
+			channel.enableVibration(false);
+			channel.setVibrationPattern(new long[]{0});
+
+			nm.createNotificationChannel(channel);
+			notify = new Notification.Builder(context, notification_id)
+					.setCustomContentView(contentView)
+					.setWhen(System.currentTimeMillis())
+//                    .setContentTitle(title)
+//                    .setContentText(content)
+					.setSmallIcon(R.mipmap.ic_launcher)
+					.setAutoCancel(false).build();
 
 		} else {
-
 			Notification.Builder builder = new Notification.Builder(context)
 					.setContent(contentView)
-					.setWhen(System.currentTimeMillis())// 设置时间发生时间
-					.setAutoCancel(false)// 设置可以清除
+					.setWhen(System.currentTimeMillis())
+					.setAutoCancel(false)
 					.setSmallIcon(R.mipmap.ic_launcher);
 
 			notify = builder.build();
 		}
-		notify.contentView.setProgressBar(R.id.n_progress, 100, progress, false);
+
+
+		notify.contentView.setProgressBar(R.id.n_progress, 100, count, false);
 		nm.notify(downloadId, notify);// 显示通知
 
 		if (current >= total) {
 			nm.cancel(downloadId);
 		}
 	}
+
 }

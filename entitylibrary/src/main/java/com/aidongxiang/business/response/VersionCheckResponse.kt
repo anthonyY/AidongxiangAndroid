@@ -1,7 +1,6 @@
 package com.aidongxiang.business.response
 
 import com.aidongxiang.business.model.Result
-import com.aiitec.openapi.packet.Response
 import java.util.*
 
 /**
@@ -10,7 +9,7 @@ import java.util.*
  * createTime 2017/11/19.
  * @version 1.0
  */
-class VersionCheckResponse : Response (){
+class VersionCheckResponse{
 
     var results: ArrayList<Result> ?= null
 }

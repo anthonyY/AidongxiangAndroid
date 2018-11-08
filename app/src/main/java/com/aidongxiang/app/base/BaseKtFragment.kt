@@ -38,7 +38,7 @@ abstract class BaseKtFragment : Fragment() {
     var tv_title: TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        progressDialog = CustomProgressDialog.createDialog(activity)
+        progressDialog = CustomProgressDialog(activity)
         setHasOptionsMenu(true)
         aiiRequest = AIIRequest(activity, Api.API)
     }
@@ -85,7 +85,7 @@ abstract class BaseKtFragment : Fragment() {
             context = App.context
         }
         if (progressDialog == null) {
-            progressDialog = CustomProgressDialog.createDialog(context!!)
+            progressDialog = CustomProgressDialog(context!!)
         }
 
     }

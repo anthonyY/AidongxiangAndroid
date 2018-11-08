@@ -81,4 +81,17 @@ class SquareFragment : BaseKtFragment() {
         }
     }
 
+    /**
+     * 更新另外一个Fragment
+     */
+    fun updateOtherFragment() {
+        if(viewpager.currentItem == 1){
+            (mPagerAdapter?.getItem(0) as PostListFragment).onRefresh()
+        } else {
+            if(mPagerAdapter!!.count > 1){
+                (mPagerAdapter?.getItem(1) as PostListFragment).onRefresh()
+            }
+        }
+    }
+
 }

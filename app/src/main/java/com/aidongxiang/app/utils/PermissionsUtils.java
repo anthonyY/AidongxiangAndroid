@@ -1,6 +1,7 @@
 package com.aidongxiang.app.utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -44,7 +45,12 @@ public class PermissionsUtils {
     }
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        if(grantResults == null || grantResults.length == 0){
+            if(onPermissionsListener != null){
+                onPermissionsListener.onPermissionsSuccess(requestCode);
+            }
+        }
+        else if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
         {
             if(onPermissionsListener != null){
                 onPermissionsListener.onPermissionsSuccess(requestCode);
@@ -57,6 +63,10 @@ public class PermissionsUtils {
                 onPermissionsListener.onPermissionsFailure(requestCode);
             }
         }
+    }
+
+    public static boolean checkSelfPermission(Context context,String permission){
+        return (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED);
     }
 
     private OnPermissionsListener onPermissionsListener;

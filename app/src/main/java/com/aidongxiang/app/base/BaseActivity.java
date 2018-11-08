@@ -41,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         ContentViewUtils.inject(this);
         //绑定activity
         StatusBarUtil.addCustomStatusBar(this);
-        progressDialog = CustomProgressDialog.createDialog(this);
+        progressDialog = new CustomProgressDialog(this);
         progressDialog.setCancelable(true);
         progressDialog.setCanceledOnTouchOutside(true);
 

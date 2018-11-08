@@ -66,6 +66,7 @@ class PublishPostActivity : BaseKtActivity() {
         val REQUEST_RECORD_VIDEO = 2
         val REQUEST_SELECT_VIDEO = 3
         val REQUEST_RECORD_VIDEO_BY_SYSTEM = 4
+        val REQUEST_ADDRESS = 5
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -99,6 +100,7 @@ class PublishPostActivity : BaseKtActivity() {
             longitude = it.longitude
             tv_publish_address.text = address
         }
+        tv_publish_address.setOnClickListener { switchToActivityForResult(AddressSelectActivity::class.java, REQUEST_ADDRESS) }
     }
 
     private fun initDialog() {
@@ -410,6 +412,9 @@ class PublishPostActivity : BaseKtActivity() {
                 cursor.close()
             }
 
+        } else if(requestCode == REQUEST_ADDRESS && resultCode == Activity.RESULT_OK){
+            address = data?.getStringExtra("address")
+            tv_publish_address.text = address
         }
     }
 

@@ -227,6 +227,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:background="@color/colorPrimaryDark"
                 android:visibility="gone">
 
             </LinearLayout>
@@ -236,6 +237,47 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white">
 
+
+                <LinearLayout
+                    android:id="@+id/rlForwardTab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:minWidth="60dp"
+                    android:background="@drawable/item_selector"
+                    android:clickable="true"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tv_forward_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="转发"
+                            android:textColor="@color/gray7"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/tv_forward_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/gray7"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="3dp"
+                        android:background="@drawable/transparent_purple_selector" />
+                </LinearLayout>
                 <LinearLayout
                     android:id="@+id/rlCommentTab"
                     android:layout_width="wrap_content"
@@ -277,47 +319,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="3dp"
                         android:layout_alignParentBottom="true"
-                        android:background="@drawable/transparent_purple_selector" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/rlForwardTab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:minWidth="60dp"
-                    android:background="@drawable/item_selector"
-                    android:clickable="true"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:orientation="vertical"
-                    android:gravity="center">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center">
-                        <TextView
-                            android:id="@+id/tv_forward_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="转发"
-                            android:textColor="@color/gray7"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/tv_forward_num"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textColor="@color/gray7"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="3dp"
                         android:background="@drawable/transparent_purple_selector" />
                 </LinearLayout>
 

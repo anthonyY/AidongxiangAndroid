@@ -12,5 +12,4 @@ class Result {
     var description: String? = null
     var trackViewUrl: String? = null
     var forcedUpdate = -1
-    var type: Int = 0
 }

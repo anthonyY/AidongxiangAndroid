@@ -30,12 +30,10 @@ import com.aidongxiang.business.model.Navigation
 import com.aidongxiang.business.model.Video
 import com.aidongxiang.business.model.Where
 import com.aidongxiang.business.request.AdListRquestQuery
-import com.aidongxiang.business.response.AdListResponseQuery
-import com.aidongxiang.business.response.ArticleListResponseQuery
-import com.aidongxiang.business.response.NavigationListListResponseQuery
-import com.aidongxiang.business.response.VideoListResponseQuery
+import com.aidongxiang.business.response.*
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
+import com.aiitec.openapi.model.RequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.AiiUtil
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -161,7 +159,6 @@ class HomeFragment : BaseKtFragment() {
             }
         }
 
-//        setDatas()
         refresh()
     }
 
@@ -171,6 +168,7 @@ class HomeFragment : BaseKtFragment() {
         requestVideoList()
         requestArticleList()
         requestNavigationList()
+        requestSetting()
     }
     private fun onLoadFinish() {
         loadState++
@@ -195,44 +193,6 @@ class HomeFragment : BaseKtFragment() {
         recyclerView.layoutManager = layoutManager
     }
 
-//    /**
-//     * 设置数据
-//     */
-//    private fun setDatas() {
-//        val ads = ArrayList<Ad>()
-//        for (i in 0..4) {
-//            val ad = Ad()
-//            ad.name = "广告"
-//            ad.link = "http://www.baidu.com"
-//            ad.imagePath = imgs[random.nextInt(imgs.size)]
-//            if (i < 3) {
-//                val video = Video()
-//                video.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-//                video.audioLength = "12:10"
-//                video.name = "精彩斗牛啦啦啦啦"
-//                video.timestamp = "07-12"
-//                video.playNum = 321
-//                videoDatas.add(video)
-//                audioDatas.add(video)
-//            }
-//            val article = Article()
-//            article.timestamp = "2018-0$i-1${i + 2} 12:15:34"
-//            article.title = "农耕部落初见成效"
-//            article.abstract = "农耕部落初见成效农耕部落初见成效农耕部落初见成效"
-//            article.id = i
-//            article.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-//            newsDatas.add(article)
-//            ads.add(ad)
-//            if (i < 4) {
-//                categoryDatas.add(imgs[random.nextInt(imgs.size)])
-//            }
-//
-//        }
-//        ad_home.startAD(ads.size, 3, true, ads, 0.544f)
-//        homeNewsAdapter.update()
-//        homeVideoAdapter.update()
-//        homeAudioAdapter.update()
-//    }
 
     private fun requestAdList() {
         val query = AdListRquestQuery()
@@ -405,5 +365,17 @@ class HomeFragment : BaseKtFragment() {
         videoDatas.clear()
         response.audios?.let { videoDatas.addAll(it) }
         homeVideoAdapter.update()
+    }
+
+
+    private fun requestSetting(){
+        val query = RequestQuery("Setting")
+        App.aiiRequest.send(query, object : AIIResponse<SettingResponseQuery>(activity, false){
+
+            override fun onSuccess(response: SettingResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                Constants.poster = response?.poster
+            }
+        })
     }
 }

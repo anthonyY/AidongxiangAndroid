@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.Api
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.ui.audio.AudioFragment
@@ -17,6 +18,8 @@ import com.aidongxiang.app.ui.square.SquareFragment
 import com.aidongxiang.app.ui.video.VideoFragment
 import com.aidongxiang.app.utils.BottomNavigationViewHelper
 import com.aidongxiang.app.utils.LocationUtils
+import com.aidongxiang.app.utils.PermissionsUtils
+import com.aidongxiang.app.utils.VersionCheck
 import kotlinx.android.synthetic.main.activity_main2.*
 
 /**
@@ -34,7 +37,7 @@ class Main2Activity : BaseKtActivity() {
     private val videoFragment = VideoFragment()
     private val audioFragment = AudioFragment()
     private val squareFragment = SquareFragment()
-
+    lateinit var permissionUtils : PermissionsUtils
     override fun init(savedInstanceState: Bundle?) {
 
         BottomNavigationViewHelper.disableShiftMode(navigation)
@@ -43,8 +46,19 @@ class Main2Activity : BaseKtActivity() {
         lastItemId = R.id.navigation_square
         switchFragment(homeFragment)
 
-        LocationUtils.startLocation()
-//        VersionCheck(this).startCheck(Api.VERSION_URL, false)
+        permissionUtils = PermissionsUtils(this)
+        permissionUtils.setOnPermissionsListener(object : PermissionsUtils.OnPermissionsListener{
+            override fun onPermissionsSuccess(requestCode: Int) {
+                LocationUtils.startLocation()
+
+            }
+
+            override fun onPermissionsFailure(requestCode: Int) {
+            }
+
+        })
+        permissionUtils.requestPermissions(1, android.Manifest.permission.ACCESS_FINE_LOCATION)
+        VersionCheck(this).startCheck(Api.VERSION_URL, false)
     }
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
@@ -120,5 +134,10 @@ class Main2Activity : BaseKtActivity() {
             3-> navigation.selectedItemId = R.id.navigation_audio
             4-> navigation.selectedItemId = R.id.navigation_mine
         }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionUtils.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }

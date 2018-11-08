@@ -45,7 +45,7 @@ class WelcomeActivity : BaseKtActivity() {
 
     private fun requestSetting(){
         val query = RequestQuery("Setting")
-        App.aiiRequest.send(query, object : AIIResponse<SettingResponseQuery>(this, false){
+        App.aiiRequest.send(query, object : AIIResponse<SettingResponseQuery>(applicationContext, false){
 
             override fun onSuccess(response: SettingResponseQuery?, index: Int) {
                 super.onSuccess(response, index)

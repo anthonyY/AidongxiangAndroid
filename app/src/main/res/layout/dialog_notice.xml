@@ -21,7 +21,9 @@
         android:fadingEdge="none"
         android:overScrollMode="never"
         android:paddingBottom="20dp">
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/tv_dialog_content"
                 android:layout_width="wrap_content"
@@ -31,6 +33,8 @@
                 android:clickable="true"
                 android:layout_marginTop="8dp"
                 />
+        </LinearLayout>
+
 
     </ScrollView>
 

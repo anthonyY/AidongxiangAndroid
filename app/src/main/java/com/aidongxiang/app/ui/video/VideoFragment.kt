@@ -1,7 +1,6 @@
 package com.aidongxiang.app.ui.video
 
-import android.os.Handler
-import android.support.design.widget.CollapsingToolbarLayout
+import android.support.design.widget.AppBarLayout
 import android.support.design.widget.TabLayout
 import android.text.TextUtils
 import android.view.Menu
@@ -15,7 +14,9 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtFragment
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_TITLE
+import com.aidongxiang.app.base.Constants.ARG_TYPE
 import com.aidongxiang.app.base.Constants.ARG_URL
+import com.aidongxiang.app.interfaces.AppBarStateChangeListener
 import com.aidongxiang.app.ui.home.CommonWebViewActivity
 import com.aidongxiang.app.ui.mine.MyDownloadActivity
 import com.aidongxiang.app.utils.StatusBarUtil
@@ -26,8 +27,8 @@ import com.aidongxiang.business.response.CategoryListResponseQuery
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
 import com.aiitec.openapi.net.AIIResponse
+import com.aiitec.openapi.utils.LogUtil
 import kotlinx.android.synthetic.main.fragment_video_tablelayout.*
-import kotlinx.android.synthetic.main.layout_title_bar_home.*
 
 /**
  * 主页 - 视频
@@ -40,8 +41,9 @@ class VideoFragment : BaseKtFragment() {
     var mPagerAdapter : SimpleFragmentPagerAdapter?= null
 
     override fun init(view: View) {
-        setToolBar(toolbar)
+//        setToolBar(toolbar)
         setTitle("视频")
+        StatusBarUtil.addStatusBarView(ll_statusBar2, android.R.color.transparent)
         StatusBarUtil.addStatusBarView(titlebar, android.R.color.transparent)
         mPagerAdapter = SimpleFragmentPagerAdapter(childFragmentManager, activity)
         viewpager_video.offscreenPageLimit = 5
@@ -53,22 +55,41 @@ class VideoFragment : BaseKtFragment() {
             tablayout.tabMode = TabLayout.MODE_FIXED
         }
         ibtn_nav_menu.setOnClickListener { switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 0) }
-//        ibtn_title_search.setOnClickListener { switchToActivity(SearchActivity::class.java, ARG_TYPE to SearchActivity.TYPE_VIDEO) }
+        ibtn_title_search.setOnClickListener { switchToActivity(SearchActivity::class.java, ARG_TYPE to SearchActivity.TYPE_VIDEO) }
 
         ad_video.setOnItemClickListener {
             if(!TextUtils.isEmpty(it.link)){
                 switchToActivity(CommonWebViewActivity::class.java, ARG_TITLE to it.name, ARG_URL to it.link)
             }
         }
+        mAppBarLayout.addOnOffsetChangedListener(object : AppBarStateChangeListener() {
+            override fun onStateChanged(appBarLayout: AppBarLayout, state: AppBarStateChangeListener.State) {
+//                LogUtil.d("STATE", state.name)
+                when (state) {
+                    AppBarStateChangeListener.State.EXPANDED -> {
+                        ll_statusBar2.visibility = View.GONE
+                        LogUtil.e("展开状态")
+                    }
+
+                    AppBarStateChangeListener.State.COLLAPSED ->{
+                        ll_statusBar2.visibility = View.VISIBLE
+                        LogUtil.e("折叠状态")
+                    } //折叠状态
+
+                    else -> //中间状态
+                        ll_statusBar2.visibility = View.GONE
+                }
+            }
+        })
         requestCategoryList()
         requestAdList()
 
-        Handler().postDelayed({
-            val titleBarHeight = titlebar.measuredHeight
-            val params = CollapsingToolbarLayout.LayoutParams(CollapsingToolbarLayout.LayoutParams.MATCH_PARENT, CollapsingToolbarLayout.LayoutParams.WRAP_CONTENT)
-            params.topMargin = titleBarHeight
-            ad_video.layoutParams = params
-        }, 100)
+//        Handler().postDelayed({
+//            val titleBarHeight = titlebar.measuredHeight
+//            val params = CollapsingToolbarLayout.LayoutParams(CollapsingToolbarLayout.LayoutParams.MATCH_PARENT, CollapsingToolbarLayout.LayoutParams.WRAP_CONTENT)
+//            params.topMargin = titleBarHeight
+//            ad_video.layoutParams = params
+//        }, 100)
     }
 
 

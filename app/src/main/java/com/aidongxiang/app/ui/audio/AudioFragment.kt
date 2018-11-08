@@ -1,7 +1,5 @@
 package com.aidongxiang.app.ui.audio
 
-import android.os.Handler
-import android.support.design.widget.CollapsingToolbarLayout
 import android.support.design.widget.TabLayout
 import android.text.TextUtils
 import android.view.Menu
@@ -28,7 +26,6 @@ import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import kotlinx.android.synthetic.main.fragment_video_tablelayout.*
-import kotlinx.android.synthetic.main.layout_title_bar_home.*
 
 /**
  * 主页 - 音频
@@ -41,7 +38,7 @@ class AudioFragment : BaseKtFragment() {
     var mPagerAdapter : SimpleFragmentPagerAdapter?= null
 
     override fun init(view: View) {
-        setToolBar(toolbar)
+//        setToolBar(toolbar)
         setTitle("音频")
         StatusBarUtil.addStatusBarView(titlebar, android.R.color.transparent)
         mPagerAdapter = SimpleFragmentPagerAdapter(childFragmentManager, activity)
@@ -54,7 +51,7 @@ class AudioFragment : BaseKtFragment() {
             tablayout.tabMode = TabLayout.MODE_FIXED
         }
         ibtn_nav_menu.setOnClickListener { switchToActivity(MyDownloadActivity::class.java, MyDownloadActivity.ARG_POSITION to 1) }
-//        ibtn_title_search.setOnClickListener { switchToActivity(SearchActivity::class.java, Constants.ARG_TYPE to SearchActivity.TYPE_AUDIO) }
+        ibtn_title_search.setOnClickListener { switchToActivity(SearchActivity::class.java, Constants.ARG_TYPE to SearchActivity.TYPE_AUDIO) }
         ad_video.setOnItemClickListener {
             if(!TextUtils.isEmpty(it.link)){
                 switchToActivity(CommonWebViewActivity::class.java, ARG_TITLE to it.name, ARG_URL to it.link)
@@ -63,12 +60,12 @@ class AudioFragment : BaseKtFragment() {
         requestAdList()
         requestCategoryList()
 
-        Handler().postDelayed({
-            val titleBarHeight = titlebar.measuredHeight
-            val params = CollapsingToolbarLayout.LayoutParams(CollapsingToolbarLayout.LayoutParams.MATCH_PARENT, CollapsingToolbarLayout.LayoutParams.WRAP_CONTENT)
-            params.topMargin = titleBarHeight
-            ad_video.layoutParams = params
-        }, 100)
+//        Handler().postDelayed({
+//            val titleBarHeight = titlebar.measuredHeight
+//            val params = CollapsingToolbarLayout.LayoutParams(CollapsingToolbarLayout.LayoutParams.MATCH_PARENT, CollapsingToolbarLayout.LayoutParams.WRAP_CONTENT)
+//            params.topMargin = titleBarHeight
+//            ad_video.layoutParams = params
+//        }, 100)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -123,7 +120,7 @@ class AudioFragment : BaseKtFragment() {
     }
 
 
-    fun requestAdList(){
+    private fun requestAdList(){
         val query = AdListRquestQuery()
         query.action = AIIAction.THREE
         query.positionId = 3

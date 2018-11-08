@@ -82,6 +82,7 @@ public class ProgressResponseBody extends ResponseBody {
             }
         };
     }
+    long lastTime = 0;
     private Handler handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
 
 		@Override
@@ -96,9 +97,14 @@ public class ProgressResponseBody extends ResponseBody {
                     if(total > 0){
                         progress = (int) (current*100/total);
                     }
-                    if (progressListener != null) {
-                        progressListener.update(total, current, progress);
+                    long now = System.currentTimeMillis();
+                    if(now - lastTime > 500) {
+                        if (progressListener != null) {
+                            progressListener.update(total, current, progress);
+                        }
+                        lastTime = now;
                     }
+
                 }
 
 

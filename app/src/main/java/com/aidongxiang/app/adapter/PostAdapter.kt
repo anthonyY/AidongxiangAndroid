@@ -68,7 +68,7 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
         val ivVideoThumb = h.getView<ImageView>(R.id.ivVideoThumb)
         val ivVideoThumbChild = h.getView<ImageView>(R.id.ivVideoThumbChild)
 
-        if (item.isFocus == 2) {
+        if (item.isFocus == 2 || item.isFocus == 4) {
             tvItemFocus.visibility = View.GONE
         } else {
             if (Constants.user != null && Constants.user!!.id == item.user!!.id) {

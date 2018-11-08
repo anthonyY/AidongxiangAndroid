@@ -27,12 +27,16 @@ class FansAdapter(context: Context, datas: MutableList<Fans>) : CommonRecyclerVi
         tvSignature.text = item.description
         when {
             item.isFocus == 1 -> {
+                //未关注
                 tvStatus.text = "关注"
                 tvStatus.isSelected = true
                 tvStatus.visibility = View.VISIBLE
             }
+            //已关注，但是对方未关注我
             item.isFocus == -1 -> tvStatus.visibility = View.GONE
+            item.isFocus == 0 -> tvStatus.visibility = View.GONE
             else -> {
+                //已互相关注
                 tvStatus.text = "互相关注"
                 tvStatus.isSelected = false
                 tvStatus.visibility = View.VISIBLE
