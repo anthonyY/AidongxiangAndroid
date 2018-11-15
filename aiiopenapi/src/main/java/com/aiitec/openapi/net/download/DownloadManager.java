@@ -175,7 +175,9 @@ public class DownloadManager {
             lastSize = current;
             lastNotifyTime = currentTime;
             download.setBreakPoint(current);
-            LogUtil.e("下载中"+download.getTitle()+"  "+progress+"%");
+            download.setTotalBytes(total);
+            download.setPercentage(progress);
+            LogUtil.e("下载中"+download.getTitle()+"  "+progress+"%"+"    current:"+current+" total:"+total);
             if(context != null){
                 Intent intent = new Intent(ACTION_DOWNLOAD_UPDATE);
                 intent.putExtra(ARG_DOWNLOAD_ID, download.getId());

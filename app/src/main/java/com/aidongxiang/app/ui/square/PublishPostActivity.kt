@@ -39,7 +39,7 @@ import kotlin.collections.ArrayList
 
 
 /**
- * 发帖（微博）类
+ * 发帖（侗言）类
  * @author Anthony
  * createTime 2017-11-11
  */

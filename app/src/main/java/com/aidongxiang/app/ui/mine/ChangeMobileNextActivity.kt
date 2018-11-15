@@ -53,9 +53,9 @@ class ChangeMobileNextActivity : BaseKtActivity() {
             unionId = bundle.getString(ARG_UNION_ID)
             partner = bundle.getInt(ARG_PARTNER, -1)
         } else {
-            mobile = Constants.user?.mobile
-            etMobile.setText(mobile)
-            etMobile.isEnabled = false
+//            mobile = Constants.user?.mobile
+//            etMobile.setText(mobile)
+//            etMobile.isEnabled = false
         }
 
         smscodeCountDown = SmscodeCountDown(60*1000, 1000)

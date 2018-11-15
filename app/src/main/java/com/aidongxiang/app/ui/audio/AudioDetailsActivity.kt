@@ -429,10 +429,12 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         if (download == null || !fileExists) {
             val downloadManager = DownloadManager.getInstance(this)
             download = Download()
+            download.timestamp = System.currentTimeMillis()
             download.id = vedio.id
             download.path = vedio.audioPath
             download.imagePath = vedio.imagePath
             download.title = vedio.name
+            download.playLength = vedio.audioLength
             download.type = 1
             downloadManager.download(download)
             toast("开始下载...")
@@ -526,6 +528,6 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         tv_audio_title.text = audio.name
         val imagePath = audio.imagePath
         val content = audio.name
-        shareDialog.setShareData("爱侗乡有好听的音乐哦，快来听听吧！", content, imagePath, "http://www.aidongxiang.com/download/download.html")
+        shareDialog.setShareData("爱侗乡有好听的音乐哦，快来听听吧！", content, imagePath, "http://www.aidongxiang.com/download/download.html?aid="+id)
     }
 }

@@ -2,6 +2,7 @@ package com.aidongxiang.app.ui.login
 
 import android.os.Bundle
 import android.os.Handler
+import android.text.TextUtils
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
@@ -15,6 +16,63 @@ import com.aiitec.openapi.utils.LogUtil
 
 class WelcomeActivity : BaseKtActivity() {
     override fun init(savedInstanceState: Bundle?) {
+        if(intent.data != null){
+            intent.data?.let {
+                val videoId = it.getQueryParameter("vid")
+                val audioId = it.getQueryParameter("aid")
+                val newsId = it.getQueryParameter("nid")
+                val microblogId = it.getQueryParameter("mid")
+                val abstract = it.getQueryParameter("abstract")
+                try {
+                    if (!TextUtils.isEmpty(videoId)) {
+                        val vid = videoId.toLong()
+                        AiiUtil.putLong(this, Constants.ARG_VIDEO_ID, vid)
+                        AiiUtil.putLong(this, Constants.ARG_AUDIO_ID, -1)
+                        AiiUtil.putLong(this, Constants.ARG_NEWS_ID, -1)
+                        AiiUtil.putString(this, Constants.ARG_ABSTRACT, null)
+                        AiiUtil.putLong(this, Constants.ARG_MICROBLOG_ID, -1)
+                    } else if (!TextUtils.isEmpty(audioId)) {
+                        val aid = audioId.toLong()
+                        AiiUtil.putLong(this, Constants.ARG_VIDEO_ID, -1)
+                        AiiUtil.putLong(this, Constants.ARG_AUDIO_ID, aid)
+                        AiiUtil.putLong(this, Constants.ARG_NEWS_ID, -1)
+                        AiiUtil.putString(this, Constants.ARG_ABSTRACT, null)
+                        AiiUtil.putLong(this, Constants.ARG_MICROBLOG_ID, -1)
+                    } else if (!TextUtils.isEmpty(newsId)) {
+                        val nid = newsId.toLong()
+                        AiiUtil.putLong(this, Constants.ARG_NEWS_ID, nid)
+                        AiiUtil.putString(this, Constants.ARG_ABSTRACT, abstract)
+                        AiiUtil.putLong(this, Constants.ARG_VIDEO_ID, -1)
+                        AiiUtil.putLong(this, Constants.ARG_AUDIO_ID, -1)
+                        AiiUtil.putLong(this, Constants.ARG_MICROBLOG_ID, -1)
+                    } else if (!TextUtils.isEmpty(microblogId)) {
+                        val mid = microblogId.toLong()
+                        AiiUtil.putLong(this, Constants.ARG_MICROBLOG_ID, mid)
+                        AiiUtil.putLong(this, Constants.ARG_NEWS_ID, -1)
+                        AiiUtil.putString(this, Constants.ARG_ABSTRACT, abstract)
+                        AiiUtil.putLong(this, Constants.ARG_VIDEO_ID, -1)
+                        AiiUtil.putLong(this, Constants.ARG_AUDIO_ID, -1)
+                    } else {
+                        AiiUtil.putLong(this, Constants.ARG_MICROBLOG_ID, -1)
+                        AiiUtil.putLong(this, Constants.ARG_NEWS_ID, -1)
+                        AiiUtil.putString(this, Constants.ARG_ABSTRACT, null)
+                        AiiUtil.putLong(this, Constants.ARG_VIDEO_ID, -1)
+                        AiiUtil.putLong(this, Constants.ARG_AUDIO_ID, -1)
+                    }
+                } catch (e: NumberFormatException) {
+                    e.printStackTrace()
+                }
+            }
+        } else {
+            AiiUtil.putLong(this, Constants.ARG_VIDEO_ID, -1)
+            AiiUtil.putLong(this, Constants.ARG_AUDIO_ID, -1)
+            AiiUtil.putLong(this, Constants.ARG_NEWS_ID, -1)
+            AiiUtil.putLong(this, Constants.ARG_MICROBLOG_ID, -1)
+        }
+
+
+
+
 
         val isFirstLauncher = AiiUtil.getBoolean(this, Constants.ARG_FIRST_LAUNCHER, true)
         Handler().postDelayed({

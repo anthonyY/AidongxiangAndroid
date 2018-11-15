@@ -6,6 +6,8 @@ import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RequiresApi
 import android.text.TextUtils
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -13,6 +15,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
+import com.aidongxiang.app.base.Api
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtActivity
 import com.aidongxiang.app.base.Constants
@@ -36,6 +39,8 @@ class ArticleDetailsActivity : BaseKtActivity() {
         id = bundle.getLong(Constants.ARG_ID)
         action = bundle.getInt(Constants.ARG_ACTION)
         val title = bundle.getString(Constants.ARG_TITLE)
+        val abstract = bundle.getString(Constants.ARG_ABSTRACT)
+        var imagePath = bundle.getString(Constants.ARG_IMAGE_PATH)
 
         if (!TextUtils.isEmpty( title)) {
             setTitle(title)
@@ -68,27 +73,30 @@ class ArticleDetailsActivity : BaseKtActivity() {
         }
 
         shareDialog = ShareDialog(this)
-        shareDialog.setShareData(title, "了飒飒大是", "", "http://aidongxiang.com")
+        if(!TextUtils.isEmpty(imagePath)){
+            imagePath = Api.IMAGE_URL+imagePath
+        }
+        shareDialog.setShareData(title, abstract, imagePath, "http://www.aidongxiang.com/download/download.html?nid="+id)
 
         requestArticleDetails()
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        if(action != 2 && action != 3){
-//            menuInflater.inflate(R.menu.menu_share, menu)
-//        }
-//
-//        return super.onCreateOptionsMenu(menu)
-//    }
-//
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == R.id.action_share) {
-//            shareDialog.show()
-//            return true
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        if(action != 2 && action != 3){
+            menuInflater.inflate(R.menu.menu_share, menu)
+        }
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_share) {
+            shareDialog.show()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

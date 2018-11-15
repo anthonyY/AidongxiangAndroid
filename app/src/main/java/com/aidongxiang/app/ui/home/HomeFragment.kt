@@ -14,8 +14,10 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseKtFragment
 import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.Constants.ARG_ABSTRACT
 import com.aidongxiang.app.base.Constants.ARG_ACTION
 import com.aidongxiang.app.base.Constants.ARG_ID
+import com.aidongxiang.app.base.Constants.ARG_IMAGE_PATH
 import com.aidongxiang.app.base.Constants.ARG_TITLE
 import com.aidongxiang.app.base.Constants.ARG_URL
 import com.aidongxiang.app.ui.Main2Activity
@@ -68,7 +70,7 @@ class HomeFragment : BaseKtFragment() {
         //视频
         homeVideoAdapter = HomeVideoAdapter(activity!!, videoDatas)
         homeVideoAdapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(VideoDetails2Activity::class.java, ARG_ID to videoDatas[position].id)
+            switchToActivity(VideoDetails2Activity::class.java, ARG_ID to videoDatas[position].audioId)
         }
         setLayoutManagerInScroolView(recycler_home_video, videoLayoutManager)
         recycler_home_video.adapter = homeVideoAdapter
@@ -79,7 +81,7 @@ class HomeFragment : BaseKtFragment() {
         setLayoutManagerInScroolView(recycler_home_audio, audioManager)
         homeAudioAdapter = HomeAudioAdapter(activity!!, audioDatas)
         homeAudioAdapter.setOnRecyclerViewItemClickListener { v, position ->
-             switchToActivity(AudioDetailsActivity::class.java, ARG_ID to audioDatas[position].id)
+             switchToActivity(AudioDetailsActivity::class.java, ARG_ID to audioDatas[position].audioId)
         }
         recycler_home_audio.adapter = homeAudioAdapter
 
@@ -92,7 +94,9 @@ class HomeFragment : BaseKtFragment() {
         homeNewsAdapter.setOnRecyclerViewItemClickListener { _, position ->
             val title = newsDatas[position].title
             val id = newsDatas[position].id
-            switchToActivity(ArticleDetailsActivity::class.java, ARG_TITLE to title, ARG_ID to id)
+            val abstract = newsDatas[position].abstract
+            val imagePath = newsDatas[position].imagePath
+            switchToActivity(ArticleDetailsActivity::class.java, ARG_TITLE to title, ARG_ABSTRACT to abstract, ARG_IMAGE_PATH to imagePath, ARG_ID to id)
         }
 
         //分类 （扩展内容）
@@ -105,6 +109,7 @@ class HomeFragment : BaseKtFragment() {
             val navigation = categoryDatas[position]
             val id = navigation.fromId
             val url = navigation.link
+            val name = navigation.name
             when(navigation.fromType){
                 1->{
                     switchToActivity(CommonWebViewActivity::class.java, ARG_URL to url, ARG_TITLE to navigation.name)
@@ -116,7 +121,7 @@ class HomeFragment : BaseKtFragment() {
                     switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
                 }
                 4->{
-                    switchToActivity(ArticleDetailsActivity::class.java, ARG_ID to id, ARG_ACTION to 1)
+                    switchToActivity(ArticleDetailsActivity::class.java, ARG_ID to id, ARG_ABSTRACT to name, ARG_ACTION to 1)
                 }
                 5->{
                     noticeDialog.show()

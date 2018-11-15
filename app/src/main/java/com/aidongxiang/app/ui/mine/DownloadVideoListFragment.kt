@@ -11,10 +11,12 @@ import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.App.Companion.aiidbManager
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.ui.video.VideoDetails2Activity
+import com.aidongxiang.app.widgets.CommonDialog
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.model.Download
 import com.aiitec.openapi.net.download.DownloadManager
 import kotlinx.android.synthetic.main.fragment_list_with_edit.*
+import java.io.File
 import java.util.*
 
 /**
@@ -29,10 +31,14 @@ class DownloadVideoListFragment : BaseListKtFragment(){
     val datas = ArrayList<Download>()
     lateinit var adapter : DownloadVideoAdapter
     lateinit var downloadManager : DownloadManager
+    lateinit var deleteDialog : CommonDialog
+    lateinit var cancelDownloadDialog : CommonDialog
     override fun getDatas(): List<*>? = datas
     val random = Random()
     var isEdit = false
     var type = 2
+    var deletePosition = -1
+    var cancelPosition = -1
 
     companion object {
         val ARG_TYPE = "type"
@@ -52,14 +58,31 @@ class DownloadVideoListFragment : BaseListKtFragment(){
         adapter = DownloadVideoAdapter(activity!!, datas)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
+        recyclerView?.setPullRefreshEnabled(false)
+        recyclerView?.setLoadingMoreEnabled(false)
         arguments?.let {
             type = it.getInt(ARG_TYPE)
         }
 
-        adapter.setOnRecyclerViewItemClickListener { v, position ->
+        adapter.setOnRecyclerViewItemClickListener { _, position ->
             if(position > 0){
                 val id = datas[position-1].id
                 switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
+            }
+        }
+        adapter.setOnRecyclerViewItemLongClickListener { _, position ->
+            if(position > 0){
+                val item = datas[position-1]
+                if(datas[position-1].isDownloadFinish){
+                    deletePosition = position-1
+                    deleteDialog.setTitle("删除${item.title}?")
+                    deleteDialog.show()
+                }  else {
+                    cancelPosition = position-1
+                    cancelDownloadDialog.setTitle("取消下载${item.title}?")
+                    cancelDownloadDialog.show()
+                }
+
             }
         }
         tv_select_all.setOnClickListener {
@@ -75,7 +98,36 @@ class DownloadVideoListFragment : BaseListKtFragment(){
 
         downloadManager = DownloadManager.getInstance(activity)
 
+        deleteDialog = CommonDialog(activity!!)
+        deleteDialog.setOnConfirmClickListener {
+            deleteDialog.dismiss()
+            if(deletePosition >= 0){
+                val file = File(datas[deletePosition].localPath)
+                if(file.exists()){
+                    file.delete()
+                }
+                aiidbManager.deleteById(Download::class.java, datas[deletePosition].id)
+                datas.removeAt(deletePosition)
+                adapter.notifyDataSetChanged()
+            }
 
+        }
+
+        cancelDownloadDialog = CommonDialog(activity!!)
+        cancelDownloadDialog.setOnConfirmClickListener {
+            cancelDownloadDialog.dismiss()
+            if(cancelPosition >= 0){
+                DownloadManager.getInstance(activity!!).cancel(datas[cancelPosition].id.toInt())
+                val file = File(datas[cancelPosition].localPath)
+                if(file.exists()){
+                    file.delete()
+                }
+                aiidbManager.deleteById(Download::class.java, datas[cancelPosition].id)
+                datas.removeAt(cancelPosition)
+                adapter.notifyDataSetChanged()
+            }
+
+        }
 
         loadData()
     }
@@ -96,7 +148,7 @@ class DownloadVideoListFragment : BaseListKtFragment(){
 
     fun loadData() {
         App.app.cachedThreadPool.execute({
-            val downloads = aiidbManager.findAll(Download::class.java, "type=?", arrayOf(type.toString()))
+            val downloads = aiidbManager.findAll(Download::class.java, "type=?", arrayOf(type.toString()), "timestamp desc")
             activity?.runOnUiThread {
                 datas.clear()
                 if (downloads != null) {

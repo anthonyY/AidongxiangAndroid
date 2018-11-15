@@ -70,8 +70,8 @@ public class ShareUtils {
 		// ActivityCompat.requestPermissions((Activity)context,mPermissionList,
 		// 100);
 
-		PlatformConfig.setWeixin(context.getString(R.string.weixinId),
-				context.getString(R.string.weixinSecret));
+		PlatformConfig.setWeixin(context.getString(R.string.weixinId), context.getString(R.string.weixinSecret));
+		PlatformConfig.setQQZone(context.getString(R.string.qqId), context.getString(R.string.qqSecretKey));
 
 
 	}

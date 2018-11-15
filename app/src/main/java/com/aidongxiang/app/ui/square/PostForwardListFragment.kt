@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_video_comment.*
 import java.util.*
 
 /**
- * 微博转发列表
+ * 侗言转发列表
  * @author Anthony
  * createTime 2017/12/7.
  * @version 1.0
@@ -49,7 +49,7 @@ class PostForwardListFragment : BaseListKtFragment(){
     }
 
     /**
-     * 请求微博列表
+     * 请求侗言列表
      */
     private fun requestMicroblogList() {
         val query = ListRequestQuery("MicroblogList")

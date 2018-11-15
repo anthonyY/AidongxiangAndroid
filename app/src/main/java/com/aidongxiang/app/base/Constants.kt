@@ -31,6 +31,11 @@ object Constants {
     val ARG_OPEN_ID = "openId"
     val ARG_UNION_ID = "unionId"
     val ARG_PARTNER = "partner"
+    val ARG_VIDEO_ID = "videoId"
+    val ARG_AUDIO_ID = "audioId"
+    val ARG_MICROBLOG_ID = "microblogId"
+    val ARG_NEWS_ID = "newsId"
+    val ARG_IMAGE_PATH = "imagePath"
     var poster : String ?= null
 
     val TYPE_THIRTY_PART_LOGIN = 1

@@ -33,7 +33,7 @@ class MyScreenActivity : BaseKtActivity() {
         screenUserListFragment = ScreenUserListFragment()
         postListFragment = PostListFragment.newInstance(5)
         mPagerAdapter?.addFragment(screenUserListFragment, "用户")
-        mPagerAdapter?.addFragment(postListFragment, "微博")
+        mPagerAdapter?.addFragment(postListFragment, "侗言")
 
 
         viewpager.adapter = mPagerAdapter

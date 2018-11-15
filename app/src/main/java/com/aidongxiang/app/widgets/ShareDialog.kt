@@ -47,7 +47,7 @@ class ShareDialog(context : Context) : AbsCommonDialog(context){
         datas.add("朋友圈")
         datas.add("QQ好友")
         datas.add("QQ空间")
-        datas.add("新浪微博")
+//        datas.add("新浪微博")
         datas.add("复制链接")
         adapter = ShareAdapter(context, datas)
         adapter.setOnRecyclerViewItemClickListener { v, position ->

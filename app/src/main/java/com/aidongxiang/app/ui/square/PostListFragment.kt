@@ -54,7 +54,7 @@ class PostListFragment : BaseListKtFragment() {
      * 1 关注
      * 2 热门
      * 3 我的
-     * 4 微博转发列表
+     * 4 侗言转发列表
      * 5 屏蔽的
      */
     var type = 0
@@ -101,7 +101,7 @@ class PostListFragment : BaseListKtFragment() {
                         clickMicroblog = datas[positon - 1]
                         clickPosition = positon - 1
                         if (Constants.user != null && clickMicroblog!!.user?.id == Constants.user?.id) {
-                            //如果是自己的微博
+                            //如果是自己的侗言
                             val itemDatas = ArrayList<String>()
                             itemDatas.add("删除")
                             itemDialog.setItems(itemDatas)
@@ -232,8 +232,8 @@ class PostListFragment : BaseListKtFragment() {
         }
 
         deleteDialog = CommonDialog(activity!!)
-        deleteDialog.setTitle("删除微博")
-        deleteDialog.setContent("确定删除这条微博？")
+        deleteDialog.setTitle("删除侗言")
+        deleteDialog.setContent("确定删除这条侗言？")
 //        val deleteDatas = ArrayList<String>()
 //        deleteDatas.add("删除此条内容")
 //        deleteDialog.setItems(datas)
@@ -262,7 +262,7 @@ class PostListFragment : BaseListKtFragment() {
         }
         val query = SubmitRequestQuery()
         query.namespace = "ScreenSwitch"
-//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+//       2屏蔽侗言，1用户屏蔽(用户所有侗言)
         query.action = AIIAction.valueOf(action)
         query.id = id
         query.open = 1
@@ -284,7 +284,7 @@ class PostListFragment : BaseListKtFragment() {
         }
         val query = DeleteActionRequestQuery()
         query.namespace = "DeleteAction"
-//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+//        1屏蔽评论，2屏蔽侗言，3用户屏蔽(用户所有侗言)
         query.action = AIIAction.TWO
         query.ids = arrayListOf(id)
         App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog) {
@@ -348,7 +348,7 @@ class PostListFragment : BaseListKtFragment() {
     private fun addHeaderView() {
 
         val header = TextView(activity)
-        header.text = "已屏蔽的微博"
+        header.text = "已屏蔽的侗言"
         header.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
         val padding = resources.getDimension(R.dimen.margin_screen_left).toInt()
         header.setPadding(padding, padding, padding, padding)
@@ -356,7 +356,7 @@ class PostListFragment : BaseListKtFragment() {
     }
 
     /**
-     * 请求微博列表
+     * 请求侗言列表
      */
     fun requestMicroblogList() {
         if (type == 1 && Constants.user == null) {

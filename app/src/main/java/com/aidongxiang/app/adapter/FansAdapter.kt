@@ -14,7 +14,7 @@ import com.aidongxiang.business.model.Fans
  * createTime 2017/12/22.
  * @version 1.0
  */
-class FansAdapter(context: Context, datas: MutableList<Fans>) : CommonRecyclerViewAdapter<Fans>(context, datas){
+class FansAdapter(context: Context, datas: MutableList<Fans>, val isScreen: Boolean = false) : CommonRecyclerViewAdapter<Fans>(context, datas){
     override fun convert(h: CommonRecyclerViewHolder, item: Fans, position: Int) {
 
         val tvSignature = h.getView<TextView>(R.id.tv_item_signature)
@@ -25,22 +25,39 @@ class FansAdapter(context: Context, datas: MutableList<Fans>) : CommonRecyclerVi
 
         tvName.text = item.name
         tvSignature.text = item.description
-        when {
-            item.isFocus == 1 -> {
-                //未关注
-                tvStatus.text = "关注"
-                tvStatus.isSelected = true
-                tvStatus.visibility = View.VISIBLE
-            }
+        if(isScreen){
+            tvStatus.visibility = View.GONE
+        } else {
+            when {
+                item.isFocus == 1 -> {
+                    //未关注
+                    tvStatus.text = "关注"
+                    tvStatus.isSelected = true
+                    tvStatus.visibility = View.VISIBLE
+                }
             //已关注，但是对方未关注我
-            item.isFocus == -1 -> tvStatus.visibility = View.GONE
-            item.isFocus == 0 -> tvStatus.visibility = View.GONE
-            else -> {
-                //已互相关注
-                tvStatus.text = "互相关注"
-                tvStatus.isSelected = false
-                tvStatus.visibility = View.VISIBLE
+                item.isFocus == -1 -> {
+//                tvStatus.visibility = View.GONE
+                    //已互相关注
+                    tvStatus.text = "取消关注"
+                    tvStatus.isSelected = false
+                    tvStatus.visibility = View.VISIBLE
+                }
+                item.isFocus == 0 -> {
+//                tvStatus.visibility = View.GONE
+                    //已互相关注
+                    tvStatus.text = "取消关注"
+                    tvStatus.isSelected = false
+                    tvStatus.visibility = View.VISIBLE
+                }
+                else -> {
+                    //已互相关注
+                    tvStatus.text = "互相关注"
+                    tvStatus.isSelected = false
+                    tvStatus.visibility = View.VISIBLE
+                }
             }
+
         }
 
         GlideImgManager.load(context, item.imagePath, R.drawable.ic_avatar_default, ivAvatar, GlideImgManager.GlideType.TYPE_CIRCLE)

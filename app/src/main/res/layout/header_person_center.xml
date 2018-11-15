@@ -124,7 +124,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="他的微博"
+            android:text="他的侗言"
             android:textSize="16sp"
             android:textColor="@color/black3"/>
         <ImageView

@@ -37,6 +37,7 @@ public class Download extends Entity implements Parcelable {
     private boolean downloadFinish;
     private boolean isSelect;
     private String speed;
+    private long timestamp;
 
     public long getId() {
         return id;
@@ -131,15 +132,6 @@ public class Download extends Entity implements Parcelable {
         this.cacheNum = cacheNum;
     }
 
-
-//    public Call getCall() {
-//        return call;
-//    }
-//
-//    public void setCall(Call call) {
-//        this.call = call;
-//    }
-
     public boolean isDownloadFinish() {
         return downloadFinish;
     }
@@ -164,6 +156,14 @@ public class Download extends Entity implements Parcelable {
         this.speed = speed;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -185,6 +185,7 @@ public class Download extends Entity implements Parcelable {
         dest.writeByte(this.downloadFinish ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isSelect ? (byte) 1 : (byte) 0);
         dest.writeString(this.speed);
+        dest.writeLong(this.timestamp);
     }
 
     public Download() {
@@ -205,6 +206,7 @@ public class Download extends Entity implements Parcelable {
         this.downloadFinish = in.readByte() != 0;
         this.isSelect = in.readByte() != 0;
         this.speed = in.readString();
+        this.timestamp = in.readLong();
     }
 
     public static final Parcelable.Creator<Download> CREATOR = new Parcelable.Creator<Download>() {

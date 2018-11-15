@@ -77,7 +77,7 @@ class VideoSearchActivity : BaseListKtActivity() {
         }
         videoAdapter.setOnRecyclerViewItemClickListener { v, position ->
             if(position > 0){
-                val id = datas[position-1].id
+                val id = datas[position-1].audioId
                 if(type == TYPE_AUDIO){
                     switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
                 } else {
@@ -164,7 +164,7 @@ class VideoSearchActivity : BaseListKtActivity() {
         }
         videoAdapter.update()
         if(datas.size == 0){
-            onNoData()
+            checkIsEmpty()
         }
     }
 }

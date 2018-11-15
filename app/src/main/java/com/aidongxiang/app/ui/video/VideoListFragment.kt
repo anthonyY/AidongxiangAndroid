@@ -8,12 +8,15 @@ import com.aidongxiang.app.adapter.HomeVideoAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.Constants.ARG_ID
+import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.business.model.Video
 import com.aidongxiang.business.model.Where
 import com.aidongxiang.business.response.VideoListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
+import com.aiitec.openapi.model.ResponseQuery
+import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import kotlinx.android.synthetic.main.fragment_list_with_edit.*
 import java.util.*
@@ -28,6 +31,7 @@ import java.util.*
 class VideoListFragment : BaseListKtFragment(){
 
     val datas = ArrayList<Video>()
+    lateinit var deleteDialog : CommonDialog
     lateinit var adapter : HomeVideoAdapter
     override fun getDatas(): List<*>? = datas
     val random = Random()
@@ -35,6 +39,7 @@ class VideoListFragment : BaseListKtFragment(){
 //    var headerView : AdvertisementLayout ?= null
     var type = TYPE_HOME
     var categoryId : Long = -1
+    var deletePosition = -1
 
     companion object {
         val ARG_TYPE = "type"
@@ -75,8 +80,18 @@ class VideoListFragment : BaseListKtFragment(){
 //            setHeaderData()
 //        }
         adapter.setOnRecyclerViewItemClickListener { v, position ->
-            val id = datas[position-1].id
+            val id = datas[position-1].audioId
             switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
+        }
+        if(type == TYPE_COLLECT){
+            adapter.setOnRecyclerViewItemLongClickListener { v, position ->
+                if(position > 0){
+                    val item = datas[position-1]
+                    deletePosition = position-1
+                    deleteDialog.setTitle("取消收藏${item.name}?")
+                    deleteDialog.show()
+                }
+            }
         }
         tv_select_all.setOnClickListener {
             for(data in datas){
@@ -88,36 +103,37 @@ class VideoListFragment : BaseListKtFragment(){
             datas.filter { it.isSelected }.forEach { datas.remove(it) }
             adapter.update()
         }
-//        for (i in 0..10){
-//            val video = Video()
-//            video.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-//            video.audioLength = "12:10"
-//            video.name = "精彩斗牛啦啦啦啦"
-//            video.timestamp = "07-12"
-//            video.playNum = 321
-//            datas.add(video)
-//        }
-//        adapter.update()
 
-//        if(type == TYPE_HOME) {
-//            requestAdList()
-//        }
+        deleteDialog = CommonDialog(activity!!)
+        deleteDialog.setOnConfirmClickListener {
+            deleteDialog.dismiss()
+            if(deletePosition >= 0){
+                requestCollection(2, datas[deletePosition].audioId)
+            }
 
+        }
         requestVideoList()
 
     }
-//    fun setHeaderData(){
-//        val ads = ArrayList<Ad>()
-//        for(i in 0..6){
-//            val ad = Ad()
-//            ad.name = "广告"
-//            ad.link = "http://www.baidu.com"
-//            ad.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-//            ads.add(ad)
-//        }
-//        headerView?.startAD(ads.size, 3, true, ads, 0.47f)
-//
-//    }
+
+    /**
+     * 请求收藏
+     */
+    private fun requestCollection(open : Int, id: Long) {
+
+        val query = SubmitRequestQuery("FavoritesSwitch")
+        query.action = AIIAction.ONE
+        query.id = id
+        query.open = open
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog){
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                datas.removeAt(deletePosition)
+                adapter.notifyDataSetChanged()
+            }
+        })
+    }
+
 
     fun setIsEdit(isEdit : Boolean ){
         this.isEdit = isEdit
@@ -130,19 +146,7 @@ class VideoListFragment : BaseListKtFragment(){
     }
 
 
-//    fun requestAdList(){
-//        val query = AdListRquestQuery()
-//        query.action = AIIAction.TWO
-//
-//        App.aiiRequest.send(query, object : AIIResponse<AdListResponseQuery>(activity, false){
-//            override fun onSuccess(response: AdListResponseQuery?, index: Int) {
-//                super.onSuccess(response, index)
-//                response?.ads?.let {
-//                    headerView?.startAD(it.size, 3, true, it, 0.48f)
-//                }
-//            }
-//        })
-//    }
+
 
     fun requestVideoList(){
         if(type == 4){

@@ -298,7 +298,7 @@ class VideoDetails2Activity : BaseKtActivity() {
         video_player.setUp(audio.audioPath, true, audio.name)
         val imagePath = audio.imagePath
         val content = audio.name
-        shareDialog.setShareData("爱侗乡有精彩好看的视频哦，快来看看吧！", content, imagePath, "http://www.aidongxiang.com/download/download.html")
+        shareDialog.setShareData("爱侗乡有精彩好看的视频哦，快来看看吧！", content, imagePath, "http://www.aidongxiang.com/download/download.html?vid="+id)
         GlideImgManager.load(this, audio.imagePath, thumbImageView)
         setCommentNum(audio.commentNum)
         videoSynopsisFragment.update(audio)

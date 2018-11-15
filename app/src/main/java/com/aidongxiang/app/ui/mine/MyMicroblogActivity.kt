@@ -11,7 +11,7 @@ import com.aidongxiang.app.base.Constants.ARG_NAME
 import com.aidongxiang.app.ui.square.PostListFragment
 
 /**
- * 我的微博
+ * 我的侗言
  * @author Anthony
  * createTime 2017-12-13
  */
@@ -25,13 +25,13 @@ class MyMicroblogActivity : BaseKtActivity() {
         title = if(!TextUtils.isEmpty(name)){
             if(Constants.user != null && Constants.user!!.id == id){
                 //是我自己
-                "我的微博"
+                "我的侗言"
             } else {
-                "${name}的微博"
+                "${name}的侗言"
             }
 
         } else {
-            "我的微博"
+            "我的侗言"
         }
 
         val fragment = PostListFragment.newInstance(3, id)

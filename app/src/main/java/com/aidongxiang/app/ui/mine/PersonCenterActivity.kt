@@ -104,7 +104,7 @@ class PersonCenterActivity : BaseListKtActivity() {
                         clickMicroblog = datas[positon - 1]
                         clickPosition = positon - 1
                         if (Constants.user != null && clickMicroblog!!.user?.id == Constants.user?.id) {
-                            //如果是自己的微博
+                            //如果是自己的侗言
                             val itemDatas = ArrayList<String>()
                             itemDatas.add("删除")
                             itemDialog.setItems(itemDatas)
@@ -222,7 +222,7 @@ class PersonCenterActivity : BaseListKtActivity() {
     private fun requestScreenSubmit(id: Long, action: Int) {
         val query = SubmitRequestQuery()
         query.namespace = "ScreenSwitch"
-//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+//        2屏蔽侗言，1用户屏蔽(用户所有侗言)
         query.action = AIIAction.valueOf(action)
         query.id = id
         query.open = 1
@@ -240,7 +240,7 @@ class PersonCenterActivity : BaseListKtActivity() {
     private fun requestDeleteAction(id: Long) {
         val query = RequestQuery()
         query.namespace = "DeleteAction"
-//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+//        1屏蔽评论，2屏蔽侗言，3用户屏蔽(用户所有侗言)
         query.action = AIIAction.TWO
         query.id = id
         App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this, progressDialog) {
@@ -361,14 +361,14 @@ class PersonCenterActivity : BaseListKtActivity() {
 
     private fun getMicroblogList(response: MicroblogListResponseQuery) {
         total = response.total
-        if(page == 0){
+        if(page == 1){
             datas.clear()
         }
         response.microblogs?.let {
             datas.addAll(it)
         }
         if(datas.size == 0){
-            onNoData()
+            checkIsEmpty()
         }
         adapter.update()
     }
@@ -409,9 +409,9 @@ class PersonCenterActivity : BaseListKtActivity() {
             //是我自己
             tvFocus.visibility = View.GONE
             lineTop2.visibility = View.GONE
-            tvHeaderMicroblogLabel.text = "Ta的微博"
+            tvHeaderMicroblogLabel.text = "Ta的侗言"
         } else {
-            tvHeaderMicroblogLabel.text = "Ta的微博"
+            tvHeaderMicroblogLabel.text = "Ta的侗言"
             tvFocus.visibility = View.VISIBLE
             lineTop2.visibility = View.VISIBLE
             if(user.isFocus == 2){

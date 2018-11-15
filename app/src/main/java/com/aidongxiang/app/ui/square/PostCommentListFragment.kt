@@ -24,7 +24,7 @@ import com.aiitec.openapi.net.AIIResponse
 import kotlinx.android.synthetic.main.fragment_video_comment.*
 
 /**
- * 微博评论列表
+ * 侗言评论列表
  * @author Anthony
  * createTime 2017/12/7.
  * @version 1.0

@@ -76,7 +76,7 @@ abstract class BaseListKtFragment : BaseKtFragment() , XRecyclerView.LoadingList
 
     override fun onLoadMore() {
         if (getDatas()!!.size >= total) {
-            Handler(Looper.getMainLooper()).post { toast( R.string.no_more); onLoadFinish() }
+            Handler(Looper.getMainLooper()).post {/* toast( R.string.no_more);*/ onLoadFinish() }
         } else {
             page++
             requestData()

@@ -27,7 +27,7 @@ class SquareFragment : BaseKtFragment() {
         setToolBar(toolbar)
         StatusBarUtil.addStatusBarView(titlebar, android.R.color.transparent)
         mPagerAdapter = SimpleFragmentPagerAdapter(childFragmentManager, activity)
-        setTitle("热门微博")
+        setTitle("热门侗言")
 
         viewpager.adapter = mPagerAdapter
 //        tablayout.setupWithViewPager(viewpager)

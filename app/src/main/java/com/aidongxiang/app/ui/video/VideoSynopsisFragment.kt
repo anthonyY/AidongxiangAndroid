@@ -237,10 +237,12 @@ class VideoSynopsisFragment : BaseFragment(){
         if (download == null || !fileExists) {
             val downloadManager = DownloadManager.getInstance(activity)
             download = Download()
+            download.timestamp = System.currentTimeMillis()
             download.id = vedio.id
             download.path = vedio.audioPath
             download.imagePath = vedio.imagePath
             download.title = vedio.name
+            download.playLength = vedio.audioLength
             download.type = 2
             downloadManager.download(download)
             ToastUtil.show(activity, "开始下载...")

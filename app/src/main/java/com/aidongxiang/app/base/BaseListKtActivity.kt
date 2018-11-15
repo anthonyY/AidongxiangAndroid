@@ -46,10 +46,13 @@ abstract class BaseListKtActivity : BaseKtActivity(), XRecyclerView.LoadingListe
     /**
      * 无数据
      */
-    protected fun onNoData() {
+    protected fun checkIsEmpty() {
         if (tv_empty_nodata != null && getDatas() != null && getDatas()!!.isEmpty()) {
             if(recyclerView != null && recyclerView is XRecyclerView) {
                 (recyclerView as XRecyclerView).emptyView = tv_empty_nodata
+                tv_empty_nodata?.visibility = View.VISIBLE
+            } else {
+                tv_empty_nodata?.visibility = View.GONE
             }
         }
         tv_empty_nodata?.setText(R.string.no_data)
@@ -61,10 +64,13 @@ abstract class BaseListKtActivity : BaseKtActivity(), XRecyclerView.LoadingListe
      * 无网络
      */
     protected fun onNetError() {
-        if (getDatas()?.size === 0 && ll_no_net != null) {
+        if (getDatas()?.size == 0 && ll_no_net != null) {
             tv_empty_nodata?.visibility = View.GONE
             if(recyclerView != null && recyclerView is XRecyclerView) {
                 (recyclerView as XRecyclerView).emptyView = ll_no_net
+                ll_no_net?.visibility = View.VISIBLE
+            } else {
+                ll_no_net?.visibility = View.GONE
             }
         }
     }
@@ -80,7 +86,7 @@ abstract class BaseListKtActivity : BaseKtActivity(), XRecyclerView.LoadingListe
     override fun onLoadMore() {
         if (getDatas()!!.size >= total) {
 
-            Handler(Looper.getMainLooper()).post { toast(R.string.no_more); onLoadFinish() }
+            Handler(Looper.getMainLooper()).post { /*toast(R.string.no_more);*/ onLoadFinish() }
         } else {
             page++
             requestData()

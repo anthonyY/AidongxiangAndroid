@@ -37,7 +37,7 @@ class HomeAudioAdapter(context: Context, datas:MutableList<Video>) : CommonRecyc
         var audioLength = ""
         item.audioLength?.let {
             if(it.length == 8 && it.startsWith("00")){
-                audioLength = it.substring(2)
+                audioLength = it.substring(3)
             } else {
                 audioLength = it
             }

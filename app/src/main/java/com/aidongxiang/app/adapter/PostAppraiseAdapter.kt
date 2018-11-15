@@ -9,7 +9,7 @@ import com.aidongxiang.app.utils.GlideImgManager
 import com.aidongxiang.business.model.User
 
 /**
- * 微博赞 adapter
+ * 侗言赞 adapter
  * @author Anthony
  * createTime 2017/12/7.
  * @version 1.0

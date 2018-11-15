@@ -54,7 +54,7 @@ class NewsListFragment : BaseListKtFragment(){
         adapter.setOnRecyclerViewItemClickListener { _, position ->
             if(position > 0){
                 val id = datas[position-1].id
-                switchToActivity(ArticleDetailsActivity::class.java, Constants.ARG_TITLE to "资讯详情", Constants.ARG_ABSTRACT to datas[position-1].abstract, Constants.ARG_ID to id)
+                switchToActivity(ArticleDetailsActivity::class.java, Constants.ARG_TITLE to "资讯详情", Constants.ARG_ABSTRACT to datas[position-1].abstract, Constants.ARG_IMAGE_PATH to datas[position-1].imagePath, Constants.ARG_ID to id)
 
             }
 

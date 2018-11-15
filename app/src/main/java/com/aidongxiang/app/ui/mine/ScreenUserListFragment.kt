@@ -10,12 +10,17 @@ import com.aidongxiang.app.adapter.CommonRecyclerViewAdapter
 import com.aidongxiang.app.adapter.FansAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
+import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
+import com.aidongxiang.app.ui.login.LoginActivity
+import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.business.model.Fans
 import com.aidongxiang.business.response.FansListResponseQuery
 import com.aiitec.moreschool.base.BaseListKtFragment
 import com.aiitec.openapi.json.enums.AIIAction
 import com.aiitec.openapi.model.ListRequestQuery
+import com.aiitec.openapi.model.ResponseQuery
+import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import java.util.*
 
@@ -30,8 +35,9 @@ class ScreenUserListFragment : BaseListKtFragment(){
 
     lateinit var adapter : FansAdapter
     val datas = ArrayList<Fans>()
+    var deleteUser : Fans?= null
     var random = Random()
-
+    lateinit var deleteDialog : CommonDialog
     override fun getDatas(): List<*>? = datas
 
     override fun requestData() {
@@ -41,8 +47,14 @@ class ScreenUserListFragment : BaseListKtFragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        adapter = FansAdapter(activity!!, datas)
+        adapter = FansAdapter(activity!!, datas, true)
         requestData()
+        deleteDialog = CommonDialog(activity!!)
+        deleteDialog.setTitle("确定取消屏蔽？")
+        deleteDialog.setOnConfirmClickListener {
+            deleteUser?.let { requestScreenSubmit(it.id, 1) }
+            deleteDialog.dismiss()
+        }
     }
 
     override fun init(view: View) {
@@ -57,7 +69,13 @@ class ScreenUserListFragment : BaseListKtFragment(){
                 switchToActivity(PersonCenterActivity::class.java, ARG_ID to id)
             }
         }, R.id.iv_item_avatar)
-
+        adapter.setOnRecyclerViewItemClickListener { v, position ->
+            if(position > 0){
+                deleteUser = datas[position-1]
+                deleteDialog.setTitle("确定取消屏蔽${datas[position-1].name}？")
+                deleteDialog.show()
+            }
+        }
         requestUserList()
 
     }
@@ -111,5 +129,27 @@ class ScreenUserListFragment : BaseListKtFragment(){
         checkIsEmpty()
     }
 
+
+    /**
+     * 屏蔽
+     */
+    private fun requestScreenSubmit(id: Long, action: Int) {
+        if(Constants.user == null){
+            switchToActivity(LoginActivity::class.java)
+            return
+        }
+        val query = SubmitRequestQuery()
+        query.namespace = "ScreenSwitch"
+//      2屏蔽侗言，1用户屏蔽(用户所有侗言)
+        query.action = AIIAction.valueOf(action)
+        query.id = id
+        query.open = 2
+        App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog) {
+            override fun onSuccess(response: ResponseQuery?, index: Int) {
+                super.onSuccess(response, index)
+                onRefresh()
+            }
+        })
+    }
 
 }

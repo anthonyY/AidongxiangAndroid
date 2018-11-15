@@ -162,7 +162,6 @@ public class Utils {
             fileName = System.currentTimeMillis()+".jpg";
         }
         final String imagePath = Constants.INSTANCE.getVIDEOS_DIR() + fileName;
-        LogUtil.e("Thumbnail:"+imagePath);
         File file = new File(imagePath);
         if (file.exists()) {
             if (listener != null) {
@@ -347,7 +346,7 @@ public class Utils {
     }
 
     /**
-     * 设置微博的视频信息
+     * 设置侗言的视频信息
      *
      * @param videoPath       视频路径
      * @param rlItemVideoPlay 包裹视频相关的大布局

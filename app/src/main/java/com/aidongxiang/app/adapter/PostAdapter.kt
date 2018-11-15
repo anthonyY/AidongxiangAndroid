@@ -181,7 +181,7 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
     }
 
 //    /**
-//     * 设置微博的视频信息
+//     * 设置侗言的视频信息
 //     * @param videoview 视频控件
 //     * @param videoPath 视频路径
 //     * @param rlItemVideoPlay 包裹视频相关的大布局

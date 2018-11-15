@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_video_comment.*
 import java.util.*
 
 /**
- * 微博赞列表
+ * 侗言赞列表
  * @author Anthony
  * createTime 2017/12/7.
  * @version 1.0

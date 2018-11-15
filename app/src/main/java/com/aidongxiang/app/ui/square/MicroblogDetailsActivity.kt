@@ -46,7 +46,7 @@ import java.util.regex.Pattern
 
 
 /***
- * 微博详情
+ * 侗言详情
  * @author Anthony
  * createTime 2017-12-10
  */
@@ -70,7 +70,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         microblog?.let {
             postId = it.id
         }
-        title = "微博详情"
+        title = "侗言详情"
         adapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
         commentFragment = PostCommentListFragment.newInstance(postId)
         forwardFragment = PostForwardListFragment.newInstance(postId)
@@ -148,8 +148,8 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         }
 
         deleteDialog = CommonDialog(this)
-        deleteDialog.setTitle("删除微博")
-        deleteDialog.setContent("确定删除这条微博？")
+        deleteDialog.setTitle("删除侗言")
+        deleteDialog.setContent("确定删除这条侗言？")
 //        val deleteDatas = ArrayList<String>()
 //        deleteDatas.add("删除此条内容")
 //        deleteDialog.setItems(datas)
@@ -207,7 +207,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         }
         ivItemMore.setOnClickListener {
             if (Constants.user != null && microblog?.user?.id == Constants.user?.id) {
-                //如果是自己的微博
+                //如果是自己的侗言
                 val itemDatas = ArrayList<String>()
                 itemDatas.add("删除")
                 itemDialog.setItems(itemDatas)
@@ -409,7 +409,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
 
 
 //    /**
-//     * 请求微博
+//     * 请求侗言
 //     */
 //    fun requestMicroblogDetails() {
 //
@@ -456,7 +456,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         }
         val query = SubmitRequestQuery()
         query.namespace = "ScreenSwitch"
-//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+//       2屏蔽侗言，1用户屏蔽(用户所有侗言)
         query.action = AIIAction.valueOf(action)
         query.id = id
         query.open = 1
@@ -485,7 +485,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         }
         val query = DeleteActionRequestQuery()
         query.namespace = "DeleteAction"
-//        1屏蔽评论，2屏蔽微博，3用户屏蔽(用户所有微博)
+//        1屏蔽评论，2屏蔽侗言，3用户屏蔽(用户所有侗言)
         query.action = AIIAction.TWO
         query.ids = arrayListOf(id)
         App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(this, progressDialog) {

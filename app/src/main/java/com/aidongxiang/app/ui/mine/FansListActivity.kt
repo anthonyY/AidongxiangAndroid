@@ -11,9 +11,11 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseListKtActivity
 import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.base.Constants.ARG_TYPE
 import com.aidongxiang.app.event.RefreshMicrobolgEvent
 import com.aidongxiang.app.ui.login.LoginActivity
+import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.business.model.Fans
 import com.aidongxiang.business.request.FocusSwitchRequestQuery
 import com.aidongxiang.business.response.FansListResponseQuery
@@ -38,6 +40,9 @@ class FansListActivity : BaseListKtActivity(){
     val datas = ArrayList<Fans>()
     var type = 1
     override fun getDatas(): List<*>? = datas
+    lateinit var cancelFocusDialiog : CommonDialog
+    var deleteFans : Fans?= null
+    var deletePosition = -1
 
     override fun requestData() {
         requestUserList()
@@ -58,6 +63,14 @@ class FansListActivity : BaseListKtActivity(){
             title = "我关注的用户"
         }
 
+        cancelFocusDialiog = CommonDialog(this)
+        cancelFocusDialiog.setOnConfirmClickListener {
+            deleteFans?.let {
+                requestFocusSubmit(it.id, 2, deletePosition)
+            }
+
+            cancelFocusDialiog.dismiss()
+        }
         header.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
         val padding = resources.getDimension(R.dimen.margin_screen_left).toInt()
         header.setPadding(padding, padding, padding , padding)
@@ -70,11 +83,34 @@ class FansListActivity : BaseListKtActivity(){
             } else if(v?.id == R.id.tv_item_status){
                 val data = datas[position-1]
                 val isFocus = data.isFocus
-                if(isFocus != 2 && type == 2){
-                    requestFocusSubmit(data.id.toLong(), 1, position-1)
+                if(type == 2){
+                    //我的粉丝
+                    if(isFocus != 2){
+                        requestFocusSubmit(data.id, 1, position-1)
+                    } else {
+                        deleteFans = data
+                        deletePosition = position-1
+                        cancelFocusDialiog.setTitle("确认取消关注${data.name}？")
+                        cancelFocusDialiog.show()
+                    }
+                } else {
+
+                    deleteFans = data
+                    deletePosition = position-1
+                    cancelFocusDialiog.setTitle("确认取消关注${data.name}？")
+                    cancelFocusDialiog.show()
                 }
+
             }
         }, R.id.iv_item_avatar, R.id.tv_item_status)
+
+        adapter.setOnRecyclerViewItemClickListener { _, position ->
+            if(position > 0){
+                val id = datas[position-1].id
+                switchToActivity(PersonCenterActivity::class.java, ARG_ID to id)
+            }
+
+        }
         requestUserList()
     }
 
@@ -98,12 +134,19 @@ class FansListActivity : BaseListKtActivity(){
                     if(open == 1){
                         datas[position].isFocus = 2
                         toast("关注成功")
+                        adapter.notifyItemChanged(position+2)
                     } else {
                         toast("已取消关注")
-                        datas[position].isFocus = 1
+                        if(type == 2){
+                            datas[position].isFocus = 1
+                            adapter.notifyItemChanged(position+2)
+                        } else {
+                            //直接刷新，这条数据已经没有了
+                            onRefresh()
+                        }
                     }
-                    adapter.notifyItemChanged(position+2)
                 }
+                requestUserDetails(false)
                 EventBus.getDefault().post(RefreshMicrobolgEvent())
 
             }
@@ -153,7 +196,7 @@ class FansListActivity : BaseListKtActivity(){
 
         adapter.update()
         if(datas.size == 0){
-            onNoData()
+            checkIsEmpty()
         }
     }
 

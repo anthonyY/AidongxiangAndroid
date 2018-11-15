@@ -21,6 +21,7 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
      * 条目的点击事件的监听接口
      */
     private OnRecyclerViewItemClickListener onRecyclerViewItemClickListener;
+    private OnRecyclerViewItemLongClickListener onRecyclerViewItemLongClickListener;
 
     /**
      * 条目里面的控件的点击事件的监听接口
@@ -205,6 +206,7 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
             position = position - size;
             if (isNeedSetClickListener(position)) { //如果需要设置监听
                 h.itemView.setOnClickListener(new MyItemClickListenerAdapter(h));
+                h.itemView.setOnLongClickListener(new MyItemLongClickListenerAdapter(h));
             }
             if (viewIdsInItem != null && viewIdsInItem.length > 0 && isNeedSetViewInItemClickListener(position)) {
                 for (int i = 0; i < viewIdsInItem.length; i++) {
@@ -299,6 +301,9 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
     public void setOnRecyclerViewItemClickListener(OnRecyclerViewItemClickListener onRecyclerViewItemClickListener) {
         this.onRecyclerViewItemClickListener = onRecyclerViewItemClickListener;
     }
+    public void setOnRecyclerViewItemLongClickListener(OnRecyclerViewItemLongClickListener onRecyclerViewItemLongClickListener) {
+        this.onRecyclerViewItemLongClickListener = onRecyclerViewItemLongClickListener;
+    }
 
     /**
      * 设置条目的监听,具有一个筛选作用<br>
@@ -361,6 +366,20 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         public void onItemClick(View v, int position);
 
     }
+    /**
+     * 条目的长按事件
+     */
+    public interface OnRecyclerViewItemLongClickListener {
+
+        /**
+         * 回调的方法
+         *
+         * @param v
+         * @param position
+         */
+        public void onItemClick(View v, int position);
+
+    }
 
     /**
      * 实现点击的接口,每一个ViewItem都对应一个这个类,每一个都不一样的对象
@@ -384,6 +403,27 @@ public abstract class CommonRecyclerViewAdapter<T> extends RecyclerView.Adapter<
             }
         }
 
+    }
+    private class MyItemLongClickListenerAdapter implements View.OnLongClickListener {
+
+        /**
+         * 条目的下标
+         */
+        private CommonRecyclerViewHolder h;
+
+        public MyItemLongClickListenerAdapter(CommonRecyclerViewHolder h) {
+            this.h = h;
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            if (onRecyclerViewItemLongClickListener != null) {
+                //回调方法
+                onRecyclerViewItemLongClickListener.onItemClick(view, h.getAdapterPosition() - headers.size());
+                return true;
+            }
+            return false;
+        }
     }
 
     /**
