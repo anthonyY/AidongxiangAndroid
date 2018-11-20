@@ -22,7 +22,7 @@ class SettingActivity : BaseKtActivity() {
 
         title  = "设置"
         llAccountSecurity.setOnClickListener{
-            switchToActivity(AccountSecurityActivity::class.java)
+            switchToActivityForResult(AccountSecurityActivity::class.java, 1)
         }
 
         llScreen.setOnClickListener { switchToActivity(MyScreenActivity::class.java) }

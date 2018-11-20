@@ -12,6 +12,7 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
+import com.aidongxiang.app.event.RefreshMicrobolgEvent
 import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.business.model.Fans
@@ -22,6 +23,7 @@ import com.aiitec.openapi.model.ListRequestQuery
 import com.aiitec.openapi.model.ResponseQuery
 import com.aiitec.openapi.model.SubmitRequestQuery
 import com.aiitec.openapi.net.AIIResponse
+import org.greenrobot.eventbus.EventBus
 import java.util.*
 
 /**
@@ -52,7 +54,7 @@ class ScreenUserListFragment : BaseListKtFragment(){
         deleteDialog = CommonDialog(activity!!)
         deleteDialog.setTitle("确定取消屏蔽？")
         deleteDialog.setOnConfirmClickListener {
-            deleteUser?.let { requestScreenSubmit(it.id, 1) }
+            deleteUser?.let { requestScreenSubmit(it.fromId, 1) }
             deleteDialog.dismiss()
         }
     }
@@ -65,7 +67,7 @@ class ScreenUserListFragment : BaseListKtFragment(){
         recyclerView?.adapter = adapter
         adapter.setOnViewInItemClickListener(CommonRecyclerViewAdapter.OnViewInItemClickListener { v, position ->
             if(v?.id == R.id.iv_item_avatar){
-                val id = datas[position-1].id
+                val id = datas[position-1].fromId
                 switchToActivity(PersonCenterActivity::class.java, ARG_ID to id)
             }
         }, R.id.iv_item_avatar)
@@ -148,6 +150,7 @@ class ScreenUserListFragment : BaseListKtFragment(){
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 onRefresh()
+                EventBus.getDefault().post(RefreshMicrobolgEvent())
             }
         })
     }

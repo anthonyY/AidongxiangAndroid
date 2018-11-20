@@ -228,5 +228,6 @@
     </LinearLayout>
     <View android:layout_width="match_parent"
         android:layout_height="10dp"
+        android:id="@+id/view_margin"
         android:background="@color/bg_all"/>
 </LinearLayout>

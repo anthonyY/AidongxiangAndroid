@@ -1,6 +1,7 @@
 package com.aidongxiang.app.ui.mine
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -33,7 +34,7 @@ import kotlinx.android.synthetic.main.activity_change_mobile_next.*
 @ContentView(R.layout.activity_change_mobile_next)
 class ChangeMobileNextActivity : BaseKtActivity() {
 
-    var mobile : String ?= null
+//    var mobile : String ?= null
 
     var smscodeId = -1
     var type = TYPE_CHANGE_MOBILE
@@ -43,7 +44,7 @@ class ChangeMobileNextActivity : BaseKtActivity() {
 
     lateinit var smscodeCountDown : SmscodeCountDown
     override fun init(savedInstanceState: Bundle?) {
-        mobile = Constants.user?.mobile
+//        mobile = Constants.user?.mobile
 //        smscodeId = bundle.getInt(ARG_SMSCODE_ID)
         title = "修改手机"
         type = bundle.getInt(Constants.ARG_TYPE)
@@ -141,12 +142,13 @@ class ChangeMobileNextActivity : BaseKtActivity() {
         val query = SubmitRequestQuery()
         query.namespace = "UserUpdateMobile"
         query.smscodeId = smscodeId
-        query.mobile = mobile
+        query.mobile = etMobile.text.toString()
         App.aiiRequest.send(query, object : AIIResponse<SMSResponseQuery>(this){
 
             override fun onSuccess(response: SMSResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 ToastUtil.show(this@ChangeMobileNextActivity, "修改完成")
+                requestUserDetails(false)
                 setResult(Activity.RESULT_OK)
                 dismissDialog()
                 finish()
@@ -155,4 +157,11 @@ class ChangeMobileNextActivity : BaseKtActivity() {
         })
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK){
+            setResult(Activity.RESULT_OK)
+            finish()
+        }
+    }
 }

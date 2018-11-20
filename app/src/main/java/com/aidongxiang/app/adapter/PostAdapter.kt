@@ -36,7 +36,7 @@ import kotlin.collections.ArrayList
  * createTime 2017/11/4.
  * @version 1.0
  */
-class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyclerViewAdapter<Microblog>(context, datas) {
+class PostAdapter(context: Context, datas: MutableList<Microblog>, val type : Int = 1) : CommonRecyclerViewAdapter<Microblog>(context, datas) {
     val random = Random()
 
     override fun convert(h: CommonRecyclerViewHolder, item: Microblog, position: Int) {
@@ -60,6 +60,7 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
 //        val videoviewChild = h.getView<CustomVideoView>(R.id.videoviewItemChild)
         val rlItemVideoPlay = h.getView<RelativeLayout>(R.id.rlItemVideoPlay)
         val ivItemVideoPlay = h.getView<ImageView>(R.id.ivItemVideoPlay)
+        val ivItemMore = h.getView<ImageView>(R.id.ivItemMore)
 
         val rlItemChildVideoPlay = h.getView<RelativeLayout>(R.id.rlItemChildVideoPlay)
         val ivItemChildVideoPlay = h.getView<ImageView>(R.id.ivItemChildVideoPlay)
@@ -67,16 +68,29 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
 //        val loading = h.getView<View>(R.id.loading)
         val ivVideoThumb = h.getView<ImageView>(R.id.ivVideoThumb)
         val ivVideoThumbChild = h.getView<ImageView>(R.id.ivVideoThumbChild)
-
-        if (item.isFocus == 2 || item.isFocus == 4) {
-            tvItemFocus.visibility = View.GONE
+        val marginView = h.getView<View>(R.id.view_margin)
+        val llItemBtns = h.getView<View>(R.id.llItemBtns)
+        if(type == 5){
+            tvItemFocus.visibility = View.VISIBLE
+            ivItemMore.visibility = View.GONE
+            llItemBtns.visibility = View.GONE
+            marginView.visibility = View.GONE
+            tvItemFocus.text = "取消屏蔽"
         } else {
-            if (Constants.user != null && Constants.user!!.id == item.user!!.id) {
+            ivItemMore.visibility = View.VISIBLE
+            llItemBtns.visibility = View.VISIBLE
+            marginView.visibility = View.VISIBLE
+            if (item.isFocus == 2 || item.isFocus == 4) {
                 tvItemFocus.visibility = View.GONE
             } else {
-                tvItemFocus.visibility = View.VISIBLE
+                if (Constants.user != null && Constants.user!!.id == item.user!!.id) {
+                    tvItemFocus.visibility = View.GONE
+                } else {
+                    tvItemFocus.visibility = View.VISIBLE
+                }
             }
         }
+
         tvItemPraiseNum.text = item.praiseNum.toString()
         tvItemCommentNum.text = item.commentNum.toString()
         tvItemForwardNum.text = item.repeatNum.toString()
@@ -180,65 +194,6 @@ class PostAdapter(context: Context, datas: MutableList<Microblog>) : CommonRecyc
         }
     }
 
-//    /**
-//     * 设置侗言的视频信息
-//     * @param videoview 视频控件
-//     * @param videoPath 视频路径
-//     * @param rlItemVideoPlay 包裹视频相关的大布局
-//     * @param ivVideoThumb 视频缩略图控件
-//     * @param ivItemVideoPlay 视频播放按钮
-//     * @param loading 加载进度条
-//     */
-//    private fun setMicoblogVideoInfo(videoview: CustomVideoView, videoPath: String?, rlItemVideoPlay: View, ivVideoThumb : ImageView, ivItemVideoPlay : ImageView, loading : View) {
-//
-//        if (!TextUtils.isEmpty(videoPath)) {
-//            rlItemVideoPlay.visibility = View.VISIBLE
-//            var path : String ?= ""
-//            if (videoPath!!.startsWith("http")) {
-//                path = videoPath
-//
-//            } else {
-//                path = Api.IMAGE_URL + videoPath
-//            }
-//            Utils.setVideoThumbnailForImageView(path) {
-//                GlideImgManager.loadFile(context, it, ivVideoThumb)
-//            }
-//            videoview.setVideoPath(path)
-//            resetVideoWidth(videoview, path)
-//        } else {
-//            rlItemVideoPlay.visibility = View.GONE
-//        }
-//        ivItemVideoPlay.setOnClickListener {
-//            videoview.start()
-//        }
-//        videoview.setOnPreparedListener {
-//            ivVideoThumb.visibility = View.GONE
-//        }
-//        videoview.setOnPlayStateListener(object : CustomVideoView.OnPlayStateListener {
-//            override fun onPlay() {
-//                ivItemVideoPlay.visibility = View.GONE
-//            }
-//
-//            override fun onPause() {
-//                ivItemVideoPlay.visibility = View.VISIBLE
-//            }
-//
-//        })
-//        videoview.setOnCompletionListener {
-//            ivItemVideoPlay.visibility = View.VISIBLE
-//            ivVideoThumb.visibility = View.VISIBLE
-//        }
-//        videoview.setOnPreparedListener {
-//            it.setOnBufferingUpdateListener { _, percent ->
-//                if(percent == 100){
-//                    loading.visibility = View.GONE
-//                } else {
-//                    loading.visibility = View.VISIBLE
-//                }
-//            }
-//        }
-//
-//    }
 
     override fun getLayoutViewId(viewType: Int): Int = R.layout.item_post
 

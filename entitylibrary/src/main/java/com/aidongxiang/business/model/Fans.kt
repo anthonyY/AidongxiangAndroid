@@ -11,6 +11,7 @@ import com.aiitec.openapi.model.Entity
 class Fans : Entity(){
 
     var id = -1L
+    var fromId = -1L
     var name : String ?= null
     var imagePath : String ?= null
     var description : String ?= null

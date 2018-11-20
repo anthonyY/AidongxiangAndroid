@@ -79,7 +79,7 @@ class PostListFragment : BaseListKtFragment() {
             userId = it.getLong(ARG_ID)
         }
 
-        adapter = PostAdapter(context!!, datas)
+        adapter = PostAdapter(context!!, datas, type)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         if (type == 5) {
             addHeaderView()
@@ -134,10 +134,13 @@ class PostListFragment : BaseListKtFragment() {
                         switchToActivity(PersonCenterActivity::class.java, ARG_ID to datas[positon - 1].user!!.id)
                     }
                     R.id.tvItemFocus -> {
-                        datas[positon - 1].user?.let {
-                            requestFocusSubmit(it.id, 1, positon-1)
+                        if(type == 5){
+                            requestScreenSubmit(datas[positon - 1].fromId, 2, 2)
+                        } else {
+                            datas[positon - 1].user?.let {
+                                requestFocusSubmit(it.id, 1, positon-1)
+                            }
                         }
-
                     }
                     R.id.rlItemVideoPlay -> {
                         datas[positon - 1].videoPath?.let {
@@ -195,7 +198,7 @@ class PostListFragment : BaseListKtFragment() {
             clickMicroblog?.let {
                 if(type == 5) {
                     //屏蔽列表, 这里取消屏蔽
-                    requestScreenSubmit(it.id, 2)
+                    requestScreenSubmit(it.id, 2, 2)
                 } else {
                     if (Constants.user != null && it.user?.id == Constants.user?.id) {
                         deleteDialog.show()
@@ -223,7 +226,7 @@ class PostListFragment : BaseListKtFragment() {
         shieldDialog.setOnItemClickListener { _, position ->
             clickMicroblog?.let {
                 if (position == 0) {
-                    requestScreenSubmit(it.id, 2)
+                    requestScreenSubmit(it.id, 2, 1)
                 } else if (position == 1) {
                     requestScreenSubmit(it.user!!.id, 1)
                 }
@@ -255,7 +258,7 @@ class PostListFragment : BaseListKtFragment() {
     /**
      * 屏蔽
      */
-    private fun requestScreenSubmit(id: Long, action: Int) {
+    private fun requestScreenSubmit(id: Long, action: Int, open: Int = 1) {
         if(Constants.user == null){
             switchToActivity(LoginActivity::class.java)
             return
@@ -265,11 +268,14 @@ class PostListFragment : BaseListKtFragment() {
 //       2屏蔽侗言，1用户屏蔽(用户所有侗言)
         query.action = AIIAction.valueOf(action)
         query.id = id
-        query.open = 1
+        query.open = open
         App.aiiRequest.send(query, object : AIIResponse<ResponseQuery>(activity, progressDialog) {
             override fun onSuccess(response: ResponseQuery?, index: Int) {
                 super.onSuccess(response, index)
                 onRefresh()
+                if(type == 5){
+                    EventBus.getDefault().post(RefreshMicrobolgEvent())
+                }
             }
         })
     }

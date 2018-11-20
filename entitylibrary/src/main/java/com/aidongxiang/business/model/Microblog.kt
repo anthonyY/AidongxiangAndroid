@@ -14,7 +14,8 @@ import com.aiitec.openapi.model.Entity
 class Microblog() : Entity(), Parcelable {
 
 
-    var id : Long = -1
+    var id  = -1L
+    var fromId = -1L
     var content : String ?= null
     var timestamp : String ?= null
     var address : String ?= null
@@ -27,11 +28,11 @@ class Microblog() : Entity(), Parcelable {
     var isPraise = -1
     var user : User ?= null
     var videoId : Long = -1
-    var regionId : Int = -1
-    var isScreen : Int = -1
-    var parentId : Long = -1
-    var longitude : Double = -1.0
-    var latitude : Double = -1.0
+    var regionId = -1
+    var isScreen = -1
+    var parentId = -1L
+    var longitude = -1.0
+    var latitude = -1.0
     var images  : ArrayList<String> ?= null
     var imageIds  : ArrayList<Long> ?= null
     @JSONField(name = "parent")

@@ -21,7 +21,7 @@ class AccountSecurityActivity : BaseKtActivity() {
         tvAccountSecurityMobile.text = Constants.user?.mobile
         title = "账号与安全"
         llChangePassword.setOnClickListener{ switchToActivity(UpdatePasswordActivity::class.java) }
-        llChangeMobile.setOnClickListener { switchToActivity(ChangeMobileNextActivity::class.java, Constants.ARG_TYPE to Constants.TYPE_CHANGE_MOBILE) }
+        llChangeMobile.setOnClickListener { switchToActivityForResult(ChangeMobileNextActivity::class.java, 1, Constants.ARG_TYPE to Constants.TYPE_CHANGE_MOBILE) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

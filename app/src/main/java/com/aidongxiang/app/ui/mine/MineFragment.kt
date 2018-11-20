@@ -31,8 +31,6 @@ class MineFragment : BaseKtFragment(), IUserInfoChangeObserver {
         } else {
             (activity as BaseKtActivity).requestUserDetails()
         }
-
-
     }
 
     private fun setListener() {
@@ -57,7 +55,9 @@ class MineFragment : BaseKtFragment(), IUserInfoChangeObserver {
         ll_mine_fans.setOnClickListener { switchToActivity(FansListActivity::class.java, Constants.ARG_TYPE to 2) }
         ll_mine_follow.setOnClickListener { switchToActivity(FansListActivity::class.java, Constants.ARG_TYPE to 1) }
         ll_mine_microblog.setOnClickListener { switchToActivity(MyMicroblogActivity::class.java) }
-
+        swipe_mine_refresh.setOnRefreshListener {
+            (activity as BaseKtActivity).requestUserDetails()
+        }
         UserInfoSubject.getInstance().registerObserver(this)
     }
 
@@ -87,8 +87,8 @@ class MineFragment : BaseKtFragment(), IUserInfoChangeObserver {
             tvMineFocusNum.text = "0"
             tvMineFansNum.text = "0"
             ivMineAvatar.setImageResource(R.drawable.ic_avatar_default)
-
         }
+        swipe_mine_refresh.isRefreshing = false
     }
     override fun update(user: User) {
         setUserData()
