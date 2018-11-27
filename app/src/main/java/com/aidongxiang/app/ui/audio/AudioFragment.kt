@@ -60,12 +60,7 @@ class AudioFragment : BaseKtFragment() {
         requestAdList()
         requestCategoryList()
 
-//        Handler().postDelayed({
-//            val titleBarHeight = titlebar.measuredHeight
-//            val params = CollapsingToolbarLayout.LayoutParams(CollapsingToolbarLayout.LayoutParams.MATCH_PARENT, CollapsingToolbarLayout.LayoutParams.WRAP_CONTENT)
-//            params.topMargin = titleBarHeight
-//            ad_video.layoutParams = params
-//        }, 100)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {

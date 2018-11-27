@@ -9,12 +9,11 @@ import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
-import com.aidongxiang.app.base.Api
-import com.aidongxiang.app.base.App
-import com.aidongxiang.app.base.BaseFragment
-import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.*
 import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.utils.Utils
+import com.aidongxiang.app.webview.BaseJavascriptInterface
+import com.aidongxiang.app.webview.BaseJavascriptInterface.Companion.jsInterfaceObjectName
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.business.model.Audio
 import com.aiitec.openapi.json.enums.AIIAction
@@ -106,20 +105,9 @@ class VideoSynopsisFragment : BaseFragment(){
             webview_video_synopsis.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         }
         webview_video_synopsis.webChromeClient = WebChromeClient()
-//        webview_video_synopsis.webViewClient = object : WebViewClient() {
-//            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-//                //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
-//                view.loadUrl(url)
-//                return true
-//            }
-//
-//            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-//                val url = request.url.toString()
-//                view.loadUrl(url)
-//                return true
-//            }
-//        }
+        webview_video_synopsis.webViewClient = BaseWebviewClient(activity, true)
+        webview_video_synopsis.addJavascriptInterface(BaseJavascriptInterface(activity), jsInterfaceObjectName)
+
     }
 
     fun update(audio: Audio) {

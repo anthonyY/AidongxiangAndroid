@@ -43,8 +43,8 @@ public class VersionCheck {
 	private Handler handler = new Handler();
 	private onNewVersionListener onNewVersionListener;
 	private long totalBytes = 0;
-	public static final String notification_id = "chxgo_notification_id";
-	public static final String notification_channel = "chxgo_notification_channel_version_update";
+	public static final String notification_id = "adx_notification_id";
+	public static final String notification_channel = "adx_notification_channel_version_update";
 
 	public void setOnNewVersionListener(VersionCheck.onNewVersionListener onNewVersionListener) {
 		this.onNewVersionListener = onNewVersionListener;

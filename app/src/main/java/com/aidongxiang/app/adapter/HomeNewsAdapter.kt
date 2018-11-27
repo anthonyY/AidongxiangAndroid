@@ -1,6 +1,7 @@
 package com.aidongxiang.app.adapter
 
 import android.content.Context
+import android.text.Html
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -37,7 +38,7 @@ class HomeNewsAdapter(context: Context, datas: MutableList<Article>, val isVisib
             (lineItem?.layoutParams as LinearLayout.LayoutParams).setMargins(marginLeft, 0, 0, 0)
         }
         GlideImgManager.load(context, item.imagePath, ivImg)
-        tvContent.text = item.title
+        tvContent.text = Html.fromHtml(item.title)
         if(item.timestamp != null){
             tvTime.text = DateUtil.formatStr(item.timestamp, "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd")
         } else {

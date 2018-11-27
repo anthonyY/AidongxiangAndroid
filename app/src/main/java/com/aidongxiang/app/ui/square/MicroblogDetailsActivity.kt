@@ -74,8 +74,9 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         adapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
         commentFragment = PostCommentListFragment.newInstance(postId)
         forwardFragment = PostForwardListFragment.newInstance(postId)
-        adapter.addFragment(commentFragment, "评论")
+
         adapter.addFragment(forwardFragment, "转发")
+        adapter.addFragment(commentFragment, "评论")
         adapter.addFragment(PostAppraiseListFragment.newInstance(postId), "赞")
         viewpager.adapter = adapter
         viewpager.offscreenPageLimit = 2

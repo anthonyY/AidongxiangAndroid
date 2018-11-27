@@ -15,16 +15,14 @@ import android.webkit.WebSettings
 import android.widget.SeekBar
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
-import com.aidongxiang.app.base.Api
-import com.aidongxiang.app.base.App
-import com.aidongxiang.app.base.BaseKtActivity
-import com.aidongxiang.app.base.Constants
+import com.aidongxiang.app.base.*
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.observer.IMusicPlayObserver
 import com.aidongxiang.app.observer.MusicPlaySubject
 import com.aidongxiang.app.service.MusicService
 import com.aidongxiang.app.ui.login.LoginActivity
 import com.aidongxiang.app.utils.Utils
+import com.aidongxiang.app.webview.BaseJavascriptInterface
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.app.widgets.PayDialog
 import com.aidongxiang.business.model.Audio
@@ -72,16 +70,6 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         setListener()
         initWebview()
 
-//        val random = Random()
-//        val ads = ArrayList<Ad>()
-//        for(i in 0..5){
-//            val ad = Ad()
-//            ad.imagePath = HomeFragment.imgs[random.nextInt(HomeFragment.imgs.size)]
-//            ad.name = "广告"
-//            ads.add(ad)
-//        }
-//
-//        adAudioDetails.startAD(ads.size, 4, true, ads)
 
         requestVideoDetails()
     }
@@ -180,20 +168,9 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
         if (Build.VERSION.SDK_INT >= 21) {//兼容https和http的图片
             webview_audio.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
         }
-//        webview_audio.webViewClient = object : WebViewClient() {
-//            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-//                //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
-//                view.loadUrl(url)
-//                return true
-//            }
-//
-//            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-//                val url = request.url.toString()
-//                view.loadUrl(url)
-//                return true
-//            }
-//        }
+        webview_audio.webViewClient = BaseWebviewClient(this, true)
+        webview_audio.addJavascriptInterface(BaseJavascriptInterface(this), BaseJavascriptInterface.jsInterfaceObjectName)
+
         webview_audio.webChromeClient = WebChromeClient()
         if (Build.VERSION.SDK_INT >= 21) {//兼容https和http的图片
             webview_audio_effect.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW

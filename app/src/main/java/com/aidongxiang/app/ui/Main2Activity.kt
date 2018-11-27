@@ -148,11 +148,6 @@ class Main2Activity : BaseKtActivity() {
 
     fun swicthFragment(index : Int){
         when(index){
-//            0-> switchFragment(homeFragment)
-//            1-> switchFragment(videoFragment)
-//            2-> switchFragment(squareFragment)
-//            3-> switchFragment(audioFragment)
-//            4-> switchFragment(mineFragment)
 
             0-> navigation.selectedItemId = R.id.navigation_home
             1-> navigation.selectedItemId = R.id.navigation_video

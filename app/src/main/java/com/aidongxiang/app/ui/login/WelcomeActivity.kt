@@ -14,6 +14,10 @@ import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.openapi.utils.AiiUtil
 import com.aiitec.openapi.utils.LogUtil
 
+/**
+ * 启动欢迎页面
+ * createTime 2017-11-19
+ */
 class WelcomeActivity : BaseKtActivity() {
     override fun init(savedInstanceState: Bundle?) {
         if(intent.data != null){
@@ -82,11 +86,7 @@ class WelcomeActivity : BaseKtActivity() {
             if(isFirstLauncher){
                 switchToActivity(GuideActivity::class.java)
             } else {
-//                if(Constants.user != null){
-                    switchToActivity(Main2Activity::class.java)
-//                } else {
-//                    switchToActivity(LoginActivity::class.java, ARG_ACTION to 1)
-//                }
+                switchToActivity(Main2Activity::class.java)
             }
             finish()
         },2000)

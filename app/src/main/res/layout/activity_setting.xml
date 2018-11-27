@@ -114,8 +114,45 @@
                 android:src="@drawable/common_btn_arrow_gray"/>
         </LinearLayout>
         <View style="@style/line"/>
+        <LinearLayout
+            android:id="@+id/llVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:clickable="true"
+            android:background="@drawable/item_selector"
+            android:paddingRight="@dimen/margin_screen_right"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/margin_screen_left">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="@string/version_update"
+                android:textColor="@color/black5"
+                />
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_marginRight="8dp"
+                android:textColor="@color/black5"
+                />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/common_btn_arrow_gray"/>
+        </LinearLayout>
+        <View style="@style/line"/>
 
         <LinearLayout
+            android:id="@+id/ll_about"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="12dp"

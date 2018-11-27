@@ -1,1 +1,1 @@
-include ':app', ':aiiopenapi', ':alipay', ':socialsdklibrary', ':entitylibrary', ':SmallVideoLib2', ':FlowTaglibrary', ':videotest'
+include ':app', ':aiiopenapi', ':alipay', ':socialsdklibrary', ':entitylibrary', ':SmallVideoLib2', ':FlowTaglibrary'

@@ -1,12 +1,14 @@
 package com.aidongxiang.app.receiver
 
 import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
+import android.os.Build
 import android.text.TextUtils
 import android.view.View
 import android.widget.RemoteViews
@@ -23,6 +25,8 @@ import com.aidongxiang.app.service.MusicService.Companion.TYPE_PLAY
  */
 class MusicPlayReceiver : BroadcastReceiver() {
 
+    val notification_id = "aidongxiang_music_notification_id"
+    val notification_channel = "aidongxiang_music_notification_channel_version_update"
 
     val MUSIC_PLAY_NOTIFY_ID = 9
     override fun onReceive(context: Context, intent: Intent) {
@@ -51,15 +55,31 @@ class MusicPlayReceiver : BroadcastReceiver() {
         if(!TextUtils.isEmpty(title)){
             contentView.setTextViewText(R.id.tvTitle, title)
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(notification_id, notification_channel, NotificationManager.IMPORTANCE_HIGH)
+            // 设置通知出现时不震动
+            channel.enableVibration(false)
+            channel.vibrationPattern = longArrayOf(0)
+            mNotificationManager.createNotificationChannel(channel)
+            notify = Notification.Builder(context, notification_id)
+                    .setCustomContentView(contentView)
+                    .setWhen(System.currentTimeMillis())
+                    //                    .setContentTitle(title)
+                    //                    .setContentText(content)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setAutoCancel(false).build()
+        } else {
 
-        val builder = Notification.Builder(context)
-                .setContent(contentView)
-                .setWhen(System.currentTimeMillis())// 设置时间发生时间
-                .setAutoCancel(false)// 设置可以清除
-                .setSmallIcon(R.mipmap.ic_launcher)
+            val builder = Notification.Builder(context)
+                    .setContent(contentView)
+                    .setWhen(System.currentTimeMillis())// 设置时间发生时间
+                    .setAutoCancel(false)// 设置可以清除
+                    .setSmallIcon(R.mipmap.ic_launcher)
 
 
-        notify = builder.build()
+            notify = builder.build()
+        }
+
 
 
         if(type == MusicService.TYPE_PLAY){

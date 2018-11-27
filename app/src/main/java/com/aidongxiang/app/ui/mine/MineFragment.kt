@@ -19,13 +19,8 @@ import kotlinx.android.synthetic.main.fragment_mine.*
  */
 @ContentView(R.layout.fragment_mine)
 class MineFragment : BaseKtFragment(), IUserInfoChangeObserver {
-
-
-
     override fun init(view: View) {
-
         setListener()
-
         if(Constants.user != null){
             setUserData()
         } else {

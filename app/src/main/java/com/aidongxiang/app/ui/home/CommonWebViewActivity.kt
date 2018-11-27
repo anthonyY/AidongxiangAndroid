@@ -2,20 +2,22 @@ package com.aidongxiang.app.ui.home
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.webkit.*
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
 import com.aidongxiang.app.R
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.BaseKtActivity
+import com.aidongxiang.app.base.BaseWebviewClient
 import com.aidongxiang.app.base.Constants.ARG_TITLE
 import com.aidongxiang.app.base.Constants.ARG_URL
+import com.aidongxiang.app.webview.BaseJavascriptInterface
 import com.aiitec.openapi.utils.LogUtil
 import com.aiitec.widgets.ShareDialog
 import kotlinx.android.synthetic.main.activity_common_web_view.*
@@ -41,34 +43,36 @@ class CommonWebViewActivity : BaseKtActivity() {
         LogUtil.i("url: " + url)
         webview.loadUrl(url)
 
-        webview.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
-                if (url.startsWith("tel:") || url.startsWith("scheme:") || url.startsWith("scheme:")){
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    startActivity(intent)
-                } else if(url.startsWith("http:") || url.startsWith("https:")) {
-                    view.loadUrl(url)
-                }
-                return true
-            }
-
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                val url = request.url.toString()
-                if (url.startsWith("tel:") || url.startsWith("scheme:") || url.startsWith("scheme:")){
-                    val intent = Intent(Intent.ACTION_VIEW, request.url)
-                    startActivity(intent)
-                } else if(url.startsWith("http:") || url.startsWith("https:")) {
-                    view.loadUrl(url)
-                }
-                return true
-                //                return super.shouldOverrideUrlLoading(view, request);
-            }
-
-
-
-        }
+        webview.webViewClient = BaseWebviewClient(this)
+        webview.addJavascriptInterface(BaseJavascriptInterface(this), BaseJavascriptInterface.jsInterfaceObjectName)
+//        {
+//            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+//                //返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
+//                if (url.startsWith("tel:") || url.startsWith("scheme:") || url.startsWith("scheme:")){
+//                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+//                    startActivity(intent)
+//                } else if(url.startsWith("http:") || url.startsWith("https:")) {
+//                    view.loadUrl(url)
+//                }
+//                return true
+//            }
+//
+//            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//            override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+//                val url = request.url.toString()
+//                if (url.startsWith("tel:") || url.startsWith("scheme:") || url.startsWith("scheme:")){
+//                    val intent = Intent(Intent.ACTION_VIEW, request.url)
+//                    startActivity(intent)
+//                } else if(url.startsWith("http:") || url.startsWith("https:")) {
+//                    view.loadUrl(url)
+//                }
+//                return true
+//                //                return super.shouldOverrideUrlLoading(view, request);
+//            }
+//
+//
+//
+//        }
         progressDialogShow()
         webview.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView, progress: Int) {
