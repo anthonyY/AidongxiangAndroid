@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:padding="16dp"
-            android:background="@color/transparent"
+            android:background="@android:color/transparent"
             android:textColor="@color/black3"
             android:hint="好名字可以让您的朋友更容易记住您"/>
         <android.support.v7.widget.AppCompatTextView

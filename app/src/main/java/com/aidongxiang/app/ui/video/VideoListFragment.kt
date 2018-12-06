@@ -7,6 +7,7 @@ import com.aidongxiang.app.R
 import com.aidongxiang.app.adapter.HomeVideoAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
+import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.business.model.Video
@@ -79,12 +80,13 @@ class VideoListFragment : BaseListKtFragment(){
 //            adapter.addHeaderView(headerView)
 //            setHeaderData()
 //        }
-        adapter.setOnRecyclerViewItemClickListener { v, position ->
+        adapter.setOnRecyclerViewItemClickListener { _, position ->
             val id = datas[position-1].audioId
-            switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
+            val title = datas[position-1].name
+            switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id, Constants.ARG_TITLE to title)
         }
         if(type == TYPE_COLLECT){
-            adapter.setOnRecyclerViewItemLongClickListener { v, position ->
+            adapter.setOnRecyclerViewItemLongClickListener { _, position ->
                 if(position > 0){
                     val item = datas[position-1]
                     deletePosition = position-1

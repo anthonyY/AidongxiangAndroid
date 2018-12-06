@@ -27,7 +27,7 @@
             android:padding="16dp"
             android:minLines="3"
             android:gravity="left|top"
-            android:background="@color/transparent"
+            android:background="@android:color/transparent"
             android:textColor="@color/black3"
             android:maxLength="140"
             android:hint="评论内容,140字以内"/>

@@ -65,7 +65,12 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
 
     override fun init(savedInstanceState: Bundle?) {
         id = bundle.getLong(ARG_ID)
-
+        val title = bundle.getString(Constants.ARG_TITLE)
+        if(TextUtils.isEmpty(title)){
+            setTitle("音频")
+        } else {
+            setTitle(title)
+        }
         initDialog()
         setListener()
         initWebview()
@@ -236,12 +241,14 @@ class AudioDetailsActivity : BaseKtActivity(), IMusicPlayObserver {
                     if(it.isPraise == 2){
                         it.isPraise = 1
                         val praiseNum = it.praiseNum-1
+                        it.praiseNum = praiseNum
                         tv_audio_praise_num.text = praiseNum.toString()
                         iv_audio_praise.setImageResource(R.drawable.common_btn_like_nor)
                         tv_audio_praise_num.setTextColor(ContextCompat.getColor(this@AudioDetailsActivity, R.color.gray7))
                     } else {
                         it.isPraise = 2
-                        val praiseNum = it.praiseNum-1
+                        val praiseNum = it.praiseNum+1
+                        it.praiseNum = praiseNum
                         tv_audio_praise_num.text = praiseNum.toString()
                         iv_audio_praise.setImageResource(R.drawable.common_btn_like_pre)
                         tv_audio_praise_num.setTextColor(ContextCompat.getColor(this@AudioDetailsActivity, R.color.colorPrimaryLight))

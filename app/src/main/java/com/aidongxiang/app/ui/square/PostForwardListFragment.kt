@@ -40,7 +40,7 @@ class PostForwardListFragment : BaseListKtFragment(){
         recyclerView?.adapter = adapter
         recyclerView?.setPullRefreshEnabled(false)
         faBtnComment.visibility = View.GONE
-
+        tv_empty_nodata?.text = "还没有人转发哦~"
         requestMicroblogList()
     }
 
@@ -88,6 +88,7 @@ class PostForwardListFragment : BaseListKtFragment(){
         }
         response.microblogs?.let { datas.addAll(it) }
 
+        checkIsEmpty()
         adapter.update()
 
     }

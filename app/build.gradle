@@ -15,8 +15,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         applicationId "com.aidongxiang.app"
-        versionCode 7
-        versionName "1.0.1127"
+        versionCode 1
+        versionName "1.0.1104"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
@@ -80,12 +80,12 @@ android {
             }
         }
     }
-    android {
-        lintOptions {
-            checkReleaseBuilds false
-            abortOnError false
-        }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
     }
+
 }
 
 dependencies {

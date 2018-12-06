@@ -6,7 +6,7 @@ import android.util.Log;
 public class LogUtil {
 	public static final String DEFAULT_TAG = "TAG_AII_NET";
 	public static boolean showLog = false;
-	private static final int MAX = 3900;
+	private static final int MAX = 3800;
 
 	private static void logIntercept(String tag, String logText, LogLevel level) {
 		if (TextUtils.isEmpty(logText)) {

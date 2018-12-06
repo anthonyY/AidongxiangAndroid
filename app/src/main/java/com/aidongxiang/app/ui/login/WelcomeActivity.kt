@@ -83,11 +83,11 @@ class WelcomeActivity : BaseKtActivity() {
             if(supportFragmentManager.isDestroyed){
                 return@postDelayed
             }
-            if(isFirstLauncher){
-                switchToActivity(GuideActivity::class.java)
-            } else {
+//            if(isFirstLauncher){
+//                switchToActivity(GuideActivity::class.java)
+//            } else {
                 switchToActivity(Main2Activity::class.java)
-            }
+//            }
             finish()
         },2000)
 

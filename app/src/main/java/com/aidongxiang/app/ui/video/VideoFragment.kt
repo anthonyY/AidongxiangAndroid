@@ -94,7 +94,11 @@ class VideoFragment : BaseKtFragment() {
 
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.menu_search, menu)
+        menu?.clear()
+        if (childFragmentManager.backStackEntryCount == 0) {
+            inflater?.inflate(R.menu.menu_search, menu)
+        }
+
         super.onCreateOptionsMenu(menu, inflater)
     }
 

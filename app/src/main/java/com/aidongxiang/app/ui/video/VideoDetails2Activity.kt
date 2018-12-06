@@ -24,6 +24,7 @@ import com.aiitec.openapi.enums.CacheMode
 import com.aiitec.openapi.model.Download
 import com.aiitec.openapi.model.RequestQuery
 import com.aiitec.openapi.net.AIIResponse
+import com.aiitec.openapi.utils.LogUtil
 import com.aiitec.widgets.ShareDialog
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.listener.GSYSampleCallBack
@@ -67,7 +68,12 @@ class VideoDetails2Activity : BaseKtActivity() {
     override fun init(savedInstanceState: Bundle?) {
 
         id = bundle.getLong(Constants.ARG_ID)
-        title = "视频"
+        val title = bundle.getString(Constants.ARG_TITLE)
+        if(TextUtils.isEmpty(title)){
+            setTitle("视频")
+        } else {
+            setTitle(title)
+        }
         videoSynopsisFragment = VideoSynopsisFragment()
         adapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
         adapter.addFragment(videoSynopsisFragment, "简介")
@@ -165,10 +171,12 @@ class VideoDetails2Activity : BaseKtActivity() {
 
             override fun onAutoComplete(url: String?, vararg objects: Any?) {
                 super.onAutoComplete(url, *objects)
-
+                if (orientationUtils != null) {
+                    orientationUtils?.backToProtVideo()
+                }
             }
         })
-        video_player.startPlayLogic()
+//        video_player.startPlayLogic()
     }
 
 
@@ -284,6 +292,7 @@ class VideoDetails2Activity : BaseKtActivity() {
     private fun setAudioData(audio: Audio) {
         this.video = audio
         playPath = audio.audioPath
+        LogUtil.e("playPath:"+playPath)
         val download = App.aiidbManager.findObjectFromId(Download::class.java, audio.id)
         var fileExists = false
         if (download != null && !TextUtils.isEmpty(download.localPath)) {
@@ -291,11 +300,13 @@ class VideoDetails2Activity : BaseKtActivity() {
             fileExists = file.exists()
             //一下载并存在
             if (fileExists) {
+                LogUtil.e("有缓存:"+download.localPath)
                 playPath = download.localPath
             }
         }
 //        Glide.with(this).load(audio.imagePath).into(thumbImageView)
-        video_player.setUp(audio.audioPath, true, audio.name)
+        playPath = playPath?.replace("\\/", "/")
+        video_player.setUp(playPath, true, audio.name)
         val imagePath = audio.imagePath
         val content = audio.name
         shareDialog.setShareData("爱侗乡有精彩好看的视频哦，快来看看吧！", content, imagePath, "http://www.aidongxiang.com/download/download.html?vid="+id)

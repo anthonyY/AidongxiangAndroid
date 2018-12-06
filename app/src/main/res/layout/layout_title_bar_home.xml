@@ -34,6 +34,7 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:clickable="true"
+            android:visibility="gone"
             android:background="@drawable/btn_transparent_selector"
             android:src="@drawable/common_btn_down" />
 

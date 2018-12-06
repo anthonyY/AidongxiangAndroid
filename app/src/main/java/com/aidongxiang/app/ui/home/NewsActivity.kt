@@ -29,6 +29,7 @@ class NewsActivity : BaseKtActivity() {
 
 
     override fun init(savedInstanceState: Bundle?) {
+        setTitle("资讯")
         position = bundle.getInt("position")
         mPagerAdapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
 

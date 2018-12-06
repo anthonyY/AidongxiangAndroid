@@ -8,6 +8,7 @@ import com.aidongxiang.app.adapter.HomeAudioAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.Constants.ARG_ID
+import com.aidongxiang.app.base.Constants.ARG_TITLE
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aidongxiang.business.model.Video
 import com.aidongxiang.business.model.Where
@@ -82,7 +83,8 @@ class AudioListFragment : BaseListKtFragment(){
 //        }
         adapter.setOnRecyclerViewItemClickListener { v, position ->
             val id = datas[position-1].audioId
-            switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
+            val title = datas[position-1].name
+            switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id, ARG_TITLE to title)
         }
         if(type == TYPE_COLLECT){
             adapter.setOnRecyclerViewItemLongClickListener { v, position ->

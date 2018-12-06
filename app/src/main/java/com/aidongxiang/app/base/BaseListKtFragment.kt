@@ -30,7 +30,7 @@ abstract class BaseListKtFragment : BaseKtFragment() , XRecyclerView.LoadingList
     override fun init(view: View) {
         recyclerView = view.findViewById<XRecyclerView?>(R.id.recyclerView)
         tv_empty_nodata = view.findViewById<TextView?>(R.id.tv_no_data)
-        tv_net_guide =  view.findViewById<TextView?>(R.id.tv_no_data)
+        tv_net_guide =  view.findViewById<TextView?>(R.id.tv_net_guide)
         ll_no_net =  view.findViewById<LinearLayout?>(R.id.ll_no_net)
         recyclerView?.setLoadingListener(this)
         tv_empty_nodata?.setOnClickListener { onRefresh() }
@@ -49,7 +49,7 @@ abstract class BaseListKtFragment : BaseKtFragment() , XRecyclerView.LoadingList
         } else {
             tv_empty_nodata?.visibility = View.GONE
         }
-        tv_empty_nodata?.setText(R.string.no_data)
+
     }
 
 

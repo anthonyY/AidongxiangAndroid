@@ -112,6 +112,7 @@ class NewsListFragment : BaseListKtFragment(){
             datas.clear()
         }
         response.articles?.let { datas.addAll(it) }
+        checkIsEmpty()
         adapter.update()
     }
 

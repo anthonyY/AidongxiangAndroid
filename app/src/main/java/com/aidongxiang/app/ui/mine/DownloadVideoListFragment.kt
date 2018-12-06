@@ -10,6 +10,7 @@ import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.App.Companion.aiidbManager
 import com.aidongxiang.app.base.Constants.ARG_ID
+import com.aidongxiang.app.base.Constants.ARG_TITLE
 import com.aidongxiang.app.ui.video.VideoDetails2Activity
 import com.aidongxiang.app.widgets.CommonDialog
 import com.aiitec.moreschool.base.BaseListKtFragment
@@ -67,7 +68,8 @@ class DownloadVideoListFragment : BaseListKtFragment(){
         adapter.setOnRecyclerViewItemClickListener { _, position ->
             if(position > 0){
                 val id = datas[position-1].id
-                switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
+                val title = datas[position-1].title
+                switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id , ARG_TITLE to title)
             }
         }
         adapter.setOnRecyclerViewItemLongClickListener { _, position ->

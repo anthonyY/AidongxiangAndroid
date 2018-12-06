@@ -24,7 +24,7 @@
             android:padding="16dp"
             android:minLines="4"
             android:gravity="left|top"
-            android:background="@color/transparent"
+            android:background="@android:color/transparent"
             android:textColor="@color/black3"
             android:hint="向朋友介绍一下你自己"/>
         <android.support.v7.widget.AppCompatTextView

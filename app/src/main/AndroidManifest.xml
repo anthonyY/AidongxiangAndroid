@@ -90,7 +90,6 @@
         <activity android:name=".ui.mine.SettingActivity" />
         <activity android:name=".ui.mine.AccountSecurityActivity" />
         <activity android:name=".ui.mine.UpdatePasswordActivity" />
-        <activity android:name=".ui.mine.ChangeMobileActivity" />
         <activity android:name=".ui.mine.MyCollectionActivity" />
         <activity android:name=".ui.mine.WatchHistoryActivity" />
         <activity android:name=".ui.mine.MyDownloadActivity" />
@@ -104,6 +103,7 @@
         <activity android:name=".ui.mine.ChangeMobileNextActivity"/>
 
         <activity android:name=".ui.audio.AudioDetailsActivity" />
+        <activity android:name=".NetErrDescActivity" />
 
         <activity
             android:name=".ui.video.VideoPlayerActivity"

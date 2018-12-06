@@ -28,12 +28,11 @@ abstract class BaseListKtActivity : BaseKtActivity(), XRecyclerView.LoadingListe
     override fun init(savedInstanceState: Bundle?) {
         recyclerView = findViewById(R.id.recyclerView)
         tv_empty_nodata = findViewById(R.id.tv_no_data)
-        tv_net_guide = findViewById(R.id.tv_no_data)
+        tv_net_guide = findViewById(R.id.tv_net_guide)
         ll_no_net = findViewById(R.id.ll_no_net)
         if(recyclerView != null && recyclerView is XRecyclerView){
             (recyclerView as XRecyclerView).setLoadingListener(this)
         }
-
         tv_empty_nodata?.setOnClickListener { onRefresh() }
         ll_no_net?.setOnClickListener { onRefresh() }
 //        点击网络设置的引导栏
@@ -55,7 +54,7 @@ abstract class BaseListKtActivity : BaseKtActivity(), XRecyclerView.LoadingListe
                 tv_empty_nodata?.visibility = View.GONE
             }
         }
-        tv_empty_nodata?.setText(R.string.no_data)
+
     }
 
 

@@ -10,6 +10,7 @@ import com.aidongxiang.app.adapter.HomeVideoAdapter
 import com.aidongxiang.app.annotation.ContentView
 import com.aidongxiang.app.base.App
 import com.aidongxiang.app.base.BaseListKtActivity
+import com.aidongxiang.app.base.Constants
 import com.aidongxiang.app.base.Constants.ARG_ID
 import com.aidongxiang.app.base.Constants.ARG_SEARCH_KEY
 import com.aidongxiang.app.base.Constants.ARG_TYPE
@@ -78,10 +79,11 @@ class VideoSearchActivity : BaseListKtActivity() {
         videoAdapter.setOnRecyclerViewItemClickListener { v, position ->
             if(position > 0){
                 val id = datas[position-1].audioId
+                val name = datas[position-1].name
                 if(type == TYPE_AUDIO){
-                    switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
+                    switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id , Constants.ARG_TITLE to name)
                 } else {
-                    switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
+                    switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id, Constants.ARG_TITLE to name)
                 }
             }
         }

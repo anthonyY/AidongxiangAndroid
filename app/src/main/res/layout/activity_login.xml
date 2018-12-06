@@ -169,7 +169,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/login_btn_wechat"
             android:visibility="invisible"
-            android:background="@color/transparent"/>
+            android:background="@android:color/transparent"/>
         <android.support.v4.widget.Space
             android:layout_width="0dp"
             android:layout_height="1dp"
@@ -179,7 +179,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/login_btn_qq"
-            android:background="@color/transparent"/>
+            android:background="@android:color/transparent"/>
         <android.support.v4.widget.Space
             android:layout_width="0dp"
             android:layout_height="1dp"
@@ -190,6 +190,6 @@
             android:layout_height="wrap_content"
             android:visibility="invisible"
             android:src="@drawable/login_btn_sina"
-            android:background="@color/transparent"/>
+            android:background="@android:color/transparent"/>
     </LinearLayout>
 </LinearLayout>

@@ -1,6 +1,8 @@
 package com.aidongxiang.app.ui.square
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.AppBarLayout
@@ -60,6 +62,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
     lateinit var commentDialog : CommentDialog
     lateinit var commentFragment : PostCommentListFragment
     lateinit var forwardFragment : PostForwardListFragment
+    lateinit var appraiseFragment : PostAppraiseListFragment
     lateinit var itemDialog: ItemDialog
     lateinit var shieldDialog: ItemDialog
     lateinit var deleteDialog: CommonDialog
@@ -74,10 +77,10 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         adapter = SimpleFragmentPagerAdapter(supportFragmentManager, this)
         commentFragment = PostCommentListFragment.newInstance(postId)
         forwardFragment = PostForwardListFragment.newInstance(postId)
-
+        appraiseFragment = PostAppraiseListFragment.newInstance(postId)
         adapter.addFragment(forwardFragment, "转发")
         adapter.addFragment(commentFragment, "评论")
-        adapter.addFragment(PostAppraiseListFragment.newInstance(postId), "赞")
+        adapter.addFragment(appraiseFragment, "赞")
         viewpager.adapter = adapter
         viewpager.offscreenPageLimit = 2
 
@@ -271,6 +274,7 @@ class MicroblogDetailsActivity : BaseKtActivity() {
                         it.praiseNum = praiseNum
                     }
                 }
+                appraiseFragment.update()
 
             }
         })
@@ -544,4 +548,10 @@ class MicroblogDetailsActivity : BaseKtActivity() {
         })
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK && requestCode == REQUEST_FORWARD){
+            forwardFragment.onRefresh()
+        }
+    }
 }

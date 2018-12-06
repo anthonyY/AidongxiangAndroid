@@ -43,8 +43,8 @@ public class VersionCheck {
 	private Handler handler = new Handler();
 	private onNewVersionListener onNewVersionListener;
 	private long totalBytes = 0;
-	public static final String notification_id = "adx_notification_id";
-	public static final String notification_channel = "adx_notification_channel_version_update";
+	public static final String notification_id = "adx_version_notification_id";
+	public static final String notification_channel = "adx_channel_version_update";
 
 	public void setOnNewVersionListener(VersionCheck.onNewVersionListener onNewVersionListener) {
 		this.onNewVersionListener = onNewVersionListener;
@@ -394,7 +394,7 @@ public class VersionCheck {
 			// 设置通知出现时不震动
 			channel.enableVibration(false);
 			channel.setVibrationPattern(new long[]{0});
-
+			channel.setSound(null, null);
 			nm.createNotificationChannel(channel);
 			notify = new Notification.Builder(context, notification_id)
 					.setCustomContentView(contentView)

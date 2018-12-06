@@ -25,8 +25,8 @@ import com.aidongxiang.app.service.MusicService.Companion.TYPE_PLAY
  */
 class MusicPlayReceiver : BroadcastReceiver() {
 
-    val notification_id = "aidongxiang_music_notification_id"
-    val notification_channel = "aidongxiang_music_notification_channel_version_update"
+    val notification_id = "adx_music_notification_id"
+    val notification_channel = "adx_music_notification_channel_version_update"
 
     val MUSIC_PLAY_NOTIFY_ID = 9
     override fun onReceive(context: Context, intent: Intent) {
@@ -60,6 +60,7 @@ class MusicPlayReceiver : BroadcastReceiver() {
             // 设置通知出现时不震动
             channel.enableVibration(false)
             channel.vibrationPattern = longArrayOf(0)
+            channel.setSound(null, null)
             mNotificationManager.createNotificationChannel(channel)
             notify = Notification.Builder(context, notification_id)
                     .setCustomContentView(contentView)
@@ -76,7 +77,6 @@ class MusicPlayReceiver : BroadcastReceiver() {
                     .setAutoCancel(false)// 设置可以清除
                     .setSmallIcon(R.mipmap.ic_launcher)
 
-
             notify = builder.build()
         }
 
@@ -90,7 +90,7 @@ class MusicPlayReceiver : BroadcastReceiver() {
             mNotificationManager.notify(MUSIC_PLAY_NOTIFY_ID, notify)
         } else if(type == MusicService.TYPE_PAUSE){
             //设置通知点击或滑动时不被清除
-            notify?.flags = Notification.FLAG_ONGOING_EVENT
+            notify?.flags = Notification.FLAG_AUTO_CANCEL
             contentView.setViewVisibility(R.id.ivPlay, View.VISIBLE)
             contentView.setViewVisibility(R.id.ivStop, View.GONE)
             mNotificationManager.notify(MUSIC_PLAY_NOTIFY_ID, notify)

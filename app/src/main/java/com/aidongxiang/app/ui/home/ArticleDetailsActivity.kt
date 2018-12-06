@@ -21,7 +21,6 @@ import com.aiitec.openapi.model.RequestQuery
 import com.aiitec.openapi.net.AIIResponse
 import com.aiitec.widgets.ShareDialog
 import kotlinx.android.synthetic.main.activity_common_web_view.*
-import java.util.regex.Pattern
 
 @ContentView(R.layout.activity_common_web_view)
 class ArticleDetailsActivity : BaseKtActivity() {
@@ -61,7 +60,6 @@ class ArticleDetailsActivity : BaseKtActivity() {
             imagePath = Api.IMAGE_URL+imagePath
         }
         shareDialog.setShareData(title, abstract, imagePath, "http://www.aidongxiang.com/download/download.html?nid="+id)
-
         requestArticleDetails()
     }
 
@@ -109,6 +107,7 @@ class ArticleDetailsActivity : BaseKtActivity() {
                     }
 
                     webview.loadDataWithBaseURL(Api.BASE_URL, getAbsSource(it.content), "text/html", "utf-8", null)
+
 //                    webview.loadData(it.content,"text/html; charset=UTF-8", null)
                 }
             }
@@ -124,42 +123,8 @@ class ArticleDetailsActivity : BaseKtActivity() {
     }
 
     //替换body里面的图片路径问题
-    fun getAbsSource(source: String?): String {
-        val ATTR_PATTERN = Pattern.compile("<img[^<>]*?\\ssrc=['\"]?(.*?)['\"]?\\s.*?>", Pattern.CASE_INSENSITIVE)
-        if(source == null){
-            return ""
-        }
-
-        try {
-            val matcher = ATTR_PATTERN.matcher(source)
-            val list = ArrayList<String>()  // 装载了匹配整个的Tag
-            val list2 = ArrayList<String>() // 装载了src属性的内容
-            while (matcher.find()) {
-                list.add(matcher.group(0))
-                list2.add(matcher.group(1))
-            }
-            val sb = StringBuilder()
-            val dataSplit = source.split("<img".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            if (dataSplit.isNotEmpty()) {
-                val data0 = dataSplit[0]
-                // 连接<img之前的内容
-                sb.append(data0)
-            }
-            // 遍历list
-            list.indices
-                    .map { list[it].replace("img", "img style=\"width:100%;height:auto\" ") }
-                    .forEach { sb.append(it) }
-            val data = source.split("(?:<img[^<>]*?\\s.*?['\"]?\\s.*?>)+".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-            if (data.size > 1) {
-                sb.append(data[1])
-            }
-
-            return sb.toString()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return ""
+    fun getAbsSource(source: String?): String? {
+        return source?.replace("<img", "<img style='width:100%;height:auto'")
     }
 
 }

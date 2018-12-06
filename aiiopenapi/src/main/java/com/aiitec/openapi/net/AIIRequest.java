@@ -44,6 +44,7 @@ import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.FormBody.Builder;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -63,6 +64,8 @@ public class AIIRequest {
         this.sessionAction = sessionAction;
     }
 
+
+    private String formbodyMediaType = "application/x-www-form-urlencoded; charset=utf-8";
 
     /** 待请求协议列表 */
 	private static List<NoSessionRequest<?>> noRequestDatas = new ArrayList<NoSessionRequest<?>>();
@@ -485,7 +488,9 @@ public class AIIRequest {
                 RequestBody requestBody = multipart.build();
                 requestBuilder.post(requestBody);
             } else {
-                requestBuilder.post(new FormBody.Builder().add(KEY_JSON, requestJson).build());
+//                requestBuilder.post(new FormBody.Builder().add(KEY_JSON, requestJson).build());
+                RequestBody body = RequestBody.create(MediaType.parse(formbodyMediaType), "json="+requestJson);
+                requestBuilder.post(body);
             }
 
         }

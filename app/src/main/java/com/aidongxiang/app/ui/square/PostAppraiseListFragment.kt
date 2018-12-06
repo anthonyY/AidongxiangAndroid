@@ -39,6 +39,7 @@ class PostAppraiseListFragment : BaseListKtFragment(){
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.adapter = adapter
         recyclerView?.setPullRefreshEnabled(false)
+        tv_empty_nodata?.text = "还没有人点赞哦~"
         faBtnComment.visibility = View.GONE
         requestUserList()
     }
@@ -95,5 +96,9 @@ class PostAppraiseListFragment : BaseListKtFragment(){
             fragment.arguments = bundle
             return fragment
         }
+    }
+
+    fun update(){
+        onRefresh()
     }
 }

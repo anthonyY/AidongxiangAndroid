@@ -69,8 +69,10 @@ class HomeFragment : BaseKtFragment() {
 
         //视频
         homeVideoAdapter = HomeVideoAdapter(activity!!, videoDatas)
-        homeVideoAdapter.setOnRecyclerViewItemClickListener { v, position ->
-            switchToActivity(VideoDetails2Activity::class.java, ARG_ID to videoDatas[position].audioId)
+        homeVideoAdapter.setOnRecyclerViewItemClickListener { _, position ->
+            val id = videoDatas[position].audioId
+            val title = videoDatas[position].name
+            switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id, ARG_TITLE to title)
         }
         setLayoutManagerInScroolView(recycler_home_video, videoLayoutManager)
         recycler_home_video.adapter = homeVideoAdapter
@@ -81,7 +83,9 @@ class HomeFragment : BaseKtFragment() {
         setLayoutManagerInScroolView(recycler_home_audio, audioManager)
         homeAudioAdapter = HomeAudioAdapter(activity!!, audioDatas)
         homeAudioAdapter.setOnRecyclerViewItemClickListener { v, position ->
-             switchToActivity(AudioDetailsActivity::class.java, ARG_ID to audioDatas[position].audioId)
+            val id = audioDatas[position].audioId
+            val title = audioDatas[position].name
+             switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id, ARG_TITLE to title)
         }
         recycler_home_audio.adapter = homeAudioAdapter
 
@@ -112,13 +116,13 @@ class HomeFragment : BaseKtFragment() {
             val name = navigation.name
             when(navigation.fromType){
                 1->{
-                    switchToActivity(CommonWebViewActivity::class.java, ARG_URL to url, ARG_TITLE to navigation.name)
+                    switchToActivity(CommonWebViewActivity::class.java, ARG_URL to url, ARG_TITLE to name)
                 }
                 2->{
-                    switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id)
+                    switchToActivity(VideoDetails2Activity::class.java, ARG_ID to id, ARG_TITLE to name)
                 }
                 3->{
-                    switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id)
+                    switchToActivity(AudioDetailsActivity::class.java, ARG_ID to id, ARG_TITLE to name)
                 }
                 4->{
                     switchToActivity(ArticleDetailsActivity::class.java, ARG_ID to id, ARG_ABSTRACT to name, ARG_ACTION to 1)
@@ -133,7 +137,7 @@ class HomeFragment : BaseKtFragment() {
 
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.CHINESE)
         val isShowNoticeToday = AiiUtil.getBoolean(activity, "isShowNotice" + today)
-        if (!isShowNoticeToday) {
+        if (!isShowNoticeToday && !TextUtils.isEmpty(Constants.poster)) {
             noticeDialog.show()
             AiiUtil.putBoolean(activity, "isShowNotice" + today, true)
         }

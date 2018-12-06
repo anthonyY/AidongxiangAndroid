@@ -198,12 +198,14 @@ class VideoSynopsisFragment : BaseFragment(){
                     if(it.isPraise == 2){
                         it.isPraise = 1
                         val praiseNum = it.praiseNum-1
+                        it.praiseNum = praiseNum
                         tv_video_praise_num.text = praiseNum.toString()
                         iv_video_praise.setImageResource(R.drawable.common_btn_like_nor)
                         tv_video_praise_num.setTextColor(ContextCompat.getColor(activity!!, R.color.gray7))
                     } else {
                         it.isPraise = 2
                         val praiseNum = it.praiseNum+1
+                        it.praiseNum = praiseNum
                         tv_video_praise_num.text = praiseNum.toString()
                         iv_video_praise.setImageResource(R.drawable.common_btn_like_pre)
                         tv_video_praise_num.setTextColor(ContextCompat.getColor(activity!!, R.color.colorPrimaryLight))
